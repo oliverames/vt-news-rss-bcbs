@@ -1,0 +1,163 @@
+{
+  "title": "Blue Cross VT News Mentions",
+  "generatedAt": "2026-05-13T16:27:07.656Z",
+  "itemCount": 5,
+  "sources": [
+    {
+      "name": "WCAX",
+      "feedUrl": "https://www.wcax.com/arc/outboundfeeds/whiz-rss/category/news/?outputType=xml&size=50&sort=display_date%3Adesc",
+      "ok": true,
+      "itemCount": 50
+    },
+    {
+      "name": "VTDigger",
+      "feedUrl": "https://vtdigger.org/feed/",
+      "ok": true,
+      "itemCount": 30
+    },
+    {
+      "name": "Seven Days",
+      "feedUrl": "https://www.sevendaysvt.com/vermont/Rss.xml",
+      "ok": true,
+      "itemCount": 10
+    },
+    {
+      "name": "MyNBC5",
+      "feedUrl": "https://www.mynbc5.com/topstories-rss",
+      "ok": true,
+      "itemCount": 20
+    },
+    {
+      "name": "MyChamplainValley",
+      "feedUrl": "https://www.mychamplainvalley.com/feed/",
+      "ok": true,
+      "itemCount": 12
+    },
+    {
+      "name": "Vermont Business Magazine",
+      "feedUrl": "https://vermontbiz.com/rss.xml",
+      "ok": true,
+      "itemCount": 10
+    },
+    {
+      "name": "Addison Independent",
+      "feedUrl": "https://www.addisonindependent.com/feed/",
+      "ok": true,
+      "itemCount": 10
+    },
+    {
+      "name": "Rutland Herald",
+      "feedUrl": "https://www.rutlandherald.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+      "ok": false,
+      "itemCount": 0,
+      "error": "HTTP 429 while fetching https://www.rutlandherald.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc"
+    },
+    {
+      "name": "Times Argus",
+      "feedUrl": "https://www.timesargus.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+      "ok": false,
+      "itemCount": 0,
+      "error": "HTTP 429 while fetching https://www.timesargus.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc"
+    },
+    {
+      "name": "Bennington Banner",
+      "feedUrl": "https://www.benningtonbanner.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+      "ok": true,
+      "itemCount": 50
+    },
+    {
+      "name": "Brattleboro Reformer",
+      "feedUrl": "https://www.reformer.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+      "ok": true,
+      "itemCount": 50
+    },
+    {
+      "name": "Vermont Community Newspaper Group",
+      "feedUrl": "https://www.vtcng.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+      "ok": true,
+      "itemCount": 50
+    },
+    {
+      "name": "Valley News",
+      "feedUrl": "https://vnews.com/feed/",
+      "ok": true,
+      "itemCount": 10
+    },
+    {
+      "name": "The Mountain Times",
+      "feedUrl": "https://mountaintimes.info/feed/",
+      "ok": true,
+      "itemCount": 12
+    },
+    {
+      "name": "Newport Daily Express",
+      "feedUrl": "https://www.newportvermontdailyexpress.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+      "ok": false,
+      "itemCount": 0,
+      "error": "HTTP 429 while fetching https://www.newportvermontdailyexpress.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc"
+    }
+  ],
+  "items": [
+    {
+      "title": "Blue Cross and Blue Shield of Vermont seeks smaller premium increase this year",
+      "sourceName": "MyNBC5",
+      "link": "https://www.mynbc5.com/article/blue-cross-and-blue-shield-of-vermont-seeks-premium-increases/71287520",
+      "pubDate": "2026-05-13T14:08:00.000Z",
+      "matchedTerms": [
+        "Blue Cross VT",
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross"
+      ],
+      "snippet": "Advertisement Blue Cross and Blue Shield of Vermont seeks smaller premium increase this year The single digit percentage increases would be the smallest the last several years, Blue Cross VT said. Blue Cross and Blue Shield of Vermont seeks smaller premium increase this yea ...",
+      "articleError": ""
+    },
+    {
+      "title": "Blue Cross Blue Shield of Vermont files for rate increases with state",
+      "sourceName": "WCAX",
+      "link": "https://www.wcax.com/2026/05/12/blue-cross-blue-shield-files-rate-increases-with-state/",
+      "pubDate": "2026-05-12T20:29:16.000Z",
+      "matchedTerms": [
+        "Blue Cross Blue Shield of Vermont",
+        "Blue Cross"
+      ],
+      "snippet": "ShareAdd Us On GoogleAdd as a preferred source on GoogleBURLINGTON, Vt. (WCAX) - Blue Cross Blue Shield of Vermont has filed its 2027 premium rate request with state healthcare regulators.The insurer wants to increase rates for small groups 3.1%, and 5.2% for individuals.Related Stories:Final plans released for Vt. hospital transformationV ...",
+      "articleError": ""
+    },
+    {
+      "title": "UVM Health must cut expenses by $300 million in three years, independent liaison finds",
+      "sourceName": "VTDigger",
+      "link": "https://vtdigger.org/2026/05/08/uvm-health-must-cut-expenses-by-300-million-in-three-years-independent-liaison-finds/",
+      "pubDate": "2026-05-08T10:35:00.000Z",
+      "matchedTerms": [
+        "BCBSVT",
+        "BlueCross BlueShield of Vermont"
+      ],
+      "snippet": "... board in fiscal years 2023 and 2024. The liaison team, helmed by Mike Smith, has worked since spring 2025 to oversee the network’s 2025 budget proposal, contract negotiations with BlueCross BlueShield of Vermont and other ongoing work surrounding affordability, access and quality of care. Though the liaison team does not have regulatory authority or the power to compel the hospital to act, its memos hold sway with the hospital group’s b ...",
+      "articleError": ""
+    },
+    {
+      "title": "2026 Best of Business in Vermont recipients announced",
+      "sourceName": "Vermont Business Magazine",
+      "link": "https://vermontbiz.com/news/2026/april/08/2026-best-business-vermont-recipients-announced",
+      "pubDate": "2026-04-08T16:05:59.000Z",
+      "matchedTerms": [
+        "BlueCross BlueShield of Vermont"
+      ],
+      "snippet": "... st Company of Vermont Best Employee Benefits Firm: The Richards Group Best Commercial Property/Casualty Insurance Provider: Kinney Insurance Agency Best Health Insurance Provider: BlueCross BlueShield of Vermont Best Large Health Care Provider: 600+ Employees University of Vermont Medical Center Best Small Health Care Provider: Less than 600 Employees Copley Hospital Best Auto Dealership: Handy Cars Best Truck Dealership: Handy Toyota B ...",
+      "articleError": ""
+    },
+    {
+      "title": "Vermont DFR warns of potential health insurance scams",
+      "sourceName": "Brattleboro Reformer",
+      "link": "https://www.reformer.com/news/vermont-dfr-warns-of-potential-health-insurance-scams/article_cfb12686-a91e-11ef-94e1-e38b04594951.html",
+      "pubDate": "2024-11-22T22:12:00.000Z",
+      "matchedTerms": [
+        "BCBSVT",
+        "Blue Cross Blue Shield of Vermont",
+        "Blue Cross"
+      ],
+      "snippet": "... ealth Plans are only available from Vermont Health Connect (VHC), which is administered by the Department of Vermont Health Access, or directly from the health insurance companies Blue Cross Blue Shield of Vermont (BCBSVT) and MVP Health Care. The annual open enrollment period for selecting a Qualified Health Plan is November 1, 2024, to January 15, 2025. While health insurance fraud scams occur throughout the year, scammers increase th ...",
+      "articleError": ""
+    }
+  ]
+}

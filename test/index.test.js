@@ -1,0 +1,137 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import {
+  buildJsonSummary,
+  buildRss,
+  buildSnippet,
+  findMentionTerms,
+  parseFeedItems,
+} from "../src/index.js";
+
+test("findMentionTerms catches requested and similar Blue Cross VT variants", () => {
+  const text = [
+    "BCBSVT requested a rate increase.",
+    "Blue Cross VT filed documents.",
+    "Blue Cross and Blue Shield of Vermont responded.",
+    "BCBS of Vermont is another shorthand.",
+  ].join(" ");
+
+  assert.deepEqual(findMentionTerms(text), [
+    "BCBSVT",
+    "BCBS of Vermont",
+    "Blue Cross VT",
+    "Blue Cross and Blue Shield of Vermont",
+    "Blue Cross",
+  ]);
+});
+
+test("parseFeedItems parses RSS items", () => {
+  const xml = `<?xml version="1.0"?>
+    <rss version="2.0">
+      <channel>
+        <item>
+          <title>Blue Cross Blue Shield of Vermont files rates</title>
+          <link>/story</link>
+          <guid>story-1</guid>
+          <pubDate>Tue, 12 May 2026 12:00:00 GMT</pubDate>
+          <description><![CDATA[Regulators received the filing.]]></description>
+        </item>
+      </channel>
+    </rss>`;
+
+  const items = parseFeedItems(xml, {
+    name: "Example",
+    feedUrl: "https://example.com/feed.xml",
+    homepage: "https://example.com/",
+  });
+
+  assert.equal(items.length, 1);
+  assert.equal(
+    items[0].link,
+    "https://example.com/story",
+  );
+  assert.equal(items[0].sourceName, "Example");
+  assert.equal(items[0].description, "Regulators received the filing.");
+});
+
+test("parseFeedItems parses Atom entries", () => {
+  const xml = `<?xml version="1.0"?>
+    <feed xmlns="http://www.w3.org/2005/Atom">
+      <entry>
+        <title>Health care story</title>
+        <link rel="alternate" href="https://example.com/atom-story" />
+        <id>tag:example.com,2026:1</id>
+        <updated>2026-05-12T12:00:00Z</updated>
+        <summary>Blue Cross VT appears in the body.</summary>
+      </entry>
+    </feed>`;
+
+  const items = parseFeedItems(xml, {
+    name: "Atom Example",
+    feedUrl: "https://example.com/atom.xml",
+    homepage: "https://example.com/",
+  });
+
+  assert.equal(items.length, 1);
+  assert.equal(items[0].title, "Health care story");
+  assert.equal(items[0].link, "https://example.com/atom-story");
+});
+
+test("buildSnippet centers the first matched mention", () => {
+  const snippet = buildSnippet(
+    `${"before ".repeat(80)} Blue Cross and Blue Shield of Vermont filed testimony. ${"after ".repeat(80)}`,
+  );
+
+  assert.match(snippet, /Blue Cross and Blue Shield of Vermont/);
+  assert.ok(snippet.startsWith("... "));
+  assert.ok(snippet.endsWith(" ..."));
+});
+
+test("buildRss emits valid channel and escaped item fields", () => {
+  const rss = buildRss(
+    [
+      {
+        sourceName: "WCAX",
+        sourceFeedUrl: "https://www.wcax.com/feed.xml",
+        title: "Blue Cross & rates",
+        link: "https://www.wcax.com/story",
+        guid: "https://www.wcax.com/story",
+        pubDate: new Date("2026-05-12T12:00:00Z"),
+        matchedTerms: ["Blue Cross"],
+        snippet: "Blue Cross filed rates.",
+      },
+    ],
+    {
+      now: new Date("2026-05-13T12:00:00Z"),
+      feedUrl: "https://example.com/feed.rss",
+      siteUrl: "https://example.com/",
+    },
+  );
+
+  assert.match(rss, /<rss version="2.0"/);
+  assert.match(rss, /<title>Blue Cross VT News Mentions<\/title>/);
+  assert.match(rss, /WCAX: Blue Cross &amp; rates/);
+  assert.match(rss, /<category>Blue Cross<\/category>/);
+  assert.match(rss, /atom:link href="https:\/\/example.com\/feed.rss"/);
+});
+
+test("buildJsonSummary creates auditable item output", () => {
+  const summary = buildJsonSummary(
+    [
+      {
+        sourceName: "Seven Days",
+        title: "Insurance story",
+        link: "https://example.com/story",
+        pubDate: new Date("2026-05-12T12:00:00Z"),
+        matchedTerms: ["BCBSVT"],
+        snippet: "BCBSVT mention.",
+      },
+    ],
+    [{ name: "Seven Days", ok: true, itemCount: 1 }],
+    new Date("2026-05-13T12:00:00Z"),
+  );
+
+  assert.equal(summary.itemCount, 1);
+  assert.equal(summary.sources[0].name, "Seven Days");
+  assert.equal(summary.items[0].matchedTerms[0], "BCBSVT");
+});

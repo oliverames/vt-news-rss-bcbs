@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Blue Cross VT News Mentions</title>
+    <meta
+      name="description"
+      content="RSS feed for Blue Cross VT mentions in Vermont news outlets."
+    >
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f7f7f4;
+        --fg: #172026;
+        --muted: #5d6972;
+        --link: #005ea8;
+        --border: #d7d9d2;
+        --panel: #ffffff;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #111416;
+          --fg: #f4f5f2;
+          --muted: #aab2b8;
+          --link: #75bfff;
+          --border: #30383f;
+          --panel: #181d20;
+        }
+      }
+
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font-family:
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        line-height: 1.5;
+      }
+
+      main {
+        width: min(760px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 64px 0;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(2rem, 6vw, 4rem);
+        line-height: 1;
+        letter-spacing: 0;
+      }
+
+      p {
+        margin: 0 0 18px;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+
+      .links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin: 28px 0;
+      }
+
+      a {
+        color: var(--link);
+      }
+
+      .button {
+        display: inline-flex;
+        align-items: center;
+        min-height: 42px;
+        padding: 0 16px;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        background: var(--panel);
+        color: var(--fg);
+        font-weight: 650;
+        text-decoration: none;
+      }
+
+      code {
+        padding: 2px 5px;
+        border-radius: 4px;
+        background: color-mix(in srgb, var(--border) 45%, transparent);
+        font-size: 0.95em;
+      }
+
+      section {
+        margin-top: 42px;
+        padding-top: 28px;
+        border-top: 1px solid var(--border);
+      }
+
+      ul {
+        margin: 16px 0 0;
+        padding-left: 20px;
+        color: var(--muted);
+      }
+
+      li + li {
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Blue Cross VT News Mentions</h1>
+      <p>
+        A filtered RSS feed for mentions of BCBSVT, Blue Cross VT, and Blue
+        Cross and Blue Shield of Vermont in public Vermont news feeds.
+      </p>
+
+      <div class="links" aria-label="Feed links">
+        <a class="button" href="feed.rss">RSS Feed</a>
+        <a class="button" href="feed.json">Audit JSON</a>
+      </div>
+
+      <section>
+        <p>
+          The generator scans the requested minimum outlets, WCAX, VTDigger,
+          and Seven Days, plus additional Vermont news RSS feeds. It checks each
+          feed item and the linked article page when the source allows it.
+        </p>
+        <ul>
+          <li>RSS output: <code>feed.rss</code></li>
+          <li>Audit output: <code>feed.json</code></li>
+          <li>Refresh cadence: every 6 hours in GitHub Actions</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>
