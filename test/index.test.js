@@ -14,6 +14,7 @@ test("findMentionTerms catches requested and similar Blue Cross VT variants", ()
     "Blue Cross VT filed documents.",
     "Blue Cross and Blue Shield of Vermont responded.",
     "BCBS of Vermont is another shorthand.",
+    "Visit bluecrossvt.org for more information.",
   ].join(" ");
 
   assert.deepEqual(findMentionTerms(text), [
@@ -22,6 +23,7 @@ test("findMentionTerms catches requested and similar Blue Cross VT variants", ()
     "Blue Cross VT",
     "Blue Cross and Blue Shield of Vermont",
     "Blue Cross",
+    "bluecrossvt.org",
   ]);
 });
 
@@ -134,4 +136,49 @@ test("buildJsonSummary creates auditable item output", () => {
   assert.equal(summary.itemCount, 1);
   assert.equal(summary.sources[0].name, "Seven Days");
   assert.equal(summary.items[0].matchedTerms[0], "BCBSVT");
+});
+
+test("parseFeedItems supports isSearchFeed property", () => {
+  const xml = `<?xml version="1.0"?>
+    <rss version="2.0">
+      <channel>
+        <item>
+          <title>Web mention</title>
+          <link>https://example.com/story</link>
+          <description>Mention found by search engine</description>
+        </item>
+      </channel>
+    </rss>`;
+
+  const items = parseFeedItems(xml, {
+    name: "Google News Search",
+    feedUrl: "https://news.google.com/rss/...",
+    isSearchFeed: true,
+  });
+
+  assert.equal(items.length, 1);
+  assert.equal(items[0].isSearchFeed, true);
+});
+
+test("enrichAndFilterItems retains search feed item with fallback matching term when no explicit mentions are found in text", async () => {
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "false";
+  try {
+    const { enrichAndFilterItems } = await import("../src/index.js");
+    const items = [
+      {
+        sourceName: "Google News Search",
+        isSearchFeed: true,
+        title: "Implicit news item",
+        link: "https://example.com/implicit-story",
+        feedContent: "This text does not mention any target keywords directly but was indexed by Google News.",
+      }
+    ];
+
+    const filtered = await enrichAndFilterItems(items);
+    assert.equal(filtered.length, 1);
+    assert.deepEqual(filtered[0].matchedTerms, ["Blue Cross"]);
+  } finally {
+    process.env.RSS_ARTICLE_SCAN = originalScan;
+  }
 });
