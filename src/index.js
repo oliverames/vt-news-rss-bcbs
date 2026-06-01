@@ -1,5 +1,5 @@
 import path from "node:path";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile, readFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import * as cheerio from "cheerio";
 import { GoogleDecoder } from "google-news-url-decoder";
@@ -395,9 +395,10 @@ export function buildSnippet(text, terms = MENTION_TERMS) {
   return `${prefix}${cleaned.slice(start, end)}${suffix}`;
 }
 
-function htmlToArticleText(html) {
+export function htmlToArticleText(html) {
   const $ = cheerio.load(html);
-  $("script, style, noscript, svg, iframe, form").remove();
+  // Remove navigation, sidebar, ads, and header/footer elements
+  $("script, style, noscript, svg, iframe, form, nav, footer, header, aside, .sidebar, #sidebar, .nav, .menu, .ads, .ad, .advertisement, [role='banner'], [role='navigation'], [role='contentinfo']").remove();
 
   const candidates = [
     "article",
@@ -411,16 +412,56 @@ function htmlToArticleText(html) {
     ".body-content",
   ];
 
-  const texts = candidates
-    .map((selector) => cleanText($(selector).text()))
-    .filter(Boolean)
-    .sort((a, b) => b.length - a.length);
+  for (const selector of candidates) {
+    const element = $(selector);
+    if (element.length > 0) {
+      const paragraphs = element
+        .find("p")
+        .map((_, el) => $(el).text().trim())
+        .get()
+        .filter(Boolean);
+      if (paragraphs.length > 0) {
+        return cleanText(paragraphs.join(" "));
+      }
+      const text = cleanText(element.text());
+      if (text) {
+        return text;
+      }
+    }
+  }
 
-  return texts[0] || cleanText($("body").text());
+  const paragraphs = $("body p")
+    .map((_, el) => $(el).text().trim())
+    .get()
+    .filter(Boolean);
+  if (paragraphs.length > 0) {
+    return cleanText(paragraphs.join(" "));
+  }
+
+  return cleanText($("body").text());
 }
 
 async function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+const DOMAIN_DELAYS = new Map();
+const PER_DOMAIN_DELAY_MS = 1000; // 1 second politeness delay
+
+async function throttleRequest(url) {
+  try {
+    const hostname = new URL(url).hostname;
+    const now = Date.now();
+    const lastTime = DOMAIN_DELAYS.get(hostname) || 0;
+    const elapsed = now - lastTime;
+    if (elapsed < PER_DOMAIN_DELAY_MS) {
+      const delay = PER_DOMAIN_DELAY_MS - elapsed;
+      await sleep(delay);
+    }
+    DOMAIN_DELAYS.set(hostname, Date.now());
+  } catch {
+    // If URL parsing fails, ignore throttling
+  }
 }
 
 async function fetchText(url, accept) {
@@ -549,7 +590,67 @@ async function collectFeedItems(sources) {
   return { items: dedupeItems(items), sourceResults };
 }
 
-export async function enrichAndFilterItems(items) {
+async function loadCache(jsonOutputPath) {
+  const cache = new Map();
+  try {
+    const raw = await readFile(jsonOutputPath, "utf8");
+    const parsed = JSON.parse(raw);
+    if (parsed && Array.isArray(parsed.items)) {
+      for (const item of parsed.items) {
+        if (item.link) {
+          cache.set(item.link, {
+            matchedTerms: item.matchedTerms,
+            snippet: item.snippet,
+            articleError: item.articleError || "",
+          });
+        }
+      }
+    }
+    console.log(`Loaded cache with ${cache.size} matched items from ${jsonOutputPath}`);
+  } catch {
+    console.log("No existing feed found to populate cache, starting fresh.");
+  }
+  return cache;
+}
+
+export async function triggerWebhooks(failedSources) {
+  if (failedSources.length === 0) return;
+
+  const slackUrl = process.env.SLACK_WEBHOOK_URL;
+  const discordUrl = process.env.DISCORD_WEBHOOK_URL;
+  if (!slackUrl && !discordUrl) return;
+
+  const message = `⚠️ *Blue Cross VT News Mention Monitor Alert*\nSome news feeds failed to fetch in the latest run:\n` +
+    failedSources.map(s => `- *${s.name}*: ${s.error}`).join("\n");
+
+  if (slackUrl) {
+    try {
+      await fetch(slackUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: message }),
+      });
+      console.log("Successfully sent Slack alert.");
+    } catch (err) {
+      console.error("Failed to send Slack alert:", err.message);
+    }
+  }
+
+  if (discordUrl) {
+    try {
+      await fetch(discordUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: message }),
+      });
+      console.log("Successfully sent Discord alert.");
+    } catch (err) {
+      console.error("Failed to send Discord alert:", err.message);
+    }
+  }
+}
+
+export async function enrichAndFilterItems(items, cache = new Map()) {
   const results = await mapWithConcurrency(items, CONCURRENCY, async (item) => {
     let articleText = "";
     let articleError = "";
@@ -566,7 +667,20 @@ export async function enrichAndFilterItems(items) {
       }
     }
 
+    if (cache.has(resolvedLink)) {
+      const cached = cache.get(resolvedLink);
+      console.log(`Cache Hit: Skipping fetch/scrape for ${resolvedLink}`);
+      return {
+        ...item,
+        link: resolvedLink,
+        matchedTerms: cached.matchedTerms,
+        snippet: cached.snippet,
+        articleError: cached.articleError,
+      };
+    }
+
     if (SCAN_ARTICLE_PAGES) {
+      await throttleRequest(resolvedLink);
       try {
         const { text: html, url: finalUrl } = await fetchText(
           resolvedLink,
@@ -721,8 +835,14 @@ export async function generateFeed({
   rssOutputPath = resolveRssOutputPath(),
   jsonOutputPath = resolveJsonOutputPath(rssOutputPath),
 } = {}) {
+  const cache = await loadCache(jsonOutputPath);
   const { items, sourceResults } = await collectFeedItems(sources);
-  const matchedItems = sortItemsByDate(await enrichAndFilterItems(items));
+  
+  // Trigger alerts for failed feeds asynchronously
+  const failedSources = sourceResults.filter(s => !s.ok);
+  triggerWebhooks(failedSources).catch(err => console.error("Webhook trigger error:", err));
+
+  const matchedItems = sortItemsByDate(await enrichAndFilterItems(items, cache));
   const rss = buildRss(matchedItems, { now });
   const jsonSummary = buildJsonSummary(matchedItems, sourceResults, now);
 
