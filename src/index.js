@@ -2,6 +2,9 @@ import path from "node:path";
 import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import * as cheerio from "cheerio";
+import { GoogleDecoder } from "google-news-url-decoder";
+
+const googleDecoder = new GoogleDecoder();
 
 export const DEFAULT_SOURCES = [
   {
@@ -86,6 +89,13 @@ export const DEFAULT_SOURCES = [
     feedUrl:
       "https://www.newportvermontdailyexpress.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
   },
+  {
+    name: "Google News Search",
+    homepage: "https://news.google.com/",
+    feedUrl:
+      "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22&hl=en-US&gl=US&ceid=US:en",
+    isSearchFeed: true,
+  },
 ];
 
 export const MENTION_TERMS = [
@@ -111,6 +121,7 @@ export const MENTION_TERMS = [
     pattern: /\bblue\s+cross\s*\/\s*blue\s+shield\s+(?:of\s+)?vermont\b/i,
   },
   { label: "Blue Cross", pattern: /\bblue\s+cross\b/i },
+  { label: "bluecrossvt.org", pattern: /\bbluecrossvt\.org\b/i },
 ];
 
 const REQUEST_TIMEOUT_MS = parsePositiveInteger(
@@ -121,7 +132,8 @@ const CONCURRENCY = parsePositiveInteger(process.env.RSS_CONCURRENCY, 6);
 const SCAN_ARTICLE_PAGES = process.env.RSS_ARTICLE_SCAN !== "false";
 const SITE_URL = process.env.SITE_URL?.trim() || "";
 const FEED_URL = resolveFeedUrl();
-const USER_AGENT = "vt-news-rss-bcbs/1.0 (+https://github.com/oliverames)";
+const USER_AGENT =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 const MAX_FETCH_ATTEMPTS = parsePositiveInteger(
   process.env.RSS_FETCH_ATTEMPTS,
   3,
@@ -277,6 +289,7 @@ export function parseFeedItems(feedXml, source) {
       return {
         sourceName: source.name,
         sourceFeedUrl: source.feedUrl,
+        isSearchFeed: !!source.isSearchFeed,
         title,
         link,
         guid,
@@ -318,6 +331,7 @@ export function parseFeedItems(feedXml, source) {
       return {
         sourceName: source.name,
         sourceFeedUrl: source.feedUrl,
+        isSearchFeed: !!source.isSearchFeed,
         title,
         link,
         guid,
@@ -418,6 +432,14 @@ async function fetchText(url, accept) {
         headers: {
           accept,
           "user-agent": USER_AGENT,
+          "accept-language": "en-US,en;q=0.9",
+          "sec-ch-ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+          "sec-ch-ua-mobile": "?0",
+          "sec-ch-ua-platform": '"macOS"',
+          "sec-fetch-dest": "document",
+          "sec-fetch-mode": "navigate",
+          "sec-fetch-site": "none",
+          "sec-fetch-user": "?1",
         },
         redirect: "follow",
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
@@ -436,7 +458,10 @@ async function fetchText(url, accept) {
         throw error;
       }
 
-      return await response.text();
+      return {
+        text: await response.text(),
+        url: response.url,
+      };
     } catch (error) {
       lastError = error;
 
@@ -496,7 +521,7 @@ async function collectFeedItems(sources) {
 
   for (const source of sources) {
     try {
-      const xml = await fetchText(
+      const { text: xml } = await fetchText(
         source.feedUrl,
         "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
       );
@@ -524,18 +549,33 @@ async function collectFeedItems(sources) {
   return { items: dedupeItems(items), sourceResults };
 }
 
-async function enrichAndFilterItems(items) {
+export async function enrichAndFilterItems(items) {
   const results = await mapWithConcurrency(items, CONCURRENCY, async (item) => {
     let articleText = "";
     let articleError = "";
+    let resolvedLink = item.link;
+
+    if (resolvedLink.includes("news.google.com/rss/articles")) {
+      try {
+        const decoded = await googleDecoder.decode(resolvedLink);
+        if (decoded && decoded.status && decoded.decoded_url) {
+          resolvedLink = decoded.decoded_url;
+        }
+      } catch (error) {
+        console.warn(`Failed to decode Google News link ${resolvedLink}: ${error.message}`);
+      }
+    }
 
     if (SCAN_ARTICLE_PAGES) {
       try {
-        const html = await fetchText(
-          item.link,
+        const { text: html, url: finalUrl } = await fetchText(
+          resolvedLink,
           "text/html, application/xhtml+xml, */*",
         );
         articleText = htmlToArticleText(html);
+        if (finalUrl) {
+          resolvedLink = finalUrl;
+        }
       } catch (error) {
         articleError = error.message;
       }
@@ -543,20 +583,23 @@ async function enrichAndFilterItems(items) {
 
     const feedMatches = findMentionTerms(item.feedContent);
     const articleMatches = findMentionTerms(articleText);
-    const searchableText = cleanText(
-      [item.feedContent, articleText].filter(Boolean).join(" "),
-    );
     const matchedTerms = [...new Set([...feedMatches, ...articleMatches])];
 
-    if (matchedTerms.length === 0) {
-      return null;
+    let finalMatchedTerms = matchedTerms;
+    if (finalMatchedTerms.length === 0) {
+      if (item.isSearchFeed) {
+        finalMatchedTerms = ["Blue Cross"];
+      } else {
+        return null;
+      }
     }
 
     const snippetSource = articleMatches.length > 0 ? articleText : item.feedContent;
 
     return {
       ...item,
-      matchedTerms,
+      link: resolvedLink,
+      matchedTerms: finalMatchedTerms,
       snippet: buildSnippet(snippetSource),
       articleError,
     };
