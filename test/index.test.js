@@ -6,6 +6,8 @@ import {
   buildSnippet,
   findMentionTerms,
   parseFeedItems,
+  enrichAndFilterItems,
+  htmlToArticleText,
 } from "../src/index.js";
 
 test("findMentionTerms catches requested and similar Blue Cross VT variants", () => {
@@ -178,6 +180,73 @@ test("enrichAndFilterItems retains search feed item with fallback matching term 
     const filtered = await enrichAndFilterItems(items);
     assert.equal(filtered.length, 1);
     assert.deepEqual(filtered[0].matchedTerms, ["Blue Cross"]);
+  } finally {
+    process.env.RSS_ARTICLE_SCAN = originalScan;
+  }
+});
+
+test("htmlToArticleText extracts clean editorial text ignoring boilerplates", () => {
+  const html = `
+    <!doctype html>
+    <html>
+      <head><title>Test Page</title></head>
+      <body>
+        <header>
+          <nav><a href="/">Home</a> | <a href="/about">About Us</a></nav>
+        </header>
+        <aside class="sidebar">
+          <h3>Trending Articles</h3>
+          <p>Unrelated sidebar mention of Blue Cross</p>
+        </aside>
+        <main>
+          <article>
+            <h1>Main Editorial Story</h1>
+            <p>This is the actual news content of the story.</p>
+            <p>It has multiple paragraphs representing the article body.</p>
+          </article>
+        </main>
+        <footer>
+          <p>&copy; 2026 Publisher. All rights reserved.</p>
+        </footer>
+      </body>
+    </html>
+  `;
+
+  const text = htmlToArticleText(html);
+  assert.match(text, /This is the actual news content/);
+  assert.match(text, /multiple paragraphs/);
+  assert.ok(!text.includes("Trending Articles"));
+  assert.ok(!text.includes("About Us"));
+  assert.ok(!text.includes("Publisher"));
+});
+
+test("enrichAndFilterItems skips network fetches on cache hits", async () => {
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "true";
+  
+  try {
+    const items = [
+      {
+        sourceName: "Cached Outlet",
+        title: "News story",
+        link: "https://example.com/cached-article",
+        feedContent: "Implicit content",
+      }
+    ];
+
+    const cache = new Map([
+      ["https://example.com/cached-article", {
+        matchedTerms: ["BCBSVT"],
+        snippet: "Cached snippet about BCBSVT.",
+        articleError: "No error"
+      }]
+    ]);
+
+    const filtered = await enrichAndFilterItems(items, cache);
+    assert.equal(filtered.length, 1);
+    assert.deepEqual(filtered[0].matchedTerms, ["BCBSVT"]);
+    assert.equal(filtered[0].snippet, "Cached snippet about BCBSVT.");
+    assert.equal(filtered[0].articleError, "No error");
   } finally {
     process.env.RSS_ARTICLE_SCAN = originalScan;
   }
