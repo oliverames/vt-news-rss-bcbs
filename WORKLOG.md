@@ -6,7 +6,9 @@
 
 **Left off at**: 45 tests pass, `node --check` on all twelve `src/*.js` files, offline `generateFeed` smoke through the seeded archive (169 items merged, RSS well-formed, JSON valid), and two live-network generates to `/tmp` (45/45 sources ok, zero failures, 238 then 246 items) — one before the split on the parallel-fetch commit, one after the split. Both workflows parse as YAML.
 
-**Open questions**: The throttle's promise-chain behavior is verified structurally and by the live runs, not by a dedicated unit test; PER_DOMAIN_DELAY_MS is not injectable and a timing test would be flake-prone. Revisit if politeness complaints ever surface.
+**Open questions**: The throttle's promise-chain behavior is verified structurally and by the live runs, not by a dedicated unit test; a timing test would be flake-prone. Revisit if politeness complaints ever surface.
+
+**Post-deploy finding**: The first CI run on these changes built in 9:10 versus ~2:15 for prior runs. Source collection itself dropped to 17 seconds (parallel fetching works); the added time is article scanning, because the old racy throttle never actually enforced its 1-second per-domain delay under concurrency, and the fixed one does. Prior runs were fast by accident of broken politeness. 9 minutes is comfortable against the hourly cadence and 30-minute timeout, so the delay stays at 1s, now tunable via `RSS_DOMAIN_DELAY_MS`. The deeper inefficiency, re-fetching article pages for items that did not match on earlier runs (only matches are cached), is a candidate for a negative-result cache with a TTL if run length ever becomes a problem. Two sources returned transient HTTP 403s on this run (Vermont Business Magazine, The Mountain Times) and correctly show streak 1 in the live audit.
 
 ---
 

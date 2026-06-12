@@ -42,7 +42,15 @@ const MAX_RESPONSE_BYTES = parsePositiveInteger(
 );
 
 const DOMAIN_QUEUES = new Map();
-const PER_DOMAIN_DELAY_MS = 1000; // 1 second politeness delay between request starts
+// Politeness delay between request starts on the same domain. Note: before
+// the promise-chain rewrite this delay was unenforced under concurrency (a
+// race let workers slip through), which is why older runs looked faster.
+// Now that it works, it dominates run time when many uncached articles share
+// a domain; lower it here if run length ever matters more than politeness.
+const PER_DOMAIN_DELAY_MS = parsePositiveInteger(
+  process.env.RSS_DOMAIN_DELAY_MS,
+  1000,
+);
 
 // Serialize request starts per domain: each caller awaits the previous
 // caller's slot, and the next slot opens one delay later. The get/set pair
