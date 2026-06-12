@@ -33,9 +33,13 @@ The default source list includes:
 | MyNBC5 | `https://www.mynbc5.com/topstories-rss` |
 | MyChamplainValley | `https://www.mychamplainvalley.com/feed/` |
 | Vermont Business Magazine | `https://vermontbiz.com/rss.xml` |
+| UVM Health Newsroom | `https://www.uvmhealth.org/newsroom` listing page |
+| BlueCrossVT Newsroom | `https://www.bluecrossvt.org/health-community/news` listing page |
+| BlueCrossVT Be Well VT Blog | `https://www.bluecrossvt.org/health-community/blog/listing` listing page |
 | Addison Independent | `https://www.addisonindependent.com/feed/` |
 | Rutland Herald | `https://www.rutlandherald.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc` |
 | Times Argus | `https://www.timesargus.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc` |
+| Times Argus UVM Health search | `https://www.timesargus.com/search/?q=%22UVM%20Health%22&f=rss&t=article&l=50&s=start_time&sd=desc` |
 | Bennington Banner | `https://www.benningtonbanner.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc` |
 | Brattleboro Reformer | `https://www.reformer.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc` |
 | Vermont Community Newspaper Group | `https://www.vtcng.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc` |
@@ -45,7 +49,17 @@ The default source list includes:
 | Google News brand search | capped BCBSVT/Blue Cross VT search RSS |
 | Google News Vermont health search | capped 7-day Vermont health care search RSS |
 | Google News health insurance search | capped 7-day national payer/coverage search RSS |
+| STAT Health News | `https://www.statnews.com/feed/` |
+| Fierce Healthcare | `https://www.fiercehealthcare.com/rss/xml` |
+| Healthcare Dive | `https://www.healthcaredive.com/feeds/news/` |
+| KFF Health News | `https://kffhealthnews.org/feed/` |
+| The Hill Health Care | `https://thehill.com/policy/healthcare/feed/` |
+| NPR Health | `https://www.npr.org/rss/rss.php?id=1128` |
+| Google News health trade search | capped 14-day Modern Healthcare/Becker's payer search RSS |
+| Google News national health policy search | capped 14-day AP/NBC/NYT/Washington Post/Axios health policy search RSS |
 | Facebook pages (VTDigger, WCAX, Seven Days, Vermont Public, MyNBC5, VermontBiz) | each page's latest public post, kept only on a Blue Cross brand match; comments included when parseable |
+
+BlueCrossVT.org and UVM Health do not expose RSS/Atom at the usual feed URLs for these pages, so the generator parses the public dated listing rows on their newsroom/blog pages.
 
 ## Quick Start
 

@@ -17,6 +17,9 @@
         --link: #0000cc;
         --visited: #551a8b;
         --rule: #ccc;
+        --surface: #f5f8fc;
+        --surface-strong: #e8f0fb;
+        --rule-blue: #b7cbe9;
         --bar-1: #0033a0;
         --bar-2: #111;
         --bar-3: #418fde;
@@ -85,14 +88,14 @@
       }
 
       .sections {
-        margin: 0 0 4px;
-        padding: 10px 0;
+        margin: 0 0 22px;
+        padding: 10px 0 14px;
         border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
         font-size: 0.92rem;
       }
 
-      .sections .label,
-      .filters .label {
+      .sections .label {
         font-weight: 700;
         margin-right: 6px;
       }
@@ -108,31 +111,7 @@
         text-decoration: none;
       }
 
-      .filters {
-        margin: 0 0 22px;
-        padding: 10px 0 14px;
-        border-top: 1px solid var(--rule);
-        border-bottom: 1px solid var(--rule);
-        font-size: 0.88rem;
-      }
-
-      .filters .label {
-        font-weight: 700;
-        margin-right: 6px;
-      }
-
-      .filters a {
-        margin-right: 10px;
-        white-space: nowrap;
-      }
-
-      .filters a.active {
-        color: var(--fg);
-        font-weight: 700;
-        text-decoration: none;
-      }
-
-      .filters .count {
+      .sections .count {
         color: var(--muted);
         font-weight: 400;
       }
@@ -143,7 +122,7 @@
         padding: 0;
       }
 
-      ul.stories li {
+      ul.stories > li {
         margin: 0 0 18px;
       }
 
@@ -156,8 +135,18 @@
         margin-top: 3px;
       }
 
-      ul.stories .why {
-        font-style: italic;
+      ul.stories .reason {
+        margin: 8px 0 0;
+        padding: 7px 10px;
+        border-left: 4px solid var(--bar-1);
+        background: var(--surface);
+        color: #1b2f52;
+        font-size: 0.82rem;
+      }
+
+      ul.stories .reason-label {
+        display: inline;
+        font-weight: 700;
       }
 
       ul.stories .meta {
@@ -171,15 +160,46 @@
       }
 
       ul.stories .comments {
-        margin: 5px 0 0 18px;
+        list-style: none;
+        margin: 7px 0 0;
         padding: 0;
         font-size: 0.84rem;
       }
 
       ul.stories .comments-title {
-        color: var(--muted);
+        color: var(--fg);
+        font-weight: 700;
         font-size: 0.8rem;
-        margin-top: 4px;
+        margin-top: 9px;
+      }
+
+      ul.stories .comment {
+        margin: 0 0 7px;
+        padding: 7px 9px;
+        border-left: 3px solid var(--rule-blue);
+        background: var(--surface);
+      }
+
+      ul.stories .comment-meta {
+        color: var(--muted);
+        display: block;
+        font-size: 0.76rem;
+        margin-bottom: 2px;
+      }
+
+      ul.stories .comment-author {
+        color: var(--fg);
+        font-weight: 700;
+      }
+
+      ul.stories .comment-replies {
+        list-style: none;
+        margin: 7px 0 0 13px;
+        padding: 0;
+      }
+
+      ul.stories .comment-replies .comment {
+        background: var(--surface-strong);
       }
 
       .status {
@@ -217,11 +237,6 @@
         <span id="section-links"></span>
       </nav>
 
-      <nav class="filters" id="filters" aria-label="Filter by matched keyword" hidden>
-        <span class="label">Keywords:</span>
-        <span id="filter-links"></span>
-      </nav>
-
       <ul class="stories" id="stories">
         <li class="status">Loading stories&hellip;</li>
       </ul>
@@ -230,8 +245,8 @@
         Blue Cross VT mentions and Vermont health care coverage collected
         from Vermont news outlets and Google News, refreshed hourly. Stories
         are kept for a year, even after they leave their source feeds.
-        Keywords under each story are the terms that caused it to be
-        included; summaries are AI-generated.
+        Inclusion signals are retained in the JSON feed; summaries are
+        AI-generated.
         Subscribe via <a href="feed.rss">RSS</a> or
         <a href="feed.json">JSON</a>.
       </footer>
@@ -241,11 +256,34 @@
       const storiesEl = document.getElementById("stories");
       const sectionsEl = document.getElementById("sections");
       const sectionLinksEl = document.getElementById("section-links");
-      const filtersEl = document.getElementById("filters");
-      const filterLinksEl = document.getElementById("filter-links");
       const datelineEl = document.getElementById("dateline");
 
       let allItems = [];
+
+      const localSourceNames = new Set([
+        "Addison Independent",
+        "Bennington Banner",
+        "BlueCrossVT Be Well VT Blog",
+        "BlueCrossVT Newsroom",
+        "Brattleboro Reformer",
+        "MyChamplainValley",
+        "MyNBC5",
+        "Newport Daily Express",
+        "Rutland Herald",
+        "Seven Days",
+        "The Mountain Times",
+        "Times Argus",
+        "Times Argus UVM Health Search",
+        "UVM Health Newsroom",
+        "Valley News",
+        "Vermont Business Magazine",
+        "Vermont Community Newspaper Group",
+        "Vermont Public",
+        "VTDigger",
+        "WCAX",
+      ]);
+      const regionalTextPattern =
+        /\b(?:vermont|vermonters?|uvm|dartmouth[\s-]+hitchcock|dartmouth health|dhmc|cvph|new england|maine|new hampshire|massachusetts|rhode island|connecticut)\b/i;
 
       function hashParam(name) {
         const match = new RegExp(`(?:^|[#&])${name}=([^&]*)`).exec(
@@ -254,21 +292,14 @@
         return match ? decodeURIComponent(match[1]) : "";
       }
 
-      function activeTerm() {
-        return hashParam("term");
-      }
-
       function activeSection() {
         return hashParam("section");
       }
 
-      function buildHash(section, term) {
+      function buildHash(section) {
         const parts = [];
         if (section) {
           parts.push(`section=${encodeURIComponent(section)}`);
-        }
-        if (term) {
-          parts.push(`term=${encodeURIComponent(term)}`);
         }
         return parts.length ? `#${parts.join("&")}` : "#";
       }
@@ -284,14 +315,27 @@
         return date.toLocaleDateString("en-US", options);
       }
 
-      function termCounts(items) {
-        const counts = new Map();
-        for (const item of items) {
-          for (const term of item.matchedTerms || []) {
-            counts.set(term, (counts.get(term) || 0) + 1);
-          }
+      function formatCommentDate(iso) {
+        if (!iso) {
+          return "";
         }
-        return [...counts.entries()].sort((a, b) => b[1] - a[1]);
+        const date = new Date(iso);
+        if (Number.isNaN(date.valueOf())) {
+          return "";
+        }
+        return date.toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        });
+      }
+
+      function countComments(comments) {
+        return (comments || []).reduce(
+          (total, comment) => total + 1 + countComments(comment.replies || []),
+          0,
+        );
       }
 
       function sectionItems() {
@@ -301,26 +345,47 @@
           : allItems;
       }
 
-      function termLink(term, label, count) {
-        const a = document.createElement("a");
-        a.href = buildHash(activeSection(), term);
-        a.textContent = label;
-        if (count !== undefined) {
-          const span = document.createElement("span");
-          span.className = "count";
-          span.textContent = ` (${count})`;
-          a.appendChild(span);
+      function itemPriority(item) {
+        if (item.category === "Blue Cross VT") {
+          return 0;
         }
-        if (activeTerm() === term) {
-          a.className = "active";
+
+        const evidence = [
+          item.sourceName,
+          item.title,
+          item.summary,
+          item.snippet,
+          item.reason,
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+        if (
+          localSourceNames.has(item.sourceName) ||
+          regionalTextPattern.test(evidence)
+        ) {
+          return 1;
         }
-        return a;
+
+        return 2;
+      }
+
+      function orderedItems(items) {
+        return [...items].sort((a, b) => {
+          const priorityDiff = itemPriority(a) - itemPriority(b);
+          if (priorityDiff !== 0) {
+            return priorityDiff;
+          }
+
+          const aTime = a.pubDate ? new Date(a.pubDate).valueOf() : 0;
+          const bTime = b.pubDate ? new Date(b.pubDate).valueOf() : 0;
+          return bTime - aTime;
+        });
       }
 
       function sectionLink(section, label, count) {
         const a = document.createElement("a");
-        // Switching sections clears the keyword filter.
-        a.href = buildHash(section, "");
+        a.href = buildHash(section);
         a.textContent = label;
         if (count !== undefined) {
           const span = document.createElement("span");
@@ -350,30 +415,15 @@
         sectionsEl.hidden = false;
       }
 
-      function renderFilters() {
-        const scoped = sectionItems();
-        filterLinksEl.replaceChildren();
-        filterLinksEl.appendChild(termLink("", "All", scoped.length));
-        for (const [term, count] of termCounts(scoped)) {
-          filterLinksEl.appendChild(document.createTextNode(" "));
-          filterLinksEl.appendChild(termLink(term, term, count));
-        }
-        filtersEl.hidden = false;
-      }
-
       function renderStories() {
-        const term = activeTerm();
-        const scoped = sectionItems();
-        const items = term
-          ? scoped.filter((item) => (item.matchedTerms || []).includes(term))
-          : scoped;
+        const items = orderedItems(sectionItems());
 
         storiesEl.replaceChildren();
 
         if (items.length === 0) {
           const li = document.createElement("li");
           li.className = "status";
-          li.textContent = "No stories match this keyword.";
+          li.textContent = "No stories match this section.";
           storiesEl.appendChild(li);
           return;
         }
@@ -401,13 +451,18 @@
             const summary = document.createElement("div");
             summary.className = "summary";
             summary.appendChild(document.createTextNode(item.summary || item.snippet));
-            if (item.summary && item.reason) {
-              const why = document.createElement("span");
-              why.className = "why";
-              why.textContent = ` Why it's here: ${item.reason}`;
-              summary.appendChild(why);
-            }
             li.appendChild(summary);
+          }
+
+          if (item.reason) {
+            const reason = document.createElement("div");
+            reason.className = "reason";
+            const reasonLabel = document.createElement("span");
+            reasonLabel.className = "reason-label";
+            reasonLabel.textContent = "Why it's here: ";
+            reason.appendChild(reasonLabel);
+            reason.appendChild(document.createTextNode(item.reason));
+            li.appendChild(reason);
           }
 
           const meta = document.createElement("div");
@@ -419,41 +474,64 @@
           });
           meta.appendChild(
             document.createTextNode(
-              `${item.sourceName}${date ? ` · ${date}` : ""} · matched: `,
+              `${item.sourceName}${date ? ` · posted ${date}` : ""}`,
             ),
           );
-          (item.matchedTerms || []).forEach((matchedTerm, index) => {
-            if (index > 0) {
-              meta.appendChild(document.createTextNode(", "));
-            }
-            meta.appendChild(termLink(matchedTerm, matchedTerm));
-          });
           li.appendChild(meta);
 
           if (Array.isArray(item.comments) && item.comments.length > 0) {
             const commentsTitle = document.createElement("div");
             commentsTitle.className = "comments-title";
-            commentsTitle.textContent = "Comments";
+            const commentTotal = countComments(item.comments);
+            commentsTitle.textContent = `Comments (${commentTotal})`;
             li.appendChild(commentsTitle);
 
-            const comments = document.createElement("ul");
-            comments.className = "comments";
-            for (const comment of item.comments) {
-              const commentLi = document.createElement("li");
-              const author = comment.author ? `${comment.author}: ` : "";
-              commentLi.textContent = `${author}${comment.text || ""}`;
-              comments.appendChild(commentLi);
-            }
-            li.appendChild(comments);
+            li.appendChild(renderComments(item.comments, "comments"));
           }
 
           storiesEl.appendChild(li);
         }
       }
 
+      function renderComments(comments, className) {
+        const list = document.createElement("ul");
+        list.className = className;
+
+        for (const comment of comments) {
+          const commentLi = document.createElement("li");
+          commentLi.className = "comment";
+
+          const meta = document.createElement("span");
+          meta.className = "comment-meta";
+          const author = document.createElement("span");
+          author.className = "comment-author";
+          author.textContent = comment.author || "Commenter";
+          meta.appendChild(author);
+
+          const date = formatCommentDate(comment.date);
+          if (date) {
+            meta.appendChild(document.createTextNode(` · ${date}`));
+          }
+          commentLi.appendChild(meta);
+
+          const text = document.createElement("span");
+          text.textContent = comment.text || "";
+          commentLi.appendChild(text);
+
+          if (Array.isArray(comment.replies) && comment.replies.length > 0) {
+            commentLi.appendChild(
+              renderComments(comment.replies, "comment-replies"),
+            );
+          }
+
+          list.appendChild(commentLi);
+        }
+
+        return list;
+      }
+
       function renderAll() {
         renderSections();
-        renderFilters();
         renderStories();
       }
 

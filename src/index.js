@@ -55,6 +55,29 @@ export const DEFAULT_SOURCES = [
     feedUrl: "https://vermontbiz.com/rss.xml",
   },
   {
+    name: "UVM Health Newsroom",
+    homepage: "https://www.uvmhealth.org/newsroom",
+    listingUrl: "https://www.uvmhealth.org/newsroom",
+    listingParser: "uvmHealthNewsroom",
+    searchFallbackTerms: ["UVM Health"],
+    scanArticle: false,
+    maxItems: 10,
+  },
+  {
+    name: "BlueCrossVT Newsroom",
+    homepage: "https://www.bluecrossvt.org/health-community/news",
+    listingUrl: "https://www.bluecrossvt.org/health-community/news",
+    searchFallbackTerms: ["bluecrossvt.org"],
+    scanArticle: false,
+  },
+  {
+    name: "BlueCrossVT Be Well VT Blog",
+    homepage: "https://www.bluecrossvt.org/health-community/blog/listing",
+    listingUrl: "https://www.bluecrossvt.org/health-community/blog/listing",
+    searchFallbackTerms: ["bluecrossvt.org"],
+    scanArticle: false,
+  },
+  {
     name: "Addison Independent",
     homepage: "https://www.addisonindependent.com/",
     feedUrl: "https://www.addisonindependent.com/feed/",
@@ -70,6 +93,14 @@ export const DEFAULT_SOURCES = [
     homepage: "https://www.timesargus.com/",
     feedUrl:
       "https://www.timesargus.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+  },
+  {
+    name: "Times Argus UVM Health Search",
+    homepage: "https://www.timesargus.com/",
+    feedUrl:
+      "https://www.timesargus.com/search/?q=%22UVM%20Health%22&f=rss&t=article&l=50&s=start_time&sd=desc",
+    scanArticle: false,
+    maxItems: 20,
   },
   {
     name: "Bennington Banner",
@@ -169,6 +200,74 @@ export const DEFAULT_SOURCES = [
     isSearchFeed: true,
     scanArticle: false,
     maxItems: 30,
+  },
+  {
+    name: "STAT Health News",
+    homepage: "https://www.statnews.com/",
+    feedUrl: "https://www.statnews.com/feed/",
+    scanArticle: false,
+    maxItems: 50,
+  },
+  {
+    name: "Fierce Healthcare",
+    homepage: "https://www.fiercehealthcare.com/",
+    feedUrl: "https://www.fiercehealthcare.com/rss/xml",
+    scanArticle: false,
+    maxItems: 50,
+  },
+  {
+    name: "Healthcare Dive",
+    homepage: "https://www.healthcaredive.com/",
+    feedUrl: "https://www.healthcaredive.com/feeds/news/",
+    scanArticle: false,
+    maxItems: 50,
+  },
+  {
+    name: "KFF Health News",
+    homepage: "https://kffhealthnews.org/",
+    feedUrl: "https://kffhealthnews.org/feed/",
+    scanArticle: false,
+    maxItems: 50,
+  },
+  {
+    name: "The Hill Health Care",
+    homepage: "https://thehill.com/policy/healthcare/",
+    feedUrl: "https://thehill.com/policy/healthcare/feed/",
+    scanArticle: false,
+    maxItems: 50,
+  },
+  {
+    name: "NPR Health",
+    homepage: "https://www.npr.org/sections/health/",
+    feedUrl: "https://www.npr.org/rss/rss.php?id=1128",
+    scanArticle: false,
+    maxItems: 50,
+  },
+  {
+    name: "Google News Health Trade Search",
+    homepage: "https://news.google.com/",
+    feedUrl: googleNewsSearchUrl(
+      [
+        "(site:modernhealthcare.com OR site:beckerspayer.com OR site:fiercehealthcare.com OR site:statnews.com OR site:healthcaredive.com)",
+        '("Medicare Advantage" OR "prior authorization" OR PBM OR "No Surprises Act" OR Medicaid OR Medicare OR "health insurers" OR "health plans" OR "medical debt" OR "GLP-1" OR payer OR "price transparency" OR "reimbursement cuts" OR "claim denials" OR "rural hospitals" OR physicians OR "340B")',
+      ].join(" ") + " when:14d",
+    ),
+    isSearchFeed: true,
+    scanArticle: false,
+    maxItems: 75,
+  },
+  {
+    name: "Google News National Health Policy Search",
+    homepage: "https://news.google.com/",
+    feedUrl: googleNewsSearchUrl(
+      [
+        "(site:apnews.com OR site:nbcnews.com OR site:nytimes.com OR site:washingtonpost.com OR site:axios.com OR site:npr.org OR site:thehill.com OR site:kffhealthnews.org OR site:newsfromthestates.com OR site:stateline.org)",
+        '("Medicare Advantage" OR "prior authorization" OR Medicaid OR Medicare OR Obamacare OR ACA OR "medical debt" OR "No Surprises Act" OR GLP-1 OR vaccines OR "health insurance" OR "health care costs" OR "price transparency" OR menopause OR maternity OR "private equity")',
+      ].join(" ") + " when:14d",
+    ),
+    isSearchFeed: true,
+    scanArticle: false,
+    maxItems: 75,
   },
   // Facebook pages of the major VT outlets. No-login HTML exposes each
   // page's most recent post; hourly runs accumulate posts in the archive.
@@ -447,6 +546,11 @@ export const TOPIC_TERMS = [
       /\b(?:clinical|medical|health\s+care|healthcare|medical-billing)\s+AI\b|\bAI\s+(?:doctors?|in\s+(?:health\s+care|healthcare|medicine))\b|\bWISeR\b/i,
   },
   {
+    label: "Health records & interoperability",
+    pattern:
+      /\b(?:digital|electronic)\s+health\s+records?\b|\bEHRs?\b|\binteroperability\b/i,
+  },
+  {
     label: "Physician workforce",
     pattern:
       /\bphysicians?\b|\bdoctor\s+shortage\b|\bnurse\s+practitioners?\b|\bphysician\s+assistants?\b|\bscope\s+of\s+practice\b|\bmedical\s+residen\w*/i,
@@ -469,6 +573,80 @@ export const TOPIC_TERMS = [
 
 export const CATEGORY_BRAND = "Blue Cross VT";
 export const CATEGORY_TOPIC = "VT Health Care";
+
+const BLUECROSSVT_HOST_PATTERN = /^https?:\/\/(?:www\.)?bluecrossvt\.org\//i;
+
+const VERMONT_SOURCE_NAMES = new Set([
+  "Addison Independent",
+  "Bennington Banner",
+  "Brattleboro Reformer",
+  "MyChamplainValley",
+  "MyNBC5",
+  "Newport Daily Express",
+  "Rutland Herald",
+  "Seven Days",
+  "The Mountain Times",
+  "Times Argus",
+  "Valley News",
+  "Vermont Business Magazine",
+  "Vermont Community Newspaper Group",
+  "Vermont Public",
+  "VTDigger",
+  "WCAX",
+]);
+
+const REGIONAL_SIGNAL_PATTERN =
+  /\b(?:vermont|vt\.?|vermonters?|new\s+england|maine|new\s+hampshire|n\.?h\.?|massachusetts|mass\.?|rhode\s+island|connecticut|burlington|montpelier|rutland|bennington|brattleboro|st\.?\s+albans|stowe|barre|essex|colchester|south\s+burlington|winooski|williston|waterbury|middlebury|newport|st\.?\s+johnsbury|springfield|white\s+river\s+junction|townshend|uvm|dartmouth[\s-]+hitchcock|dartmouth\s+health|dhmc|cvph)\b/i;
+
+const NON_NEW_ENGLAND_STATE_PATTERN =
+  /\b(?:alabama|alaska|arizona|arkansas|california|colorado|delaware|florida|georgia|hawaii|idaho|illinois|indiana|iowa|kansas|kentucky|louisiana|maryland|michigan|minnesota|mississippi|missouri|montana|nebraska|nevada|new\s+jersey|new\s+mexico|new\s+york|north\s+carolina|north\s+dakota|ohio|oklahoma|oregon|pennsylvania|south\s+carolina|south\s+dakota|tennessee|texas|utah|virginia|washington|west\s+virginia|wisconsin|wyoming)\b/i;
+
+const LOCAL_INCIDENT_PATTERN =
+  /\b(?:shooting|shooter|stabbing|homicide|murder|assault|crash|collision|accident|wreck|police|sheriff|trooper|suspect|victims?|injur(?:y|ed|ies)|killed|dead|fatal|airlifted|transported)\b/i;
+
+const ISOLATED_OUTBREAK_PATTERN =
+  /\b(?:measles|mumps|whooping\s+cough|pertussis|outbreak|exposure|avian\s+flu|bird\s+flu)\b/i;
+
+const LOW_PRIORITY_REASON =
+  "Low-priority health mention outside Vermont or New England.";
+
+const LOW_PRIORITY_TOPIC_LABELS = new Set([
+  "Dental care",
+  "Health care",
+  "Hospital & nurse labor",
+  "Hospitals",
+  "Public health",
+  "Vaccines",
+  "Vermont hospitals & providers",
+  "Women's health",
+]);
+
+const NATIONAL_POLICY_TOPIC_LABELS = new Set([
+  "ACA & marketplace",
+  "Federal health agencies",
+  "GLP-1 & weight-loss drugs",
+  "Health care AI",
+  "Health records & interoperability",
+  "Health insurance",
+  "Medicaid",
+  "Medical costs & billing",
+  "Medicare",
+  "Medicare Advantage",
+  "Maternity & birthing",
+  "PBM",
+  "Physician workforce",
+  "Prescription drugs & pharmacy",
+  "Premiums & rate review",
+  "Prior authorization & claims",
+  "Private equity in health care",
+  "Reproductive health",
+  "Senior & long-term care",
+  "Telehealth",
+  "Universal health care",
+]);
+
+const POLICY_SIGNAL_PATTERN =
+  /\b(?:340B|aca|affordable\s+care\s+act|AMA|CMS|coverage|covered|denials?|federal|fraud\s+scrutiny|health\s+policy|HHS|hidden\s+fees?|insurers?|insurance|lawmakers?|legislation|medicaid|medicare|payer|pbms?|policy|premiums?|price\s+transparency|prior\s+authorization|regulat(?:e|es|ed|ion|or|ors|ory)|reimbursement|state\s+laws?|transparency|watchdog|WISeR|work\s+requirements?)\b/i;
 
 const TERM_LABEL_ALIASES = new Map([
   ["Blue Cross Vermont", "Blue Cross VT"],
@@ -552,6 +730,50 @@ export function cleanText(value = "") {
     .replace(/\u00a0/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function normalizeForDuplicateCheck(value = "") {
+  return cleanText(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function titleDuplicateVariants(title = "") {
+  const cleanedTitle = cleanText(title);
+  const variants = new Set([normalizeForDuplicateCheck(cleanedTitle)]);
+  const publicationSuffixMatch = cleanedTitle.match(/\s+-\s+(.{2,80})$/);
+
+  if (publicationSuffixMatch) {
+    const withoutSuffix = cleanedTitle.replace(/\s+-\s+.{2,80}$/, "");
+    const publication = publicationSuffixMatch[1];
+    variants.add(normalizeForDuplicateCheck(withoutSuffix));
+    variants.add(normalizeForDuplicateCheck(publication));
+    variants.add(
+      normalizeForDuplicateCheck(`${withoutSuffix} ${publication}`),
+    );
+  }
+
+  return [...variants].filter((variant) => variant.length > 0);
+}
+
+export function cleanStorySnippet(snippet = "", title = "") {
+  const cleaned = cleanText(snippet);
+  if (!cleaned || !title) {
+    return cleaned;
+  }
+
+  let residual = normalizeForDuplicateCheck(cleaned);
+  const variants = titleDuplicateVariants(title).sort(
+    (a, b) => b.length - a.length,
+  );
+
+  for (const variant of variants) {
+    residual = cleanText(residual.split(variant).join(" "));
+  }
+
+  const residualWords = residual ? residual.split(/\s+/).length : 0;
+  return residualWords <= 3 ? "" : cleaned;
 }
 
 export function escapeXml(value = "") {
@@ -672,9 +894,7 @@ export function parseFeedItems(feedXml, source) {
         pubDate,
         description,
         feedContent: cleanText(
-          [title, description, decodeFeedText(descriptionHtml)]
-            .filter(Boolean)
-            .join(" "),
+          [title, description].filter(Boolean).join(" "),
         ),
       };
     })
@@ -724,6 +944,103 @@ export function parseFeedItems(feedXml, source) {
   return [...rssItems, ...atomItems];
 }
 
+export function parseBlueCrossVtListingItems(html, source) {
+  const $ = cheerio.load(html);
+  const items = [];
+
+  $(".views-row article").each((_, element) => {
+    const article = $(element);
+    const linkElement = article.find("a.link-arrow").first();
+    const title = cleanText(linkElement.text());
+    const href = linkElement.attr("href");
+    const link = resolveUrl(href, source.homepage || source.listingUrl);
+    const dateText =
+      article.find("time[datetime]").first().attr("datetime") ||
+      article.find("time").first().text();
+    const pubDate = parseDate(dateText);
+    const description = cleanText(
+      article
+        .find("p")
+        .map((__, paragraph) => $(paragraph).text())
+        .get()
+        .join(" "),
+    );
+    const category = cleanText(
+      article
+        .find(".news--category, .blog-post--category")
+        .first()
+        .text(),
+    );
+
+    if (!title || !link) {
+      return;
+    }
+
+    items.push({
+      sourceName: source.name,
+      sourceFeedUrl: source.listingUrl,
+      searchFallbackTerms: source.searchFallbackTerms || [],
+      scanArticle: source.scanArticle !== false,
+      title,
+      link,
+      guid: link,
+      pubDate,
+      description,
+      feedContent: cleanText(
+        [title, description, category, "bluecrossvt.org"]
+          .filter(Boolean)
+          .join(" "),
+      ),
+    });
+  });
+
+  return items;
+}
+
+export function parseUvmHealthNewsroomItems(html, source) {
+  const $ = cheerio.load(html);
+  const items = [];
+
+  $("outline-card-clickable").each((_, element) => {
+    const card = $(element);
+    const linkElement = card.find('a[href^="/newsroom/"]').first();
+    const title = cleanText(linkElement.text());
+    const href = linkElement.attr("href");
+    const link = resolveUrl(href, source.homepage || source.listingUrl);
+
+    if (
+      !title ||
+      !link ||
+      /\/newsroom\/(?:search|media-center)$/.test(new URL(link).pathname)
+    ) {
+      return;
+    }
+
+    const dateText = cleanText(card.find("[slot='date']").first().text());
+    const pubDate = parseDate(dateText);
+    const imageAlt = cleanText(card.find("img[alt]").first().attr("alt") || "");
+
+    items.push({
+      sourceName: source.name,
+      sourceFeedUrl: source.listingUrl,
+      searchFallbackTerms: source.searchFallbackTerms || [],
+      scanArticle: source.scanArticle !== false,
+      title,
+      link,
+      guid: link,
+      pubDate,
+      description: imageAlt,
+      feedContent: cleanText(
+        [title, imageAlt, "UVM Health", "Vermont health care"]
+          .filter(Boolean)
+          .join(" "),
+      ),
+    });
+  });
+
+  return items;
+}
+
 function getMetaContent($, names) {
   for (const name of names) {
     const propertyValue = $(`meta[property="${name}"]`).attr("content");
@@ -747,6 +1064,54 @@ function parseFacebookCommentAuthor(ariaLabel) {
       /\s+(?:about\s+)?(?:an?\s+hour|\d+\s+(?:minutes?|hours?|days?))\s+ago$/i,
       "",
     );
+}
+
+function parseFacebookPostTimestamp(html) {
+  const match = /"(?:creation_time|publish_time)":(\d{9,12})\b/.exec(html);
+  if (!match) {
+    return null;
+  }
+
+  return new Date(Number.parseInt(match[1], 10) * 1000);
+}
+
+function parseFacebookRelativeDate(text, now = new Date()) {
+  const cleaned = cleanText(text);
+  const match =
+    /\b(?:(\d+)\s*([mhd])|(\d+)\s+(minutes?|hours?|days?)|an?\s+hour)\s*·/i.exec(
+      cleaned,
+    );
+  if (!match) {
+    return null;
+  }
+
+  let amount = 1;
+  let unit = "hour";
+  if (match[1] && match[2]) {
+    amount = Number.parseInt(match[1], 10);
+    unit = match[2].toLowerCase();
+  } else if (match[3] && match[4]) {
+    amount = Number.parseInt(match[3], 10);
+    unit = match[4].toLowerCase();
+  }
+
+  const multipliers = {
+    m: 60 * 1000,
+    minute: 60 * 1000,
+    minutes: 60 * 1000,
+    h: 60 * 60 * 1000,
+    hour: 60 * 60 * 1000,
+    hours: 60 * 60 * 1000,
+    d: 24 * 60 * 60 * 1000,
+    day: 24 * 60 * 60 * 1000,
+    days: 24 * 60 * 60 * 1000,
+  };
+  const multiplier = multipliers[unit];
+  if (!multiplier || !Number.isFinite(amount)) {
+    return null;
+  }
+
+  return new Date(now.valueOf() - amount * multiplier);
 }
 
 function cleanFacebookCommentText(text, author) {
@@ -819,7 +1184,8 @@ export function parseFacebookEmbeddedComments(html) {
     }
     seen.add(key);
 
-    const depthMatch = /"depth":(\d+)/.exec(before);
+    const depthMatches = [...before.matchAll(/"depth":(\d+)/g)];
+    const depthMatch = depthMatches.at(-1);
     const depth = depthMatch ? Number.parseInt(depthMatch[1], 10) : 0;
     const timeMatch = /"created_time":(\d{9,12})/.exec(after);
     const date = timeMatch
@@ -852,7 +1218,8 @@ export function parseFacebookPostHtml(html, source) {
     "article:published_time",
     "article:modified_time",
   ]);
-  const pubDate = parseDate(source.pubDate || publishedAt);
+  const pubDate =
+    parseDate(source.pubDate || publishedAt) || parseFacebookPostTimestamp(html);
   const embeddedComments = parseFacebookEmbeddedComments(html);
   const comments =
     embeddedComments.length > 0
@@ -1016,7 +1383,7 @@ export function parseFacebookPageHtml(html, source) {
       title: `${pageTitle} Facebook post: ${titleText}`,
       link,
       guid: link,
-      pubDate: null,
+      pubDate: parseFacebookRelativeDate(description, source.now || new Date()),
       description,
       comments: [],
       scanArticle: false,
@@ -1370,6 +1737,29 @@ async function collectFeedItems(sources) {
         continue;
       }
 
+      if (source.listingUrl) {
+        const { text: html } = await fetchText(
+          source.listingUrl,
+          "text/html, application/xhtml+xml, */*",
+        );
+        let sourceItems =
+          source.listingParser === "uvmHealthNewsroom"
+            ? parseUvmHealthNewsroomItems(html, source)
+            : parseBlueCrossVtListingItems(html, source);
+        if (source.maxItems) {
+          sourceItems = sourceItems.slice(0, source.maxItems);
+        }
+        sourceResults.push({
+          name: source.name,
+          feedUrl: source.listingUrl,
+          ok: true,
+          itemCount: sourceItems.length,
+        });
+        items.push(...sourceItems);
+        console.log(`Fetched ${sourceItems.length} items from ${source.name}`);
+        continue;
+      }
+
       const { text: xml } = await fetchText(
         source.feedUrl,
         "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
@@ -1407,12 +1797,23 @@ async function loadPreviousState(jsonOutputPath) {
   try {
     const raw = await readFile(jsonOutputPath, "utf8");
     const parsed = JSON.parse(raw);
+    const archiveGeneratedAt = parseDate(parsed?.generatedAt);
     if (parsed && Array.isArray(parsed.items)) {
       for (const item of parsed.items) {
         if (!item.link) {
           continue;
         }
         const matchedTerms = canonicalizeMatchedTerms(item.matchedTerms || []);
+        const recoveredPubDate =
+          parseDate(item.pubDate) ||
+          (archiveGeneratedAt
+            ? parseFacebookRelativeDate(
+                [item.snippet, item.content_text, item.description]
+                  .filter(Boolean)
+                  .join(" "),
+                archiveGeneratedAt,
+              )
+            : null);
         // `relevant` stays undefined (not false) when absent so items
         // summarized before the relevance gate existed get re-judged once.
         const relevant =
@@ -1420,7 +1821,8 @@ async function loadPreviousState(jsonOutputPath) {
         cache.set(item.link, {
           matchedTerms,
           category: item.category || categorizeTerms(matchedTerms),
-          snippet: item.snippet,
+          pubDate: recoveredPubDate,
+          snippet: cleanStorySnippet(item.snippet, item.title),
           summary: item.summary || "",
           reason: item.reason || "",
           relevant,
@@ -1434,10 +1836,10 @@ async function loadPreviousState(jsonOutputPath) {
           title: item.title,
           link: item.link,
           guid: item.guid || item.link,
-          pubDate: parseDate(item.pubDate),
+          pubDate: recoveredPubDate,
           matchedTerms,
           category: item.category || categorizeTerms(matchedTerms),
-          snippet: item.snippet || "",
+          snippet: cleanStorySnippet(item.snippet || "", item.title),
           summary: item.summary || "",
           reason: item.reason || "",
           relevant,
@@ -1489,6 +1891,100 @@ function hasCurrentMatchingEvidence(item) {
       .join(" "),
   );
   return findMentionTerms(evidence, [...MENTION_TERMS, ...TOPIC_TERMS]).length > 0;
+}
+
+function isBlueCrossVtOwnedItem(item) {
+  return BLUECROSSVT_HOST_PATTERN.test(item.link || "");
+}
+
+function hasNationalPolicySignal(text, matchedTerms = []) {
+  return (
+    matchedTerms.some((term) => NATIONAL_POLICY_TOPIC_LABELS.has(term)) ||
+    POLICY_SIGNAL_PATTERN.test(text)
+  );
+}
+
+function hasRegionalSignal(item, text) {
+  if (REGIONAL_SIGNAL_PATTERN.test(text)) {
+    return true;
+  }
+
+  return (
+    VERMONT_SOURCE_NAMES.has(item.sourceName) &&
+    !NON_NEW_ENGLAND_STATE_PATTERN.test(text)
+  );
+}
+
+function hasOnlyLowPriorityTopicTerms(matchedTerms = []) {
+  const topicTerms = canonicalizeMatchedTerms(matchedTerms).filter(
+    (term) => !MENTION_TERMS.some((mentionTerm) => mentionTerm.label === term),
+  );
+
+  return (
+    topicTerms.length > 0 &&
+    topicTerms.every((term) => LOW_PRIORITY_TOPIC_LABELS.has(term))
+  );
+}
+
+export function applyDeterministicRelevance(item) {
+  const matchedTerms = canonicalizeMatchedTerms(item.matchedTerms || []);
+  const category = item.category || categorizeTerms(matchedTerms);
+
+  if (isBlueCrossVtOwnedItem(item)) {
+    return item.relevant === false ? { ...item, relevant: true } : item;
+  }
+
+  if (category === CATEGORY_BRAND) {
+    return item;
+  }
+
+  const evidence = cleanText(
+    [
+      item.title,
+      item.description,
+      item.snippet,
+      item.summary,
+      item.sourceName,
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+  const hasRegional = hasRegionalSignal(item, evidence);
+  const hasPolicy = hasNationalPolicySignal(evidence, matchedTerms);
+
+  if (!hasRegional && !hasPolicy && LOCAL_INCIDENT_PATTERN.test(evidence)) {
+    return {
+      ...item,
+      relevant: false,
+      reason: "Out-of-region incident with incidental health mention.",
+    };
+  }
+
+  if (!hasRegional && !hasPolicy && ISOLATED_OUTBREAK_PATTERN.test(evidence)) {
+    return {
+      ...item,
+      relevant: false,
+      reason: "Out-of-region public health item without payer or policy angle.",
+    };
+  }
+
+  if (!hasRegional && !hasPolicy && hasOnlyLowPriorityTopicTerms(matchedTerms)) {
+    return {
+      ...item,
+      relevant: false,
+      reason: LOW_PRIORITY_REASON,
+    };
+  }
+
+  if (item.relevant === false && item.reason === LOW_PRIORITY_REASON) {
+    return {
+      ...item,
+      relevant: undefined,
+      reason: "",
+    };
+  }
+
+  return item;
 }
 
 // Post-enrichment dedupe. Link-level dupes happen when the same article is
@@ -1703,7 +2199,9 @@ export async function summarizeItems(items) {
   // the relevance rubric in the prompt.
   const rejudgeAll = process.env.SUMMARY_REJUDGE_ALL === "true";
   const pending = items.filter(
-    (item) => rejudgeAll || !item.summary || item.relevant === undefined,
+    (item) =>
+      item.relevant !== false &&
+      (rejudgeAll || !item.summary || item.relevant === undefined),
   );
   if (pending.length === 0) {
     return;
@@ -1790,16 +2288,27 @@ export async function enrichAndFilterItems(items, cache = new Map()) {
       }
     }
 
+    const feedBrandMatches = findMentionTerms(item.feedContent, MENTION_TERMS);
+    const topicMatches = findMentionTerms(item.feedContent, TOPIC_TERMS);
+
     if (cache.has(resolvedLink)) {
       const cached = cache.get(resolvedLink);
-      const matchedTerms = canonicalizeMatchedTerms(cached.matchedTerms || []);
+      let matchedTerms = canonicalizeMatchedTerms([
+        ...(cached.matchedTerms || []),
+        ...feedBrandMatches,
+        ...topicMatches,
+      ]);
+      if (matchedTerms.length === 0) {
+        matchedTerms = canonicalizeMatchedTerms(item.searchFallbackTerms || []);
+      }
       console.log(`Cache Hit: Skipping fetch/scrape for ${resolvedLink}`);
       return {
         ...item,
         link: resolvedLink,
         matchedTerms,
-        category: cached.category || categorizeTerms(matchedTerms),
-        snippet: cached.snippet,
+        category: categorizeTerms(matchedTerms),
+        pubDate: item.pubDate || cached.pubDate || null,
+        snippet: cleanStorySnippet(cached.snippet, item.title),
         summary: cached.summary || "",
         reason: cached.reason || "",
         relevant: cached.relevant,
@@ -1832,9 +2341,7 @@ export async function enrichAndFilterItems(items, cache = new Map()) {
     // catch stories that never name the insurer in the headline. Topic
     // terms scan feed title/description only — article bodies mention
     // "health care" too incidentally for body-matching to stay precise.
-    const feedBrandMatches = findMentionTerms(item.feedContent, MENTION_TERMS);
     const articleBrandMatches = findMentionTerms(articleText, MENTION_TERMS);
-    const topicMatches = findMentionTerms(item.feedContent, TOPIC_TERMS);
 
     // Facebook posts (and any source flagged requireBrandMatch) are only
     // kept when they mention Blue Cross itself — outlets post dozens of
@@ -1870,7 +2377,10 @@ export async function enrichAndFilterItems(items, cache = new Map()) {
       link: resolvedLink,
       matchedTerms: finalMatchedTerms,
       category: categorizeTerms(finalMatchedTerms),
-      snippet: buildSnippet(snippetSource, [...MENTION_TERMS, ...TOPIC_TERMS]),
+      snippet: cleanStorySnippet(
+        buildSnippet(snippetSource, [...MENTION_TERMS, ...TOPIC_TERMS]),
+        item.title,
+      ),
       comments: item.comments || [],
       articleError,
       matchSource,
@@ -1893,6 +2403,7 @@ function formatPubDate(date) {
 }
 
 function itemDescription(item) {
+  const snippet = cleanStorySnippet(item.snippet, item.title);
   const lines = [
     `<p><strong>Source:</strong> ${escapeXml(item.sourceName)}</p>`,
     `<p><strong>Matched terms:</strong> ${escapeXml(
@@ -1908,8 +2419,8 @@ function itemDescription(item) {
     lines.push(`<p><em>Why included: ${escapeXml(item.reason)}</em></p>`);
   }
 
-  if (!item.summary && item.snippet) {
-    lines.push(`<p>${escapeXml(item.snippet)}</p>`);
+  if (!item.summary && snippet) {
+    lines.push(`<p>${escapeXml(snippet)}</p>`);
   }
 
   if (Array.isArray(item.comments) && item.comments.length > 0) {
@@ -1920,6 +2431,16 @@ function itemDescription(item) {
       lines.push(
         `<li>${escapeXml(`${author}${comment.text || ""}`)}</li>`,
       );
+      if (Array.isArray(comment.replies) && comment.replies.length > 0) {
+        lines.push("<ul>");
+        for (const reply of comment.replies) {
+          const replyAuthor = reply.author ? `${reply.author}: ` : "";
+          lines.push(
+            `<li>${escapeXml(`${replyAuthor}${reply.text || ""}`)}</li>`,
+          );
+        }
+        lines.push("</ul>");
+      }
     }
     lines.push("</ul>");
   }
@@ -1937,6 +2458,27 @@ function itemDescription(item) {
   }
 
   return lines.join("\n");
+}
+
+function flattenCommentText(comments = []) {
+  const parts = [];
+
+  for (const comment of comments) {
+    parts.push(
+      cleanText(
+        `${comment.author ? `${comment.author}: ` : ""}${comment.text || ""}`,
+      ),
+    );
+    for (const reply of comment.replies || []) {
+      parts.push(
+        cleanText(
+          `${reply.author ? `${reply.author}: ` : ""}${reply.text || ""}`,
+        ),
+      );
+    }
+  }
+
+  return parts.filter(Boolean);
 }
 
 export function buildRss(items, options = {}) {
@@ -2003,18 +2545,13 @@ export function buildJsonSummary(items, sourceResults, now = new Date()) {
     items: sortItemsByDate(items).map((item) => {
       const matchedTerms = canonicalizeMatchedTerms(item.matchedTerms || []);
       const comments = Array.isArray(item.comments) ? item.comments : [];
+      const snippet = cleanStorySnippet(item.snippet, item.title);
       const contentText = cleanText(
         [
-          item.summary || item.snippet || item.description || "",
+          item.summary || snippet || item.description || "",
           item.reason ? `Why included: ${item.reason}` : "",
           comments.length > 0
-            ? `Comments: ${comments
-                .map((comment) =>
-                  cleanText(
-                    `${comment.author ? `${comment.author}: ` : ""}${comment.text || ""}`,
-                  ),
-                )
-                .join(" | ")}`
+            ? `Comments: ${flattenCommentText(comments).join(" | ")}`
             : "",
         ]
           .filter(Boolean)
@@ -2035,7 +2572,7 @@ export function buildJsonSummary(items, sourceResults, now = new Date()) {
         pubDate: item.pubDate?.toISOString() || null,
         matchedTerms,
         category: item.category || categorizeTerms(matchedTerms),
-        snippet: item.snippet,
+        snippet,
         summary: item.summary || "",
         reason: item.reason || "",
         // undefined (not yet judged) is omitted by JSON.stringify, which
@@ -2072,7 +2609,7 @@ export async function generateFeed({
   const currentMatched = await enrichAndFilterItems(items, cache);
   const matchedItems = dedupeResolvedItems(
     sortItemsByDate(mergeWithArchive(currentMatched, archivedItems, now)),
-  );
+  ).map(applyDeterministicRelevance);
   await summarizeItems(matchedItems);
   const rss = buildRss(matchedItems, { now });
   const jsonSummary = buildJsonSummary(matchedItems, sourceResults, now);

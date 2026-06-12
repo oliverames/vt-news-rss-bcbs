@@ -3,9 +3,11 @@ import test from "node:test";
 import {
   buildJsonSummary,
   buildRss,
+  cleanStorySnippet,
   buildSourcesFromEnv,
   buildSnippet,
   buildSummaryPrompt,
+  applyDeterministicRelevance,
   canonicalizeMatchedTerms,
   categorizeTerms,
   CATEGORY_BRAND,
@@ -14,11 +16,13 @@ import {
   dedupeResolvedItems,
   mergeWithArchive,
   mergeFacebookPagePostItem,
+  parseBlueCrossVtListingItems,
   parseFeedItems,
   parseFacebookEmbeddedPosts,
   parseFacebookPageHtml,
   parseFacebookPostHtml,
   parseSummaryResponse,
+  parseUvmHealthNewsroomItems,
   enrichAndFilterItems,
   htmlToArticleText,
   TOPIC_TERMS,
@@ -130,6 +134,7 @@ test("topic terms catch the healthcare stories the comms team pulls", () => {
     ["The shortage of many medicines in the U.S. remains a systemic problem", "Prescription drugs & pharmacy"],
     ["Poll: Trust in federal health agencies dropped sharply", "Federal health agencies"],
     ["Inside the push to bring AI doctors into American medicine", "Health care AI"],
+    ["Payers build digital health records for members", "Health records & interoperability"],
   ];
 
   for (const [headline, expectedTerm] of cases) {
@@ -214,6 +219,65 @@ test("parseSummaryResponse applies the relevance verdict", () => {
   assert.equal(batch[1].relevant, true);
   // Missing verdict defaults to relevant — only explicit false excludes
   assert.equal(batch[2].relevant, true);
+});
+
+test("deterministic relevance rejects out-of-region low-priority false positives", () => {
+  const rejected = [
+    {
+      sourceName: "MyNBC5",
+      title: "Suspect dead after Texas shooting kills 1 and leaves 9 injured",
+      description: "Those injured were taken to the hospital.",
+      matchedTerms: ["Hospitals"],
+      category: CATEGORY_TOPIC,
+    },
+    {
+      sourceName: "MyChamplainValley",
+      title: "Massive measles outbreak in Virginia county continues to grow",
+      description: "Officials advise unvaccinated people to avoid gatherings.",
+      matchedTerms: ["Vaccines"],
+      category: CATEGORY_TOPIC,
+    },
+  ];
+
+  for (const item of rejected) {
+    assert.equal(applyDeterministicRelevance(item).relevant, false);
+  }
+
+  assert.equal(
+    applyDeterministicRelevance({
+      sourceName: "Google News Health Insurance Search",
+      title:
+        "Major Medicare Advantage insurers appear to deny care for profit, federal watchdog finds",
+      description: "The report concerns insurer practices.",
+      matchedTerms: ["Medicare Advantage", "Health insurance"],
+      category: CATEGORY_TOPIC,
+    }).relevant,
+    undefined,
+  );
+
+  assert.equal(
+    applyDeterministicRelevance({
+      sourceName: "Google News Health Trade Search",
+      title: "CMS proposes new deadlines for prior authorizations for drugs",
+      description: "Federal policy update affects coverage operations.",
+      matchedTerms: ["Health care", "Prior authorization & claims"],
+      category: CATEGORY_TOPIC,
+      relevant: false,
+      reason: "Low-priority health mention outside Vermont or New England.",
+    }).relevant,
+    undefined,
+  );
+
+  assert.equal(
+    applyDeterministicRelevance({
+      sourceName: "MyChamplainValley",
+      title: "Three injured, one seriously, in Townshend crash",
+      description: "One person was airlifted to Dartmouth-Hitchcock Medical Center.",
+      matchedTerms: ["Vermont hospitals & providers"],
+      category: CATEGORY_TOPIC,
+    }).relevant,
+    undefined,
+  );
 });
 
 test("buildRss excludes items marked not relevant", () => {
@@ -471,6 +535,82 @@ test("parseFeedItems parses Atom entries", () => {
   assert.equal(items[0].link, "https://example.com/atom-story");
 });
 
+test("parseBlueCrossVtListingItems extracts dated Newsroom and blog rows", () => {
+  const html = `<!doctype html>
+    <html>
+      <body>
+        <div class="views-row">
+          <article class="node--type-news">
+            <div class="news--date"><time datetime="2026-05-12T12:00:00Z">May 12, 2026</time></div>
+            <h3><a href="/health-community/news/rate-request" class="link-arrow">Blue Cross and Blue Shield of Vermont Requests Lowest Premium Increase in Five Years</a></h3>
+            <p>Rate reflects collective work across the state.</p>
+            <div class="news--category">Company &amp; Industry News</div>
+          </article>
+        </div>
+        <div class="views-row">
+          <article class="node--type-blog">
+            <div class="blog-post--date"><time datetime="2026-06-15T12:00:00Z">Jun 15, 2026</time></div>
+            <h3><a href="/health-community/blog/listing/medicare-caregivers" class="link-arrow">What Caregivers Need to Know About Medicare</a></h3>
+            <p>Helpful guidance for caregivers.</p>
+            <div class="blog-post--category">Understanding Insurance</div>
+          </article>
+        </div>
+      </body>
+    </html>`;
+
+  const items = parseBlueCrossVtListingItems(html, {
+    name: "BlueCrossVT Newsroom",
+    homepage: "https://www.bluecrossvt.org/health-community/news",
+    listingUrl: "https://www.bluecrossvt.org/health-community/news",
+    searchFallbackTerms: ["bluecrossvt.org"],
+    scanArticle: false,
+  });
+
+  assert.equal(items.length, 2);
+  assert.equal(
+    items[0].link,
+    "https://www.bluecrossvt.org/health-community/news/rate-request",
+  );
+  assert.equal(items[0].pubDate.toISOString(), "2026-05-12T12:00:00.000Z");
+  assert.match(items[1].feedContent, /bluecrossvt\.org/);
+  assert.deepEqual(items[1].searchFallbackTerms, ["bluecrossvt.org"]);
+  assert.equal(items[1].scanArticle, false);
+});
+
+test("parseUvmHealthNewsroomItems extracts dated newsroom cards", () => {
+  const html = `<!doctype html>
+    <html>
+      <body>
+        <outline-card-clickable>
+          <h4><a href="/newsroom/uvm-health-announces-elimination-of-76-positions">UVM Health Announces Elimination of 76 Positions</a></h4>
+          <img alt="Front entrance of the UVM Medical Center in Burlington, Vermont.">
+          <div slot="date">June 9, 2026</div>
+        </outline-card-clickable>
+        <outline-card-clickable>
+          <h4><a href="/newsroom/search">Explore more news</a></h4>
+          <div slot="date">June 1, 2026</div>
+        </outline-card-clickable>
+      </body>
+    </html>`;
+
+  const items = parseUvmHealthNewsroomItems(html, {
+    name: "UVM Health Newsroom",
+    homepage: "https://www.uvmhealth.org/newsroom",
+    listingUrl: "https://www.uvmhealth.org/newsroom",
+    searchFallbackTerms: ["UVM Health"],
+    scanArticle: false,
+  });
+
+  assert.equal(items.length, 1);
+  assert.equal(
+    items[0].link,
+    "https://www.uvmhealth.org/newsroom/uvm-health-announces-elimination-of-76-positions",
+  );
+  assert.equal(items[0].pubDate.toISOString(), "2026-06-09T04:00:00.000Z");
+  assert.match(items[0].feedContent, /Vermont health care/);
+  assert.deepEqual(items[0].searchFallbackTerms, ["UVM Health"]);
+});
+
 test("parseFacebookPostHtml extracts public post metadata and comments when present", () => {
   const html = `<!doctype html>
     <html>
@@ -494,10 +634,64 @@ test("parseFacebookPostHtml extracts public post metadata and comments when pres
   assert.equal(item.link, "https://www.facebook.com/vtdigger/posts/123");
   assert.equal(item.description, "BlueCross BlueShield wants to offer cheaper plans.");
   assert.deepEqual(item.comments, [
-    { author: "Jane Reader", text: "This affects BCBS VT members." },
+    {
+      author: "Jane Reader",
+      text: "This affects BCBS VT members.",
+      date: null,
+      replies: [],
+    },
   ]);
   assert.match(item.feedContent, /BlueCross BlueShield/);
   assert.match(item.feedContent, /BCBS VT members/);
+});
+
+test("parseFacebookPostHtml uses embedded post dates and nested comments", () => {
+  const html = `<!doctype html>
+    <html>
+      <head>
+        <meta property="og:title" content="VTDigger">
+        <meta property="og:description" content="BlueCross BlueShield wants to offer cheaper plans.">
+        <meta property="og:url" content="https://www.facebook.com/vtdigger/posts/123">
+      </head>
+      <body>
+        <script>{
+          "creation_time":1781270103,
+          "depth":0,
+          "body":{"text":"Parent comment about BCBS VT."},
+          "author":{"name":"Jane Reader"},
+          "created_time":1781270200,
+          "depth":1,
+          "body":{"text":"Reply with more local detail."},
+          "author":{"name":"Sam Reply"},
+          "created_time":1781270300
+        }</script>
+      </body>
+    </html>`;
+
+  const item = parseFacebookPostHtml(html, {
+    name: "VTDigger Facebook",
+    facebookPostUrl: "https://m.facebook.com/vtdigger/posts/123",
+  });
+
+  assert.equal(
+    item.pubDate.toISOString(),
+    new Date(1781270103 * 1000).toISOString(),
+  );
+  assert.deepEqual(item.comments, [
+    {
+      author: "Jane Reader",
+      text: "Parent comment about BCBS VT.",
+      date: new Date(1781270200 * 1000).toISOString(),
+      replies: [
+        {
+          author: "Sam Reply",
+          text: "Reply with more local detail.",
+          date: new Date(1781270300 * 1000).toISOString(),
+        },
+      ],
+    },
+  ]);
+  assert.match(item.feedContent, /Reply with more local detail/);
 });
 
 test("parseFacebookPageHtml extracts public post links when page HTML exposes them", () => {
@@ -506,7 +700,7 @@ test("parseFacebookPageHtml extracts public post links when page HTML exposes th
       <head><title>VTDigger</title></head>
       <body>
         <article>
-          <p>BlueCross BlueShield wants to offer cheaper health plans.</p>
+          <p>VTDigger 3h · BlueCross BlueShield wants to offer cheaper health plans.</p>
           <a href="/vtdigger/posts/123?refid=52">Full Story</a>
         </article>
         <article>
@@ -519,6 +713,7 @@ test("parseFacebookPageHtml extracts public post links when page HTML exposes th
   const items = parseFacebookPageHtml(html, {
     name: "VTDigger Facebook page",
     facebookPageUrl: "https://www.facebook.com/vtdigger",
+    now: new Date("2026-06-12T18:00:00Z"),
   });
 
   assert.equal(items.length, 2);
@@ -526,6 +721,7 @@ test("parseFacebookPageHtml extracts public post links when page HTML exposes th
   assert.equal(items[0].link, "https://www.facebook.com/vtdigger/posts/123");
   assert.match(items[0].description, /BlueCross BlueShield/);
   assert.match(items[0].feedContent, /cheaper health plans/);
+  assert.equal(items[0].pubDate.toISOString(), "2026-06-12T15:00:00.000Z");
 });
 
 test("parseFacebookEmbeddedPosts extracts the server-rendered post from real page HTML", () => {
@@ -687,6 +883,25 @@ test("buildSnippet centers the first matched mention", () => {
   assert.ok(snippet.endsWith(" ..."));
 });
 
+test("cleanStorySnippet drops repeated title-only snippets", () => {
+  const title =
+    "How a new Blue Cross CEO plans to revive financial performance - Modern Healthcare";
+  const snippet = [
+    title,
+    "How a new Blue Cross CEO plans to revive financial performance Modern Healthcare",
+    "How a new Blue Cross CEO plans to revive financial performance Modern Healthcare",
+  ].join(" ");
+
+  assert.equal(cleanStorySnippet(snippet, title), "");
+  assert.equal(
+    cleanStorySnippet(
+      "The CEO said rate pressure and claims trends are priorities.",
+      title,
+    ),
+    "The CEO said rate pressure and claims trends are priorities.",
+  );
+});
+
 test("buildRss emits valid channel and escaped item fields", () => {
   const rss = buildRss(
     [
@@ -699,7 +914,13 @@ test("buildRss emits valid channel and escaped item fields", () => {
         pubDate: new Date("2026-05-12T12:00:00Z"),
         matchedTerms: ["Blue Cross"],
         snippet: "Blue Cross filed rates.",
-        comments: [{ author: "Reader", text: "Useful context." }],
+        comments: [
+          {
+            author: "Reader",
+            text: "Useful context.",
+            replies: [{ author: "Reply Reader", text: "More context." }],
+          },
+        ],
       },
     ],
     {
@@ -715,6 +936,7 @@ test("buildRss emits valid channel and escaped item fields", () => {
   assert.match(rss, /<category>Blue Cross<\/category>/);
   assert.match(rss, /<strong>Comments:<\/strong>/);
   assert.match(rss, /Reader: Useful context\./);
+  assert.match(rss, /Reply Reader: More context\./);
   assert.match(rss, /atom:link href="https:\/\/example.com\/feed.rss"/);
 });
 
@@ -728,7 +950,13 @@ test("buildJsonSummary creates auditable item output", () => {
         pubDate: new Date("2026-05-12T12:00:00Z"),
         matchedTerms: ["BCBSVT"],
         snippet: "BCBSVT mention.",
-        comments: [{ author: "Reader", text: "Good catch." }],
+        comments: [
+          {
+            author: "Reader",
+            text: "Good catch.",
+            replies: [{ author: "Reply Reader", text: "Subcomment catch." }],
+          },
+        ],
       },
     ],
     [{ name: "Seven Days", ok: true, itemCount: 1 }],
@@ -743,6 +971,7 @@ test("buildJsonSummary creates auditable item output", () => {
   assert.equal(summary.items[0].tags[0], "BCBSVT");
   assert.equal(summary.items[0].matchedTerms[0], "BCBSVT");
   assert.match(summary.items[0].content_text, /Good catch/);
+  assert.match(summary.items[0].content_text, /Subcomment catch/);
 });
 
 test("parseFeedItems supports isSearchFeed property", () => {
@@ -846,7 +1075,7 @@ test("enrichAndFilterItems skips network fetches on cache hits", async () => {
         sourceName: "Cached Outlet",
         title: "News story",
         link: "https://example.com/cached-article",
-        feedContent: "Implicit content",
+        feedContent: "Prior authorization policy update for BCBSVT members.",
       }
     ];
 
@@ -860,7 +1089,10 @@ test("enrichAndFilterItems skips network fetches on cache hits", async () => {
 
     const filtered = await enrichAndFilterItems(items, cache);
     assert.equal(filtered.length, 1);
-    assert.deepEqual(filtered[0].matchedTerms, ["BCBSVT"]);
+    assert.deepEqual(filtered[0].matchedTerms, [
+      "BCBSVT",
+      "Prior authorization & claims",
+    ]);
     assert.equal(filtered[0].snippet, "Cached snippet about BCBSVT.");
     assert.equal(filtered[0].articleError, "No error");
   } finally {
