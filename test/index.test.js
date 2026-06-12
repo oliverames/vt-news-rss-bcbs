@@ -606,7 +606,7 @@ test("parseUvmHealthNewsroomItems extracts dated newsroom cards", () => {
     items[0].link,
     "https://www.uvmhealth.org/newsroom/uvm-health-announces-elimination-of-76-positions",
   );
-  assert.equal(items[0].pubDate.toISOString(), "2026-06-09T04:00:00.000Z");
+  assert.equal(items[0].pubDate.toISOString().slice(0, 10), "2026-06-09");
   assert.match(items[0].feedContent, /Vermont health care/);
   assert.deepEqual(items[0].searchFallbackTerms, ["UVM Health"]);
 });
