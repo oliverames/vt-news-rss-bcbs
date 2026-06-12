@@ -68,7 +68,7 @@ npm install
 npm run generate
 ```
 
-The generated feed is written to `site/feed.rss`. A machine-readable audit file is written to `site/feed.json`.
+The generated reader feeds are written to `site/feed.rss` and `site/feed.json`. A machine-readable audit file, including rejected items and cache metadata, is written to `site/feed-audit.json`. The web page shows 25 stories per page, newest first; BlueCrossVT.org posts and social posts are available as sections but hidden from All by default.
 
 ## Mention Matching
 
@@ -94,13 +94,14 @@ The matcher includes exact and similar variants, including:
 | Variable | Default | Description |
 | --- | --- | --- |
 | `RSS_OUTPUT_PATH` | `site/feed.rss` | Output path for the RSS file |
-| `JSON_OUTPUT_PATH` | output path next to RSS as `feed.json` | Output path for the audit JSON |
+| `JSON_OUTPUT_PATH` | output path next to RSS as `feed.json` | Output path for the public JSON feed |
+| `AUDIT_JSON_OUTPUT_PATH` | output path next to RSS as `feed-audit.json` | Output path for the audit JSON and summary cache |
 | `RSS_CONCURRENCY` | `6` | Number of article pages to fetch at once |
 | `RSS_TIMEOUT_MS` | `12000` | Request timeout in milliseconds |
 | `RSS_FETCH_ATTEMPTS` | `3` | Fetch attempts before a source or article is marked failed |
 | `RSS_ARTICLE_SCAN` | `true` | Set to `false` to filter only RSS feed text |
 | `RSS_MAX_FUTURE_HOURS` | `6` | Future-dated item tolerance before an item is excluded |
-| `ARCHIVE_MAX_AGE_DAYS` | `365` | Maximum age for retained archived stories |
+| `ARCHIVE_MAX_AGE_DAYS` | `92` | Maximum age for retained archived stories |
 | `FEED_URL` | empty | Public URL for Atom self-link |
 | `JSON_FEED_URL` | empty | Public URL for the JSON Feed |
 | `SITE_URL` | empty | Public base URL for the channel link |
@@ -112,10 +113,10 @@ The matcher includes exact and similar variants, including:
 | `FACEBOOK_PAGE_URLS` | empty | Optional comma- or newline-separated `Name\|URL` public Facebook pages to scan when Facebook exposes no-login post HTML |
 | `FACEBOOK_PAGE_MAX_POSTS` | `10` | Maximum post links to read from each configured Facebook page |
 
-Gemini's public docs say rate limits vary by project, model, and usage tier; use AI Studio as the source of truth for the active project. The default summarizer starts with `gemini-2.5-flash-lite`, batches stories, caches successful summaries in `feed.json`, and caps requests per run so hourly refreshes stay conservative.
+Gemini's public docs say rate limits vary by project, model, and usage tier; use AI Studio as the source of truth for the active project. The default summarizer starts with `gemini-2.5-flash-lite`, batches stories, caches successful summaries in `feed-audit.json`, and caps requests per run so hourly refreshes stay conservative.
 
 Configured Facebook pages are used as public post discovery pages; when a post URL is exposed without a login, the generator opens the post page and nests any extracted comments under that story.
 
 ## Automation
 
-The GitHub Actions workflow publishes `site/` to GitHub Pages on pushes to `main`, manual runs, and an hourly schedule. It runs tests first, seeds the local archive from the live `feed.json` when available, regenerates the feeds, then deploys.
+The GitHub Actions workflow publishes `site/` to GitHub Pages on pushes to `main`, manual runs, and an hourly schedule. It runs tests first, seeds the local archive from the live `feed-audit.json` when available, regenerates the feeds, then deploys.

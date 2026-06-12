@@ -575,6 +575,7 @@ export const CATEGORY_BRAND = "Blue Cross VT";
 export const CATEGORY_TOPIC = "VT Health Care";
 
 const BLUECROSSVT_HOST_PATTERN = /^https?:\/\/(?:www\.)?bluecrossvt\.org\//i;
+const FACEBOOK_HOST_PATTERN = /^https?:\/\/(?:www\.)?facebook\.com\//i;
 
 const VERMONT_SOURCE_NAMES = new Set([
   "Addison Independent",
@@ -593,6 +594,24 @@ const VERMONT_SOURCE_NAMES = new Set([
   "Vermont Public",
   "VTDigger",
   "WCAX",
+]);
+
+const PAYWALL_HOST_PATTERN =
+  /(?:burlingtonfreepress\.com|modernhealthcare\.com|nytimes\.com|statnews\.com|timesargus\.com|vnews\.com|washingtonpost\.com)/i;
+
+const FREE_ACCESS_HOST_PATTERN =
+  /(?:addisonindependent\.com|apnews\.com|axios\.com|beckerspayer\.com|benningtonbanner\.com|bluecrossvt\.org|compassvermont\.com|fiercehealthcare\.com|healthcaredive\.com|kffhealthnews\.org|mynbc5\.com|mychamplainvalley\.com|npr\.org|reformer\.com|sevendaysvt\.com|thehill\.com|uvmhealth\.org|vermontbiz\.com|vermontpublic\.org|vtcng\.com|vtdigger\.org|wcax\.com)/i;
+
+const BROAD_NATIONAL_SOURCE_NAMES = new Set([
+  "Fierce Healthcare",
+  "Google News Health Insurance Search",
+  "Google News Health Trade Search",
+  "Google News National Health Policy Search",
+  "Healthcare Dive",
+  "KFF Health News",
+  "NPR Health",
+  "STAT Health News",
+  "The Hill Health Care",
 ]);
 
 const REGIONAL_SIGNAL_PATTERN =
@@ -646,7 +665,7 @@ const NATIONAL_POLICY_TOPIC_LABELS = new Set([
 ]);
 
 const POLICY_SIGNAL_PATTERN =
-  /\b(?:340B|aca|affordable\s+care\s+act|AMA|CMS|coverage|covered|denials?|federal|fraud\s+scrutiny|health\s+policy|HHS|hidden\s+fees?|insurers?|insurance|lawmakers?|legislation|medicaid|medicare|payer|pbms?|policy|premiums?|price\s+transparency|prior\s+authorization|regulat(?:e|es|ed|ion|or|ors|ory)|reimbursement|state\s+laws?|transparency|watchdog|WISeR|work\s+requirements?)\b/i;
+  /\b(?:340B|aca|affordable\s+care\s+act|AHIP|AMA|CMS|denials?|federal|fraud\s+scrutiny|health\s+coverage|health\s+policy|HHS|hidden\s+fees?|insurers?|insurance|lawmakers?|legislation|medicaid|medicare|payer|pbms?|policy|premiums?|price\s+transparency|prior\s+authorization|regulat(?:e|es|ed|ion|or|ors|ory)|reimbursement|state\s+laws?|transparency|watchdog|WISeR|work\s+requirements?)\b/i;
 
 const TERM_LABEL_ALIASES = new Map([
   ["Blue Cross Vermont", "Blue Cross VT"],
@@ -697,6 +716,14 @@ function resolveJsonOutputPath(rssOutputPath) {
   }
 
   return path.join(path.dirname(rssOutputPath), "feed.json");
+}
+
+function resolveAuditJsonOutputPath(rssOutputPath) {
+  if (process.env.AUDIT_JSON_OUTPUT_PATH) {
+    return path.resolve(process.cwd(), process.env.AUDIT_JSON_OUTPUT_PATH);
+  }
+
+  return path.join(path.dirname(rssOutputPath), "feed-audit.json");
 }
 
 function resolveJsonFeedUrl() {
@@ -1791,68 +1818,82 @@ async function collectFeedItems(sources) {
   return { items: dedupeItems(items), sourceResults };
 }
 
-async function loadPreviousState(jsonOutputPath) {
+async function loadPreviousState(...jsonOutputPaths) {
   const cache = new Map();
   const archivedItems = [];
-  try {
-    const raw = await readFile(jsonOutputPath, "utf8");
-    const parsed = JSON.parse(raw);
-    const archiveGeneratedAt = parseDate(parsed?.generatedAt);
-    if (parsed && Array.isArray(parsed.items)) {
-      for (const item of parsed.items) {
-        if (!item.link) {
-          continue;
+  const attemptedPaths = jsonOutputPaths.filter(Boolean);
+  let loadedPath = "";
+
+  for (const jsonOutputPath of attemptedPaths) {
+    try {
+      const raw = await readFile(jsonOutputPath, "utf8");
+      const parsed = JSON.parse(raw);
+      const archiveGeneratedAt = parseDate(parsed?.generatedAt);
+      if (parsed && Array.isArray(parsed.items)) {
+        for (const item of parsed.items) {
+          if (!item.link) {
+            continue;
+          }
+          const matchedTerms = canonicalizeMatchedTerms(item.matchedTerms || []);
+          const recoveredPubDate =
+            parseDate(item.pubDate) ||
+            (archiveGeneratedAt
+              ? parseFacebookRelativeDate(
+                  [item.snippet, item.content_text, item.description]
+                    .filter(Boolean)
+                    .join(" "),
+                  archiveGeneratedAt,
+                )
+              : null);
+          // `relevant` stays undefined (not false) when absent so items
+          // summarized before the relevance gate existed get re-judged once.
+          const relevant =
+            typeof item.relevant === "boolean" ? item.relevant : undefined;
+          cache.set(item.link, {
+            matchedTerms,
+            category: item.category || categorizeTerms(matchedTerms),
+            pubDate: recoveredPubDate,
+            snippet: cleanStorySnippet(item.snippet, item.title),
+            summary: item.summary || "",
+            reason: item.reason || "",
+            relevant,
+            comments: Array.isArray(item.comments) ? item.comments : [],
+            articleError: item.articleError || "",
+            matchSource: item.matchSource || "",
+          });
+          archivedItems.push({
+            sourceName: item.sourceName,
+            sourceFeedUrl: item.sourceFeedUrl || "",
+            title: item.title,
+            link: item.link,
+            guid: item.guid || item.link,
+            pubDate: recoveredPubDate,
+            matchedTerms,
+            category: item.category || categorizeTerms(matchedTerms),
+            snippet: cleanStorySnippet(item.snippet || "", item.title),
+            summary: item.summary || "",
+            reason: item.reason || "",
+            relevant,
+            comments: Array.isArray(item.comments) ? item.comments : [],
+            articleError: item.articleError || "",
+            matchSource: item.matchSource || "",
+          });
         }
-        const matchedTerms = canonicalizeMatchedTerms(item.matchedTerms || []);
-        const recoveredPubDate =
-          parseDate(item.pubDate) ||
-          (archiveGeneratedAt
-            ? parseFacebookRelativeDate(
-                [item.snippet, item.content_text, item.description]
-                  .filter(Boolean)
-                  .join(" "),
-                archiveGeneratedAt,
-              )
-            : null);
-        // `relevant` stays undefined (not false) when absent so items
-        // summarized before the relevance gate existed get re-judged once.
-        const relevant =
-          typeof item.relevant === "boolean" ? item.relevant : undefined;
-        cache.set(item.link, {
-          matchedTerms,
-          category: item.category || categorizeTerms(matchedTerms),
-          pubDate: recoveredPubDate,
-          snippet: cleanStorySnippet(item.snippet, item.title),
-          summary: item.summary || "",
-          reason: item.reason || "",
-          relevant,
-          comments: Array.isArray(item.comments) ? item.comments : [],
-          articleError: item.articleError || "",
-          matchSource: item.matchSource || "",
-        });
-        archivedItems.push({
-          sourceName: item.sourceName,
-          sourceFeedUrl: item.sourceFeedUrl || "",
-          title: item.title,
-          link: item.link,
-          guid: item.guid || item.link,
-          pubDate: recoveredPubDate,
-          matchedTerms,
-          category: item.category || categorizeTerms(matchedTerms),
-          snippet: cleanStorySnippet(item.snippet || "", item.title),
-          summary: item.summary || "",
-          reason: item.reason || "",
-          relevant,
-          comments: Array.isArray(item.comments) ? item.comments : [],
-          articleError: item.articleError || "",
-          matchSource: item.matchSource || "",
-        });
       }
+      loadedPath = jsonOutputPath;
+      break;
+    } catch {
+      // Try the next path, if any. The public feed path is kept as a
+      // migration fallback for older deployments that predate feed-audit.json.
     }
-    console.log(`Loaded ${cache.size} previously matched items from ${jsonOutputPath}`);
-  } catch {
+  }
+
+  if (loadedPath) {
+    console.log(`Loaded ${cache.size} previously matched items from ${loadedPath}`);
+  } else {
     console.log("No existing feed found to populate cache, starting fresh.");
   }
+
   return { cache, archivedItems };
 }
 
@@ -1860,7 +1901,7 @@ async function loadPreviousState(jsonOutputPath) {
 // feeds, so the page can look back in time. Bounded to keep the JSON sane.
 const ARCHIVE_MAX_AGE_DAYS = parsePositiveInteger(
   process.env.ARCHIVE_MAX_AGE_DAYS,
-  365,
+  92,
 );
 const MAX_FUTURE_SKEW_HOURS = parsePositiveInteger(
   process.env.RSS_MAX_FUTURE_HOURS,
@@ -1897,11 +1938,53 @@ function isBlueCrossVtOwnedItem(item) {
   return BLUECROSSVT_HOST_PATTERN.test(item.link || "");
 }
 
+function itemLink(item) {
+  return item.link || item.url || "";
+}
+
+function itemHost(item) {
+  try {
+    return new URL(itemLink(item)).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
+
+function itemSourceType(item) {
+  const link = itemLink(item);
+  if (BLUECROSSVT_HOST_PATTERN.test(link)) {
+    return "BlueCrossVT.org";
+  }
+  if (FACEBOOK_HOST_PATTERN.test(link) || /\bfacebook\b/i.test(item.sourceName || "")) {
+    return "Social";
+  }
+  return "News";
+}
+
+function itemAccessLabel(item) {
+  const link = itemLink(item);
+  const host = itemHost(item);
+  if (FACEBOOK_HOST_PATTERN.test(link)) {
+    return "May require login";
+  }
+  if (PAYWALL_HOST_PATTERN.test(host)) {
+    return "Paywall likely";
+  }
+  if (FREE_ACCESS_HOST_PATTERN.test(host)) {
+    return "Free to read";
+  }
+  return "Access varies";
+}
+
 function hasNationalPolicySignal(text, matchedTerms = []) {
   return (
     matchedTerms.some((term) => NATIONAL_POLICY_TOPIC_LABELS.has(term)) ||
     POLICY_SIGNAL_PATTERN.test(text)
   );
+}
+
+function hasPolicyTextSignal(text) {
+  return POLICY_SIGNAL_PATTERN.test(text);
 }
 
 function hasRegionalSignal(item, text) {
@@ -1938,19 +2021,34 @@ export function applyDeterministicRelevance(item) {
     return item;
   }
 
-  const evidence = cleanText(
+  const contentEvidence = cleanText(
     [
       item.title,
       item.description,
       item.snippet,
       item.summary,
-      item.sourceName,
     ]
       .filter(Boolean)
       .join(" "),
   );
+  const evidence = cleanText(
+    [contentEvidence, item.sourceName].filter(Boolean).join(" "),
+  );
   const hasRegional = hasRegionalSignal(item, evidence);
-  const hasPolicy = hasNationalPolicySignal(evidence, matchedTerms);
+  const hasPolicy = hasNationalPolicySignal(contentEvidence, matchedTerms);
+  const hasPolicyText = hasPolicyTextSignal(contentEvidence);
+
+  if (
+    BROAD_NATIONAL_SOURCE_NAMES.has(item.sourceName) &&
+    !hasRegional &&
+    !hasPolicyText
+  ) {
+    return {
+      ...item,
+      relevant: false,
+      reason: "Broad national health item without payer, policy, or regional angle.",
+    };
+  }
 
   if (!hasRegional && !hasPolicy && LOCAL_INCIDENT_PATTERN.test(evidence)) {
     return {
@@ -1995,6 +2093,7 @@ export function applyDeterministicRelevance(item) {
 export function dedupeResolvedItems(items) {
   const seenLinks = new Set();
   const seenTitleDomain = new Set();
+  const seenTitleOnly = new Map();
   const result = [];
 
   for (const item of items) {
@@ -2014,14 +2113,45 @@ export function dedupeResolvedItems(items) {
       .replace(/\s+-\s+[^-]+$/, "") // strip trailing "- Outlet" suffix
       .trim();
     const titleKey = domain && normalizedTitle ? `${domain}|${normalizedTitle}` : "";
+    const isAggregatorItem =
+      domain === "news.google.com" || /^Google News\b/i.test(item.sourceName || "");
 
     if (titleKey && seenTitleDomain.has(titleKey)) {
       continue;
     }
 
+    if (normalizedTitle && seenTitleOnly.has(normalizedTitle)) {
+      const existingIndex = seenTitleOnly.get(normalizedTitle);
+      const existingItem = result[existingIndex];
+      let existingDomain = "";
+      try {
+        existingDomain = new URL(existingItem.link || existingItem.guid || "")
+          .hostname.replace(/^www\./, "");
+      } catch {
+        existingDomain = "";
+      }
+      const existingIsAggregator =
+        existingDomain === "news.google.com" ||
+        /^Google News\b/i.test(existingItem.sourceName || "");
+
+      if (existingIsAggregator || isAggregatorItem) {
+        if (existingIsAggregator && !isAggregatorItem) {
+          result[existingIndex] = item;
+          seenLinks.add(link);
+          if (titleKey) {
+            seenTitleDomain.add(titleKey);
+          }
+        }
+        continue;
+      }
+    }
+
     seenLinks.add(link);
     if (titleKey) {
       seenTitleDomain.add(titleKey);
+    }
+    if (normalizedTitle) {
+      seenTitleOnly.set(normalizedTitle, result.length);
     }
     result.push(item);
   }
@@ -2062,7 +2192,7 @@ export function mergeWithArchive(currentItems, archivedItems, now = new Date()) 
 
 // ---------------------------------------------------------------------------
 // AI summaries (Gemini). Each story is summarized exactly once — results are
-// cached in feed.json — so the request volume stays far below free-tier
+// cached in feed-audit.json, so the request volume stays far below free-tier
 // daily quotas (~1-3 batched requests/day in steady state).
 // ---------------------------------------------------------------------------
 
@@ -2404,12 +2534,19 @@ function formatPubDate(date) {
 
 function itemDescription(item) {
   const snippet = cleanStorySnippet(item.snippet, item.title);
+  const date = item.pubDate?.toISOString()?.slice(0, 10) || "";
+  const access = itemAccessLabel(item);
   const lines = [
     `<p><strong>Source:</strong> ${escapeXml(item.sourceName)}</p>`,
-    `<p><strong>Matched terms:</strong> ${escapeXml(
-      item.matchedTerms.join(", "),
-    )}</p>`,
   ];
+
+  if (date) {
+    lines.push(`<p><strong>Date:</strong> ${escapeXml(date)}</p>`);
+  }
+
+  if (access) {
+    lines.push(`<p><strong>Access:</strong> ${escapeXml(access)}</p>`);
+  }
 
   if (item.summary) {
     lines.push(`<p>${escapeXml(item.summary)}</p>`);
@@ -2489,9 +2626,8 @@ export function buildRss(items, options = {}) {
     ? `\n    <atom:link href="${escapeXml(feedUrl)}" rel="self" type="application/rss+xml" />`
     : "";
 
-  // The JSON archive keeps everything; the RSS feed stays reader-friendly.
-  // Items the relevance gate rejected stay in the JSON audit but are
-  // excluded from the feed people read.
+  // Items the relevance gate rejected stay in feed-audit.json but are
+  // excluded from the feeds people read.
   const itemXml = sortItemsByDate(items)
     .filter((item) => item.relevant !== false)
     .slice(0, 100)
@@ -2533,16 +2669,26 @@ ${itemXml}
 `;
 }
 
-export function buildJsonSummary(items, sourceResults, now = new Date()) {
+export function buildJsonSummary(items, sourceResults, now = new Date(), options = {}) {
+  const includeRejected = Boolean(options.includeRejected);
+  const outputItems = sortItemsByDate(items).filter(
+    (item) => includeRejected || item.relevant !== false,
+  );
+  const rejectedItemCount = items.filter((item) => item.relevant === false).length;
+
   return {
     version: "https://jsonfeed.org/version/1.1",
     title: "Blue Cross VT News Mentions",
     home_page_url: SITE_URL || "",
-    feed_url: JSON_FEED_URL || "",
+    feed_url: options.feedUrl ?? JSON_FEED_URL ?? "",
     generatedAt: now.toISOString(),
-    itemCount: items.length,
+    itemCount: outputItems.length,
+    totalItemCount: items.length,
+    visibleItemCount: items.length - rejectedItemCount,
+    rejectedItemCount,
+    audit: includeRejected || undefined,
     sources: sourceResults,
-    items: sortItemsByDate(items).map((item) => {
+    items: outputItems.map((item) => {
       const matchedTerms = canonicalizeMatchedTerms(item.matchedTerms || []);
       const comments = Array.isArray(item.comments) ? item.comments : [];
       const snippet = cleanStorySnippet(item.snippet, item.title);
@@ -2567,6 +2713,8 @@ export function buildJsonSummary(items, sourceResults, now = new Date()) {
         tags: matchedTerms,
         sourceName: item.sourceName,
         sourceFeedUrl: item.sourceFeedUrl || "",
+        sourceType: itemSourceType(item),
+        access: itemAccessLabel(item),
         link: item.link,
         guid: item.guid || item.link,
         pubDate: item.pubDate?.toISOString() || null,
@@ -2587,10 +2735,21 @@ export function buildJsonSummary(items, sourceResults, now = new Date()) {
   };
 }
 
-async function writeOutput(rss, jsonSummary, rssOutputPath, jsonOutputPath) {
+async function writeOutput(
+  rss,
+  jsonSummary,
+  auditJsonSummary,
+  rssOutputPath,
+  jsonOutputPath,
+  auditJsonOutputPath,
+) {
   await mkdir(path.dirname(rssOutputPath), { recursive: true });
   await writeFile(rssOutputPath, rss, "utf8");
   await writeFile(jsonOutputPath, `${JSON.stringify(jsonSummary, null, 2)}\n`);
+  await writeFile(
+    auditJsonOutputPath,
+    `${JSON.stringify(auditJsonSummary, null, 2)}\n`,
+  );
 }
 
 export async function generateFeed({
@@ -2598,8 +2757,12 @@ export async function generateFeed({
   now = new Date(),
   rssOutputPath = resolveRssOutputPath(),
   jsonOutputPath = resolveJsonOutputPath(rssOutputPath),
+  auditJsonOutputPath = resolveAuditJsonOutputPath(rssOutputPath),
 } = {}) {
-  const { cache, archivedItems } = await loadPreviousState(jsonOutputPath);
+  const { cache, archivedItems } = await loadPreviousState(
+    auditJsonOutputPath,
+    jsonOutputPath,
+  );
   const { items, sourceResults } = await collectFeedItems(sources);
 
   // Trigger alerts for failed feeds asynchronously
@@ -2613,12 +2776,24 @@ export async function generateFeed({
   await summarizeItems(matchedItems);
   const rss = buildRss(matchedItems, { now });
   const jsonSummary = buildJsonSummary(matchedItems, sourceResults, now);
+  const auditJsonSummary = buildJsonSummary(matchedItems, sourceResults, now, {
+    includeRejected: true,
+    feedUrl: "",
+  });
 
-  await writeOutput(rss, jsonSummary, rssOutputPath, jsonOutputPath);
+  await writeOutput(
+    rss,
+    jsonSummary,
+    auditJsonSummary,
+    rssOutputPath,
+    jsonOutputPath,
+    auditJsonOutputPath,
+  );
 
   return {
     rssOutputPath,
     jsonOutputPath,
+    auditJsonOutputPath,
     sourceResults,
     itemCount: matchedItems.length,
     items: matchedItems,
@@ -2634,7 +2809,8 @@ async function main() {
   }
 
   console.log(`Wrote ${result.itemCount} matching items to ${result.rssOutputPath}`);
-  console.log(`Wrote audit JSON to ${result.jsonOutputPath}`);
+  console.log(`Wrote public JSON feed to ${result.jsonOutputPath}`);
+  console.log(`Wrote audit JSON to ${result.auditJsonOutputPath}`);
 }
 
 const currentFile = pathToFileURL(fileURLToPath(import.meta.url)).href;
