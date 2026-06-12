@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Blue Cross VT : News Mentions</title>
+    <title>Blue Cross VT: News Mentions</title>
     <meta
       name="description"
       content="Text-only browser for mentions of Blue Cross and Blue Shield of Vermont across Vermont news outlets."
@@ -356,7 +356,7 @@
         </label>
       </div>
 
-      <h1>Blue Cross VT : News Mentions</h1>
+      <h1>Blue Cross VT: News Mentions</h1>
       <div class="tricolor" aria-hidden="true">
         <span class="c1"></span><span class="c2"></span><span class="c3"></span>
       </div>
@@ -404,7 +404,16 @@
         const match = new RegExp(`(?:^|[#&])${name}=([^&]*)`).exec(
           location.hash,
         );
-        return match ? decodeURIComponent(match[1]) : "";
+        if (!match) {
+          return "";
+        }
+        // A mangled hash (e.g. "#page=%") would make decodeURIComponent
+        // throw and break rendering; treat it as unset instead.
+        try {
+          return decodeURIComponent(match[1]);
+        } catch {
+          return "";
+        }
       }
 
       function activePage() {
