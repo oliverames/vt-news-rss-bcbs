@@ -1,3 +1,15 @@
+## 2026-06-12 - Harden fetch, workflow, and reader; fix site title
+
+**What changed**: Changed the site title and h1 from `Blue Cross VT : News Mentions` to `Blue Cross VT: News Mentions`. Added a decompressed response size cap to all generator fetches (`RSS_MAX_RESPONSE_BYTES`, default 10 MB) with a non-retryable error path so an oversized body is not re-downloaded three times. Guarded the reader's `hashParam` against malformed percent-encoding that previously threw `URIError` and broke rendering on hashchange. Added `timeout-minutes` to both workflow jobs, `persist-credentials: false` on checkout, and `--max-time 60` on the archive seed curls. Refreshed the README source table to match `DEFAULT_SOURCES` (added BCBSA Association News, Vermont Daily Chronicle, St. Albans Messenger, ABC/CBS/CNN health feeds, the backfill and Kristina Google News searches) and documented `RSS_MAX_RESPONSE_BYTES`, `SUMMARY_REJUDGE_ALL`, `SLACK_WEBHOOK_URL`, and `DISCORD_WEBHOOK_URL`.
+
+**Decisions made**: Count the size cap against decompressed bytes by reading the response stream, which also covers compression bombs; decode accumulated bytes with `TextDecoder` to match `response.text()` UTF-8 semantics. Cap build at 30 minutes because runs are serialized (`cancel-in-progress: false`) and GitHub's 360-minute default would let one hung run back up six hourly runs. Left feed channel titles (`Blue Cross VT News Mentions`, no colon) unchanged; only the reader page title used the spaced colon. Skipped Dependabot (two stable deps, solo project, recurring PR noise outweighs benefit) and kept serial source fetching (politeness and simplicity; runtime is not a constraint on the hourly schedule).
+
+**Left off at**: `npm test` passed with 41 tests (40 existing plus a new `readResponseTextWithLimit` test), `node --check src/index.js` passed, workflow YAML parsed, and the local preview verified the new title, 25 rendered stories, zero console errors, and intact rendering with a mangled `#page=%` hash.
+
+**Open questions**: None.
+
+---
+
 ## 2026-06-12 - Add reader search, multiselect sections, and brand archive retention
 
 **What changed**: Added a browser-side search field, replaced single section links with plain checkbox multiselect controls, moved pagination to the bottom only, and changed the footer divider to match the tricolor reader rule. Updated archive retention so direct Blue Cross VT mentions stay indefinitely while topic-only Vermont health care stories keep the rolling window. Simplified the dateline to user-facing "refreshed hourly" copy and removed the story-count language.
