@@ -11,6 +11,7 @@ import {
   CATEGORY_BRAND,
   CATEGORY_TOPIC,
   findMentionTerms,
+  dedupeResolvedItems,
   mergeWithArchive,
   mergeFacebookPagePostItem,
   parseFeedItems,
@@ -149,6 +150,102 @@ test("topic terms avoid product-marketing false positives", () => {
   for (const headline of cases) {
     assert.deepEqual(findMentionTerms(headline, TOPIC_TERMS), []);
   }
+});
+
+test("transport idiom strip covers named facilities and treatment phrasing", () => {
+  // The Townshend crash story that leaked into production
+  assert.deepEqual(
+    findMentionTerms(
+      "Three injured, one seriously, in Townshend crash. One person was airlifted to Dartmouth-Hitchcock Medical Center.",
+      TOPIC_TERMS,
+    ).filter((t) => t.includes("hospital") || t.includes("Hospital")),
+    [],
+  );
+  assert.deepEqual(
+    findMentionTerms(
+      "Driver treated at a nearby hospital after the collision.",
+      TOPIC_TERMS,
+    ).filter((t) => t === "Hospitals"),
+    [],
+  );
+  // Real institutional coverage still matches
+  assert.ok(
+    findMentionTerms(
+      "Dartmouth-Hitchcock Medical Center announces new birthing pavilion program",
+      TOPIC_TERMS,
+    ).includes("Vermont hospitals & providers"),
+  );
+});
+
+test("dedupeResolvedItems drops same link and same title+domain, keeps cross-outlet copies", () => {
+  const items = [
+    { link: "https://news.yahoo.com/uvm-cuts-142", title: "UVM Health eliminates 142 positions - Yahoo" },
+    { link: "https://news.yahoo.com/uvm-cuts-142", title: "UVM Health eliminates 142 positions - Yahoo" },
+    { link: "https://news.yahoo.com/uvm-cuts-142-alt", title: "UVM Health eliminates 142 positions - Yahoo" },
+    { link: "https://www.wptz.com/uvm-cuts", title: "UVM Health eliminates 142 positions" },
+    { link: "https://www.wcax.com/uvm-cuts", title: "UVM Health eliminates 142 positions" },
+  ];
+  const deduped = dedupeResolvedItems(items);
+  assert.deepEqual(
+    deduped.map((item) => item.link),
+    [
+      "https://news.yahoo.com/uvm-cuts-142",
+      "https://www.wptz.com/uvm-cuts",
+      "https://www.wcax.com/uvm-cuts",
+    ],
+  );
+});
+
+test("parseSummaryResponse applies the relevance verdict", () => {
+  const batch = [
+    { title: "Texas shooting", snippet: "x" },
+    { title: "GMCB hearing", snippet: "y" },
+    { title: "No verdict story", snippet: "z" },
+  ];
+  parseSummaryResponse(
+    JSON.stringify([
+      { id: 1, summary: "A shooting.", reason: "Not health care", relevant: false },
+      { id: 2, summary: "Rate hearing.", reason: "Regulator action", relevant: true },
+      { id: 3, summary: "Something.", reason: "..." },
+    ]),
+    batch,
+  );
+  assert.equal(batch[0].relevant, false);
+  assert.equal(batch[1].relevant, true);
+  // Missing verdict defaults to relevant — only explicit false excludes
+  assert.equal(batch[2].relevant, true);
+});
+
+test("buildRss excludes items marked not relevant", () => {
+  const rss = buildRss(
+    [
+      {
+        sourceName: "WCAX",
+        sourceFeedUrl: "https://example.com/feed",
+        title: "Texas shooting story",
+        link: "https://example.com/shooting",
+        guid: "https://example.com/shooting",
+        pubDate: new Date("2026-06-12T12:00:00Z"),
+        matchedTerms: ["Hospitals"],
+        snippet: "",
+        relevant: false,
+      },
+      {
+        sourceName: "VTDigger",
+        sourceFeedUrl: "https://example.com/feed",
+        title: "GMCB story",
+        link: "https://example.com/gmcb",
+        guid: "https://example.com/gmcb",
+        pubDate: new Date("2026-06-12T12:00:00Z"),
+        matchedTerms: ["Green Mountain Care Board"],
+        snippet: "",
+        relevant: true,
+      },
+    ],
+    { now: new Date("2026-06-12T13:00:00Z"), feedUrl: "https://example.com/feed.rss" },
+  );
+  assert.ok(!rss.includes("Texas shooting story"));
+  assert.ok(rss.includes("GMCB story"));
 });
 
 test("hospital term ignores crime/accident transport briefs", () => {

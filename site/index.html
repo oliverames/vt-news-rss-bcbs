@@ -384,7 +384,15 @@
           const headline = document.createElement("div");
           headline.className = "headline";
           const link = document.createElement("a");
-          link.href = item.link;
+          // Links come from scraped feed content — only allow http(s).
+          try {
+            const parsed = new URL(item.link);
+            if (parsed.protocol === "https:" || parsed.protocol === "http:") {
+              link.href = item.link;
+            }
+          } catch {
+            // leave unlinked
+          }
           link.textContent = item.title;
           headline.appendChild(link);
           li.appendChild(headline);
@@ -456,7 +464,11 @@
             throw new Error(`HTTP ${response.status}`);
           }
           const data = await response.json();
-          allItems = data.items || [];
+          // Items the AI relevance gate rejected stay in the audit JSON
+          // but are hidden from the reader.
+          allItems = (data.items || []).filter(
+            (item) => item.relevant !== false,
+          );
           const generatedDate = new Date(data.generatedAt);
           const generated = Number.isNaN(generatedDate.valueOf())
             ? ""

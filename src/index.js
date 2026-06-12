@@ -305,6 +305,13 @@ export const MENTION_TERMS = [
 // health bills, coverage programs, and recurring health topics. They are
 // matched against feed title + description only (not full article text),
 // because nearly every article mentions "health care" somewhere in its body.
+// Transport/treatment idiom from crime and accident briefs. Covers both
+// generic ("taken to the hospital") and named facilities ("airlifted to
+// Dartmouth-Hitchcock Medical Center"). Stripped from text before testing
+// hospital-related terms so accident stories don't read as health news.
+const TRANSPORT_IDIOM =
+  /\b(?:taken|airlifted|transported|rushed|flown|brought|treated|died)\s+(?:to|at)\s+(?:(?:a|the|an)\s+)?(?:(?:area|local|nearby)\s+)?(?:[\w'’.-]+\s+){0,4}?(?:hospitals?\b|medical\s+cent(?:er|re)\b)/gi;
+
 export const TOPIC_TERMS = [
   // Regulators, agencies, and associations
   {
@@ -349,14 +356,16 @@ export const TOPIC_TERMS = [
     label: "Vermont hospitals & providers",
     pattern:
       /\bbrattleboro\s+(?:memorial|retreat|hospital)\b|\brutland\s+regional\b|\bcopley\s+hospital\b|\bgifford\s+(?:medical|health)\b|\bporter\s+(?:medical|hospital)\b|\bgrace\s+cottage\b|\bspringfield\s+hospital\b|\bnorth\s+country\s+hospital\b|\bnortheastern\s+vermont\s+regional\b|\bNVRH\b|\bnorthwestern\s+medical\s+center\b|\bcentral\s+vermont\s+medical\s+center\b|\bCVMC\b|\bmt\.?\s+ascutney\b|\bsouthwestern\s+vermont\s+(?:medical|health)\b|\bSVMC\b|\bchamplain\s+valley\s+physicians\b|\bCVPH\b|\balice\s+hyde\b|\bdartmouth[\s-]+(?:hitchcock|health)\b|\bhoward\s+center\b|\bnortheast\s+kingdom\s+human\s+services\b|\blamoille\s+health\b|\bbattenkill\s+valley\b/i,
+    strip: TRANSPORT_IDIOM,
   },
   {
     label: "Hospitals",
     pattern: /\bhospitals?\b/i,
-    // Crime/accident briefs ("taken to the hospital") are not healthcare
-    // coverage; strip the transport idiom before testing.
-    strip:
-      /\b(?:taken|airlifted|transported|rushed|flown|brought)\s+to\s+(?:a|the|an)?\s*(?:area|local|nearby)?\s*hospital\b/gi,
+    // Crime/accident briefs ("taken to the hospital", "airlifted to
+    // Dartmouth-Hitchcock Medical Center", "treated at a nearby hospital")
+    // are not healthcare coverage; strip the transport/treatment idiom —
+    // including named facilities — before testing.
+    strip: TRANSPORT_IDIOM,
   },
   // Topics
   { label: "Health care", pattern: /\bhealth\s*care\b/i },
@@ -1340,12 +1349,17 @@ async function loadPreviousState(jsonOutputPath) {
           continue;
         }
         const matchedTerms = canonicalizeMatchedTerms(item.matchedTerms || []);
+        // `relevant` stays undefined (not false) when absent so items
+        // summarized before the relevance gate existed get re-judged once.
+        const relevant =
+          typeof item.relevant === "boolean" ? item.relevant : undefined;
         cache.set(item.link, {
           matchedTerms,
           category: item.category || categorizeTerms(matchedTerms),
           snippet: item.snippet,
           summary: item.summary || "",
           reason: item.reason || "",
+          relevant,
           comments: Array.isArray(item.comments) ? item.comments : [],
           articleError: item.articleError || "",
           matchSource: item.matchSource || "",
@@ -1362,6 +1376,7 @@ async function loadPreviousState(jsonOutputPath) {
           snippet: item.snippet || "",
           summary: item.summary || "",
           reason: item.reason || "",
+          relevant,
           comments: Array.isArray(item.comments) ? item.comments : [],
           articleError: item.articleError || "",
           matchSource: item.matchSource || "",
@@ -1410,6 +1425,48 @@ function hasCurrentMatchingEvidence(item) {
       .join(" "),
   );
   return findMentionTerms(evidence, [...MENTION_TERMS, ...TOPIC_TERMS]).length > 0;
+}
+
+// Post-enrichment dedupe. Link-level dupes happen when the same article is
+// archived under its resolved URL but rediscovered under a raw Google News
+// URL; title+domain dupes happen when two Google News search feeds surface
+// the same syndicated copy. The same headline from *different* outlets is
+// kept on purpose — the comms team tracks coverage spread.
+export function dedupeResolvedItems(items) {
+  const seenLinks = new Set();
+  const seenTitleDomain = new Set();
+  const result = [];
+
+  for (const item of items) {
+    const link = item.link || item.guid || "";
+    if (seenLinks.has(link)) {
+      continue;
+    }
+
+    let domain = "";
+    try {
+      domain = new URL(link).hostname.replace(/^www\./, "");
+    } catch {
+      domain = "";
+    }
+    const normalizedTitle = cleanText(item.title || "")
+      .toLowerCase()
+      .replace(/\s+-\s+[^-]+$/, "") // strip trailing "- Outlet" suffix
+      .trim();
+    const titleKey = domain && normalizedTitle ? `${domain}|${normalizedTitle}` : "";
+
+    if (titleKey && seenTitleDomain.has(titleKey)) {
+      continue;
+    }
+
+    seenLinks.add(link);
+    if (titleKey) {
+      seenTitleDomain.add(titleKey);
+    }
+    result.push(item);
+  }
+
+  return result;
 }
 
 export function mergeWithArchive(currentItems, archivedItems, now = new Date()) {
@@ -1487,8 +1544,9 @@ export function buildSummaryPrompt(batch) {
     "For each article below, write:",
     '- "summary": 1-2 plain sentences describing what the story reports. Use only the title and excerpt; do not invent facts.',
     '- "reason": under 14 words, why this story matters to the team (e.g. "Names BCBSVT directly", "Hospital cost pressure affects premiums", "Legislative action on coverage").',
+    '- "relevant": true or false. false ONLY when the story is clearly not about health care, health coverage, health policy, hospitals as institutions, public health, or BCBSVT — for example crime, accident, or weather stories that merely mention someone being taken to a hospital. When in doubt, use true.',
     "",
-    "Respond with a JSON array of objects: [{\"id\": <article number>, \"summary\": \"...\", \"reason\": \"...\"}].",
+    "Respond with a JSON array of objects: [{\"id\": <article number>, \"summary\": \"...\", \"reason\": \"...\", \"relevant\": true}].",
     "",
     articles,
   ].join("\n");
@@ -1514,6 +1572,12 @@ export function parseSummaryResponse(text, batch) {
     }
     item.summary = cleanText(entry.summary);
     item.reason = cleanText(String(entry.reason || ""));
+    // Only an explicit false excludes; missing/odd values keep the story.
+    item.relevant = entry.relevant !== false;
+    // Log the pairing so a model id slip is visible in Actions logs.
+    console.log(
+      `  summary -> [${entry.id}] ${String(item.title).slice(0, 60)}${item.relevant ? "" : " (marked NOT relevant)"}`,
+    );
     applied += 1;
   }
   return applied;
@@ -1569,7 +1633,11 @@ export async function summarizeItems(items) {
     return;
   }
 
-  const pending = items.filter((item) => !item.summary);
+  // Items need a Gemini pass when unsummarized OR not yet relevance-judged
+  // (items summarized before the relevance gate existed).
+  const pending = items.filter(
+    (item) => !item.summary || item.relevant === undefined,
+  );
   if (pending.length === 0) {
     return;
   }
@@ -1667,6 +1735,7 @@ export async function enrichAndFilterItems(items, cache = new Map()) {
         snippet: cached.snippet,
         summary: cached.summary || "",
         reason: cached.reason || "",
+        relevant: cached.relevant,
         comments:
           Array.isArray(item.comments) && item.comments.length > 0
             ? item.comments
@@ -1793,10 +1862,10 @@ function itemDescription(item) {
   );
 
   if (item.articleError) {
+    // The raw error message can leak fetch URLs/details; a generic note
+    // is enough for feed readers.
     lines.push(
-      `<p><em>Article body fetch warning: ${escapeXml(
-        item.articleError,
-      )}</em></p>`,
+      "<p><em>Note: the full article text could not be fetched; matching used the feed text only.</em></p>",
     );
   }
 
@@ -1812,7 +1881,10 @@ export function buildRss(items, options = {}) {
     : "";
 
   // The JSON archive keeps everything; the RSS feed stays reader-friendly.
+  // Items the relevance gate rejected stay in the JSON audit but are
+  // excluded from the feed people read.
   const itemXml = sortItemsByDate(items)
+    .filter((item) => item.relevant !== false)
     .slice(0, 100)
     .map((item) => {
       const categories = item.matchedTerms
@@ -1899,8 +1971,12 @@ export function buildJsonSummary(items, sourceResults, now = new Date()) {
         snippet: item.snippet,
         summary: item.summary || "",
         reason: item.reason || "",
+        // undefined (not yet judged) is omitted by JSON.stringify, which
+        // marks the item for a relevance pass on the next run.
+        relevant: typeof item.relevant === "boolean" ? item.relevant : undefined,
         comments,
-        articleError: item.articleError || "",
+        // Public output gets a boolean, not the raw fetch error message.
+        articleFetchFailed: Boolean(item.articleError),
         matchSource: item.matchSource || "",
       };
     }),
@@ -1927,8 +2003,8 @@ export async function generateFeed({
   triggerWebhooks(failedSources).catch(err => console.error("Webhook trigger error:", err));
 
   const currentMatched = await enrichAndFilterItems(items, cache);
-  const matchedItems = sortItemsByDate(
-    mergeWithArchive(currentMatched, archivedItems, now),
+  const matchedItems = dedupeResolvedItems(
+    sortItemsByDate(mergeWithArchive(currentMatched, archivedItems, now)),
   );
   await summarizeItems(matchedItems);
   const rss = buildRss(matchedItems, { now });

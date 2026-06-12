@@ -16,9 +16,13 @@ permissions:
   pages: write
   id-token: write
 
+# Serialize runs instead of cancelling: a cancelled run wastes its Gemini
+# summary calls (they're only persisted on deploy), and two overlapping
+# runs could each seed from the same stale live feed and drop the other's
+# items. Queued runs are fine at this cadence.
 concurrency:
   group: github-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   build:
