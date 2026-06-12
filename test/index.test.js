@@ -1120,6 +1120,17 @@ test("buildSnippet centers the first matched mention", () => {
   assert.ok(snippet.endsWith(" ..."));
 });
 
+test("buildSnippet does not center on stripped transport idioms", () => {
+  const filler = "word ".repeat(60);
+  const text = `Driver was taken to the hospital after the crash. ${filler}Copley Hospital announced a new billing initiative.`;
+  const snippet = buildSnippet(text, TOPIC_TERMS);
+
+  // The real institutional mention is the match target; the accident
+  // transport idiom near the start is stripped and outside the window.
+  assert.match(snippet, /Copley Hospital announced/);
+  assert.doesNotMatch(snippet, /taken to the hospital/);
+});
+
 test("cleanStorySnippet drops repeated title-only snippets", () => {
   const title =
     "How a new Blue Cross CEO plans to revive financial performance - Modern Healthcare";

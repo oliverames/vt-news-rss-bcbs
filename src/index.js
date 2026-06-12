@@ -1674,7 +1674,14 @@ function findFirstMentionIndex(text, terms = MENTION_TERMS) {
   let bestIndex = -1;
 
   for (const term of terms) {
-    const match = term.pattern.exec(text);
+    // Blank stripped regions with same-length whitespace (rather than the
+    // single space findMentionTerms uses) so the match index below still
+    // points into the caller's original text. Without this, snippets could
+    // center on a transport-idiom mention the matcher deliberately ignored.
+    const subject = term.strip
+      ? text.replace(term.strip, (stripped) => " ".repeat(stripped.length))
+      : text;
+    const match = term.pattern.exec(subject);
     if (!match) {
       continue;
     }
