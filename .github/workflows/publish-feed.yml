@@ -49,16 +49,21 @@ jobs:
       - name: Run tests
         run: npm test
 
-      # The live feed.json is the durable archive and summary cache. Seed it
-      # before generating so stories persist across runs and items are only
-      # summarized once (keeps Gemini usage far under free-tier quotas).
+      # The live feed-audit.json is the durable archive and summary cache.
+      # Seed it before generating so stories persist across runs and items are
+      # only summarized once (keeps Gemini usage far under free-tier quotas).
       - name: Seed archive from live feed
         env:
           SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
         run: |
-          curl -fsSL "$SITE_URL/feed.json" -o site/feed.json \
-            && echo "Seeded archive from live feed" \
-            || echo "Live feed unavailable; using committed feed.json"
+          mkdir -p site
+          if curl -fsSL "$SITE_URL/feed-audit.json" -o site/feed-audit.json; then
+            echo "Seeded archive from live audit feed"
+          elif curl -fsSL "$SITE_URL/feed.json" -o site/feed-audit.json; then
+            echo "Seeded archive from legacy live feed"
+          else
+            echo "Live archive unavailable; using committed feed-audit.json when present"
+          fi
 
       - name: Generate feed
         env:

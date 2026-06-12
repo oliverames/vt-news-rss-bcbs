@@ -18,7 +18,6 @@
         --visited: #551a8b;
         --rule: #ccc;
         --surface: #f5f8fc;
-        --surface-strong: #e8f0fb;
         --rule-blue: #b7cbe9;
         --bar-1: #0033a0;
         --bar-2: #111;
@@ -123,7 +122,7 @@
       }
 
       ul.stories > li {
-        margin: 0 0 18px;
+        margin: 0 0 22px;
       }
 
       ul.stories .headline {
@@ -152,7 +151,7 @@
       ul.stories .meta {
         font-size: 0.8rem;
         color: var(--muted);
-        margin-top: 2px;
+        margin-bottom: 2px;
       }
 
       ul.stories .meta a {
@@ -167,10 +166,16 @@
       }
 
       ul.stories .comments-title {
-        color: var(--fg);
-        font-weight: 700;
+        appearance: none;
+        background: none;
+        border: 0;
+        color: var(--link);
+        cursor: pointer;
+        font: inherit;
         font-size: 0.8rem;
         margin-top: 9px;
+        padding: 0;
+        text-decoration: underline;
       }
 
       ul.stories .comment {
@@ -198,13 +203,26 @@
         padding: 0;
       }
 
-      ul.stories .comment-replies .comment {
-        background: var(--surface-strong);
-      }
-
       .status {
         color: var(--muted);
         font-style: italic;
+      }
+
+      .pager {
+        margin: 14px 0 20px;
+        padding: 8px 0;
+        border-top: 1px solid var(--rule);
+        border-bottom: 1px solid var(--rule);
+        font-size: 0.9rem;
+      }
+
+      .pager a,
+      .pager span {
+        margin-right: 14px;
+      }
+
+      .pager .current {
+        color: var(--muted);
       }
 
       footer {
@@ -237,16 +255,20 @@
         <span id="section-links"></span>
       </nav>
 
+      <nav class="pager" id="pager-top" aria-label="Article pages" hidden></nav>
+
       <ul class="stories" id="stories">
         <li class="status">Loading stories&hellip;</li>
       </ul>
 
+      <nav class="pager" id="pager-bottom" aria-label="Article pages" hidden></nav>
+
       <footer>
         Blue Cross VT mentions and Vermont health care coverage collected
         from Vermont news outlets and Google News, refreshed hourly. Stories
-        are kept for a year, even after they leave their source feeds.
-        Inclusion signals are retained in the JSON feed; summaries are
-        AI-generated.
+        are kept for three months, even after they leave their source feeds.
+        BlueCrossVT.org posts and social posts are available as sections but
+        hidden from All by default. Summaries are AI-generated.
         Subscribe via <a href="feed.rss">RSS</a> or
         <a href="feed.json">JSON</a>.
       </footer>
@@ -257,33 +279,11 @@
       const sectionsEl = document.getElementById("sections");
       const sectionLinksEl = document.getElementById("section-links");
       const datelineEl = document.getElementById("dateline");
+      const pagerTopEl = document.getElementById("pager-top");
+      const pagerBottomEl = document.getElementById("pager-bottom");
 
       let allItems = [];
-
-      const localSourceNames = new Set([
-        "Addison Independent",
-        "Bennington Banner",
-        "BlueCrossVT Be Well VT Blog",
-        "BlueCrossVT Newsroom",
-        "Brattleboro Reformer",
-        "MyChamplainValley",
-        "MyNBC5",
-        "Newport Daily Express",
-        "Rutland Herald",
-        "Seven Days",
-        "The Mountain Times",
-        "Times Argus",
-        "Times Argus UVM Health Search",
-        "UVM Health Newsroom",
-        "Valley News",
-        "Vermont Business Magazine",
-        "Vermont Community Newspaper Group",
-        "Vermont Public",
-        "VTDigger",
-        "WCAX",
-      ]);
-      const regionalTextPattern =
-        /\b(?:vermont|vermonters?|uvm|dartmouth[\s-]+hitchcock|dartmouth health|dhmc|cvph|new england|maine|new hampshire|massachusetts|rhode island|connecticut)\b/i;
+      const pageSize = 25;
 
       function hashParam(name) {
         const match = new RegExp(`(?:^|[#&])${name}=([^&]*)`).exec(
@@ -296,10 +296,18 @@
         return hashParam("section");
       }
 
-      function buildHash(section) {
+      function activePage() {
+        const parsed = Number.parseInt(hashParam("page") || "1", 10);
+        return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+      }
+
+      function buildHash(section, page = 1) {
         const parts = [];
         if (section) {
           parts.push(`section=${encodeURIComponent(section)}`);
+        }
+        if (page > 1) {
+          parts.push(`page=${page}`);
         }
         return parts.length ? `#${parts.join("&")}` : "#";
       }
@@ -340,43 +348,33 @@
 
       function sectionItems() {
         const section = activeSection();
+        if (section === "source") {
+          return allItems.filter(isOwnedItem);
+        }
+        if (section === "social") {
+          return allItems.filter(isSocialItem);
+        }
+
+        const defaultItems = allItems.filter(
+          (item) => !isOwnedItem(item) && !isSocialItem(item),
+        );
         return section
-          ? allItems.filter((item) => item.category === section)
-          : allItems;
+          ? defaultItems.filter((item) => item.category === section)
+          : defaultItems;
       }
 
-      function itemPriority(item) {
-        if (item.category === "Blue Cross VT") {
-          return 0;
-        }
+      function isOwnedItem(item) {
+        return item.sourceType === "BlueCrossVT.org" ||
+          /bluecrossvt\.org/i.test(item.link || item.url || "");
+      }
 
-        const evidence = [
-          item.sourceName,
-          item.title,
-          item.summary,
-          item.snippet,
-          item.reason,
-        ]
-          .filter(Boolean)
-          .join(" ");
-
-        if (
-          localSourceNames.has(item.sourceName) ||
-          regionalTextPattern.test(evidence)
-        ) {
-          return 1;
-        }
-
-        return 2;
+      function isSocialItem(item) {
+        return item.sourceType === "Social" ||
+          /\bfacebook\b/i.test(`${item.sourceName || ""} ${item.link || ""}`);
       }
 
       function orderedItems(items) {
         return [...items].sort((a, b) => {
-          const priorityDiff = itemPriority(a) - itemPriority(b);
-          if (priorityDiff !== 0) {
-            return priorityDiff;
-          }
-
           const aTime = a.pubDate ? new Date(a.pubDate).valueOf() : 0;
           const bTime = b.pubDate ? new Date(b.pubDate).valueOf() : 0;
           return bTime - aTime;
@@ -385,7 +383,7 @@
 
       function sectionLink(section, label, count) {
         const a = document.createElement("a");
-        a.href = buildHash(section);
+        a.href = buildHash(section, 1);
         a.textContent = label;
         if (count !== undefined) {
           const span = document.createElement("span");
@@ -401,26 +399,80 @@
 
       function renderSections() {
         const counts = new Map();
-        for (const item of allItems) {
+        const defaultItems = allItems.filter(
+          (item) => !isOwnedItem(item) && !isSocialItem(item),
+        );
+        const ownedCount = allItems.filter(isOwnedItem).length;
+        const socialCount = allItems.filter(isSocialItem).length;
+
+        for (const item of defaultItems) {
           const category = item.category || "Other";
           counts.set(category, (counts.get(category) || 0) + 1);
         }
 
         sectionLinksEl.replaceChildren();
-        sectionLinksEl.appendChild(sectionLink("", "All", allItems.length));
+        sectionLinksEl.appendChild(sectionLink("", "All", defaultItems.length));
         for (const [section, count] of [...counts.entries()].sort()) {
           sectionLinksEl.appendChild(document.createTextNode(" "));
           sectionLinksEl.appendChild(sectionLink(section, section, count));
         }
+        if (ownedCount > 0) {
+          sectionLinksEl.appendChild(document.createTextNode(" "));
+          sectionLinksEl.appendChild(sectionLink("source", "BlueCrossVT.org", ownedCount));
+        }
+        if (socialCount > 0) {
+          sectionLinksEl.appendChild(document.createTextNode(" "));
+          sectionLinksEl.appendChild(sectionLink("social", "Social posts", socialCount));
+        }
         sectionsEl.hidden = false;
+      }
+
+      function renderPager(container, totalItems, page, pageCount) {
+        container.replaceChildren();
+        if (pageCount <= 1) {
+          container.hidden = true;
+          return;
+        }
+
+        const section = activeSection();
+        const start = (page - 1) * pageSize + 1;
+        const end = Math.min(page * pageSize, totalItems);
+
+        if (page > 1) {
+          const newer = document.createElement("a");
+          newer.href = buildHash(section, page - 1);
+          newer.textContent = "Newer";
+          container.appendChild(newer);
+          container.appendChild(document.createTextNode(" "));
+        }
+
+        const current = document.createElement("span");
+        current.className = "current";
+        current.textContent = `${start}-${end} of ${totalItems}`;
+        container.appendChild(current);
+
+        if (page < pageCount) {
+          container.appendChild(document.createTextNode(" "));
+          const older = document.createElement("a");
+          older.href = buildHash(section, page + 1);
+          older.textContent = "Older";
+          container.appendChild(older);
+        }
+
+        container.hidden = false;
       }
 
       function renderStories() {
         const items = orderedItems(sectionItems());
+        const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
+        const page = Math.min(activePage(), pageCount);
+        const pageItems = items.slice((page - 1) * pageSize, page * pageSize);
 
         storiesEl.replaceChildren();
+        renderPager(pagerTopEl, items.length, page, pageCount);
+        renderPager(pagerBottomEl, items.length, page, pageCount);
 
-        if (items.length === 0) {
+        if (pageItems.length === 0) {
           const li = document.createElement("li");
           li.className = "status";
           li.textContent = "No stories match this section.";
@@ -428,8 +480,22 @@
           return;
         }
 
-        for (const item of items) {
+        for (const item of pageItems) {
           const li = document.createElement("li");
+
+          const date = formatDate(item.pubDate, {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+          });
+          const meta = document.createElement("div");
+          meta.className = "meta";
+          meta.textContent = [
+            date,
+            item.sourceName,
+            item.access,
+          ].filter(Boolean).join(" · ");
+          li.appendChild(meta);
 
           const headline = document.createElement("div");
           headline.className = "headline";
@@ -465,28 +531,24 @@
             li.appendChild(reason);
           }
 
-          const meta = document.createElement("div");
-          meta.className = "meta";
-          const date = formatDate(item.pubDate, {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          });
-          meta.appendChild(
-            document.createTextNode(
-              `${item.sourceName}${date ? ` · posted ${date}` : ""}`,
-            ),
-          );
-          li.appendChild(meta);
-
           if (Array.isArray(item.comments) && item.comments.length > 0) {
-            const commentsTitle = document.createElement("div");
+            const commentsTitle = document.createElement("button");
+            commentsTitle.type = "button";
             commentsTitle.className = "comments-title";
             const commentTotal = countComments(item.comments);
-            commentsTitle.textContent = `Comments (${commentTotal})`;
+            commentsTitle.textContent = `Show comments (${commentTotal})`;
             li.appendChild(commentsTitle);
 
-            li.appendChild(renderComments(item.comments, "comments"));
+            const commentsContainer = document.createElement("div");
+            commentsContainer.hidden = true;
+            commentsContainer.appendChild(renderComments(item.comments, "comments"));
+            commentsTitle.addEventListener("click", () => {
+              commentsContainer.hidden = !commentsContainer.hidden;
+              commentsTitle.textContent = commentsContainer.hidden
+                ? `Show comments (${commentTotal})`
+                : `Hide comments (${commentTotal})`;
+            });
+            li.appendChild(commentsContainer);
           }
 
           storiesEl.appendChild(li);
@@ -542,11 +604,7 @@
             throw new Error(`HTTP ${response.status}`);
           }
           const data = await response.json();
-          // Items the AI relevance gate rejected stay in the audit JSON
-          // but are hidden from the reader.
-          allItems = (data.items || []).filter(
-            (item) => item.relevant !== false,
-          );
+          allItems = data.items || [];
           const generatedDate = new Date(data.generatedAt);
           const generated = Number.isNaN(generatedDate.valueOf())
             ? ""
@@ -559,8 +617,8 @@
                 minute: "2-digit",
               });
           datelineEl.textContent = generated
-            ? `Last updated ${generated} · ${allItems.length} stories collected`
-            : `${allItems.length} stories collected`;
+            ? `Last updated ${generated} · ${allItems.length} stories collected over three months`
+            : `${allItems.length} stories collected over three months`;
           renderAll();
         } catch (error) {
           datelineEl.textContent = "";

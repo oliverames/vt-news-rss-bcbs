@@ -201,6 +201,28 @@ test("dedupeResolvedItems drops same link and same title+domain, keeps cross-out
   );
 });
 
+test("dedupeResolvedItems drops Google News wrappers when the outlet item exists", () => {
+  const items = [
+    {
+      sourceName: "Google News Health Insurance Search",
+      link: "https://news.google.com/rss/articles/example",
+      title:
+        "Major Medicare Advantage insurers appear to deny care for profit, federal watchdog finds - Healthcare Dive",
+    },
+    {
+      sourceName: "Healthcare Dive",
+      link: "https://www.healthcaredive.com/news/medicare-advantage-denials/",
+      title:
+        "Major Medicare Advantage insurers appear to deny care for profit, federal watchdog finds",
+    },
+  ];
+
+  assert.deepEqual(
+    dedupeResolvedItems(items).map((item) => item.link),
+    ["https://www.healthcaredive.com/news/medicare-advantage-denials/"],
+  );
+});
+
 test("parseSummaryResponse applies the relevance verdict", () => {
   const batch = [
     { title: "Texas shooting", snippet: "x" },
@@ -264,6 +286,55 @@ test("deterministic relevance rejects out-of-region low-priority false positives
       category: CATEGORY_TOPIC,
       relevant: false,
       reason: "Low-priority health mention outside Vermont or New England.",
+    }).relevant,
+    undefined,
+  );
+
+  assert.equal(
+    applyDeterministicRelevance({
+      sourceName: "Fierce Healthcare",
+      title: "Virtual care tech companies launch RPM tool for pharmacies",
+      description:
+        "The program helps pharmacies support chronic care patients between visits.",
+      matchedTerms: ["Prescription drugs & pharmacy"],
+      category: CATEGORY_TOPIC,
+    }).relevant,
+    false,
+  );
+
+  assert.equal(
+    applyDeterministicRelevance({
+      sourceName: "KFF Health News",
+      title:
+        "California Health Worker Union, Hospital Association Tout Dueling Ballot Initiatives",
+      description:
+        "Get our weekly newsletter with a roundup of original coverage.",
+      matchedTerms: ["Hospitals", "Hospital & nurse labor"],
+      category: CATEGORY_TOPIC,
+    }).relevant,
+    false,
+  );
+
+  assert.equal(
+    applyDeterministicRelevance({
+      sourceName: "Google News National Health Policy Search",
+      title: "Surprising ways menopause can affect your mouth",
+      description: "Wellness advice from a national outlet.",
+      matchedTerms: ["Women's health"],
+      category: CATEGORY_TOPIC,
+    }).relevant,
+    false,
+  );
+
+  assert.equal(
+    applyDeterministicRelevance({
+      sourceName: "Fierce Healthcare",
+      title:
+        "AHIP 2026: Why Ascendiun CEO is bullish on building digital health records",
+      description:
+        "AHIP discussion of health records and interoperability for patients.",
+      matchedTerms: ["Health records & interoperability"],
+      category: CATEGORY_TOPIC,
     }).relevant,
     undefined,
   );
@@ -970,8 +1041,60 @@ test("buildJsonSummary creates auditable item output", () => {
   assert.equal(summary.items[0].url, "https://example.com/story");
   assert.equal(summary.items[0].tags[0], "BCBSVT");
   assert.equal(summary.items[0].matchedTerms[0], "BCBSVT");
+  assert.equal(summary.items[0].sourceType, "News");
+  assert.equal(summary.items[0].access, "Access varies");
   assert.match(summary.items[0].content_text, /Good catch/);
   assert.match(summary.items[0].content_text, /Subcomment catch/);
+});
+
+test("buildJsonSummary keeps rejected items out of the public JSON feed", () => {
+  const items = [
+    {
+      sourceName: "MyNBC5",
+      title: "Texas shooting",
+      link: "https://example.com/texas",
+      pubDate: new Date("2026-06-12T12:00:00Z"),
+      matchedTerms: ["Hospitals"],
+      relevant: false,
+      reason: "Mentions hospitals but not BCBSVT or Vermont.",
+    },
+    {
+      sourceName: "VTDigger",
+      title: "Blue Cross VT rate filing",
+      link: "https://example.com/rate-filing",
+      pubDate: new Date("2026-06-12T13:00:00Z"),
+      matchedTerms: ["Blue Cross VT"],
+      relevant: true,
+      reason: "Blue Cross VT is the focus.",
+    },
+  ];
+
+  const publicSummary = buildJsonSummary(
+    items,
+    [],
+    new Date("2026-06-12T14:00:00Z"),
+  );
+  const auditSummary = buildJsonSummary(
+    items,
+    [],
+    new Date("2026-06-12T14:00:00Z"),
+    { includeRejected: true, feedUrl: "" },
+  );
+
+  assert.equal(publicSummary.itemCount, 1);
+  assert.equal(publicSummary.totalItemCount, 2);
+  assert.equal(publicSummary.rejectedItemCount, 1);
+  assert.deepEqual(
+    publicSummary.items.map((item) => item.title),
+    ["Blue Cross VT rate filing"],
+  );
+
+  assert.equal(auditSummary.audit, true);
+  assert.equal(auditSummary.itemCount, 2);
+  assert.deepEqual(
+    auditSummary.items.map((item) => item.title),
+    ["Blue Cross VT rate filing", "Texas shooting"],
+  );
 });
 
 test("parseFeedItems supports isSearchFeed property", () => {

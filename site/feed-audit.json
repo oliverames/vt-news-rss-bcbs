@@ -4,10 +4,11 @@
   "home_page_url": "",
   "feed_url": "",
   "generatedAt": "2026-06-12T20:04:10.583Z",
-  "itemCount": 129,
+  "itemCount": 169,
   "totalItemCount": 169,
   "visibleItemCount": 129,
   "rejectedItemCount": 40,
+  "audit": true,
   "sources": [
     {
       "name": "WCAX",
@@ -234,6 +235,34 @@
   ],
   "items": [
     {
+      "id": "https://www.mynbc5.com/article/midland-texas-police-standoff-shooting/71572017",
+      "url": "https://www.mynbc5.com/article/midland-texas-police-standoff-shooting/71572017",
+      "title": "Suspect dead after Texas shooting kills 1 and leaves 9 injured, police say",
+      "content_text": "A shooting in Texas resulted in one death and nine injuries, with the injured being taken to the hospital. Why included: Out-of-region incident with incidental health mention.",
+      "date_published": "2026-06-12T19:11:00.000Z",
+      "tags": [
+        "Hospitals"
+      ],
+      "sourceName": "MyNBC5",
+      "sourceFeedUrl": "https://www.mynbc5.com/topstories-rss",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.mynbc5.com/article/midland-texas-police-standoff-shooting/71572017",
+      "guid": "https://www.mynbc5.com/article/midland-texas-police-standoff-shooting/71572017",
+      "pubDate": "2026-06-12T19:11:00.000Z",
+      "matchedTerms": [
+        "Hospitals"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Suspect dead after Texas shooting kills 1 and leaves 9 injured, police say A shooting Friday in Midland, Texas, left one person dead and nine others in the hospital A shooting Friday in Midland, Texas, left one person dead and nine others in the hospital",
+      "summary": "A shooting in Texas resulted in one death and nine injuries, with the injured being taken to the hospital.",
+      "reason": "Out-of-region incident with incidental health mention.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://www.mychamplainvalley.com/news/local-news/vermont/northern-border-regional-commission-grants-announced-for-vermont-water-transportation-work-in-newport/",
       "url": "https://www.mychamplainvalley.com/news/local-news/vermont/northern-border-regional-commission-grants-announced-for-vermont-water-transportation-work-in-newport/",
       "title": "Northern Border Regional Commission grants announced for Vermont - water, transportation work in Newport",
@@ -256,6 +285,36 @@
       "snippet": "... nounced for Vermont - water, transportation work in Newport The recipients of $7.62 million in funding for economic development in Vermont have been announced, including water and healthcare improvements. The recipients of $7.62 million in funding for economic development in Vermont have been announced, including water and healthcare improvements.",
       "summary": "",
       "reason": "",
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://kffhealthnews.org/health-industry/the-week-in-brief-california-dueling-ballot-initiatives-union-hospital-association/",
+      "url": "https://kffhealthnews.org/health-industry/the-week-in-brief-california-dueling-ballot-initiatives-union-hospital-association/",
+      "title": "California Health Worker Union, Hospital Association Tout Dueling Ballot Initiatives",
+      "content_text": "California Health Worker Union, Hospital Association Tout Dueling Ballot Initiatives Get our weekly newsletter, The Week in Brief, featuring a roundup of our original coverage, Fridays at 2 p.m. ET. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-12T18:30:00.000Z",
+      "tags": [
+        "Hospitals",
+        "Hospital & nurse labor"
+      ],
+      "sourceName": "KFF Health News",
+      "sourceFeedUrl": "https://kffhealthnews.org/feed/",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://kffhealthnews.org/health-industry/the-week-in-brief-california-dueling-ballot-initiatives-union-hospital-association/",
+      "guid": "https://kffhealthnews.org/health-industry/the-week-in-brief-california-dueling-ballot-initiatives-union-hospital-association/",
+      "pubDate": "2026-06-12T18:30:00.000Z",
+      "matchedTerms": [
+        "Hospitals",
+        "Hospital & nurse labor"
+      ],
+      "category": "VT Health Care",
+      "snippet": "California Health Worker Union, Hospital Association Tout Dueling Ballot Initiatives Get our weekly newsletter, The Week in Brief, featuring a roundup of our original coverage, Fridays at 2 p.m. ET.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -284,6 +343,62 @@
       "summary": "Vermont is receiving $7.62 million in Northern Border Regional Commission grants to support projects including modernizing healthcare facilities.",
       "reason": "Grant funding for healthcare facilities in Vermont.",
       "relevant": true,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQbDBPRHJlc0xyckxBMDRLekwwcGVhOWdTZy0tdDg4RU9kUnZkRlpITEVrRFNrNG54MGtsUTFjbHA0SExkb0FNaVZqd3d3U2phdDFiMkE5NnIxRnQxZmNOMnZnXzJ3UHpNTVJtaTNUTzZreEdmbHA4YnpGTjlrVVdPbUxnQ2twYkFqc01Jb1lFQ0lzTjZYQmRYWFJldmpmNHFmMEE?oc=5",
+      "url": "https://www.washingtonpost.com/wellness/2026/06/12/surprising-ways-menopause-can-affect-oral-health/",
+      "title": "Surprising ways menopause can affect your mouth - The Washington Post",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-12T17:00:01.000Z",
+      "tags": [
+        "Women's health"
+      ],
+      "sourceName": "Google News National Health Policy Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Aapnews.com+OR+site%3Anbcnews.com+OR+site%3Anytimes.com+OR+site%3Awashingtonpost.com+OR+site%3Aaxios.com+OR+site%3Anpr.org+OR+site%3Athehill.com+OR+site%3Akffhealthnews.org+OR+site%3Anewsfromthestates.com+OR+site%3Astateline.org%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+Medicaid+OR+Medicare+OR+Obamacare+OR+ACA+OR+%22medical+debt%22+OR+%22No+Surprises+Act%22+OR+GLP-1+OR+vaccines+OR+%22health+insurance%22+OR+%22health+care+costs%22+OR+%22price+transparency%22+OR+menopause+OR+maternity+OR+%22private+equity%22%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "https://www.washingtonpost.com/wellness/2026/06/12/surprising-ways-menopause-can-affect-oral-health/",
+      "guid": "https://news.google.com/rss/articles/CBMiogFBVV95cUxQbDBPRHJlc0xyckxBMDRLekwwcGVhOWdTZy0tdDg4RU9kUnZkRlpITEVrRFNrNG54MGtsUTFjbHA0SExkb0FNaVZqd3d3U2phdDFiMkE5NnIxRnQxZmNOMnZnXzJ3UHpNTVJtaTNUTzZreEdmbHA4YnpGTjlrVVdPbUxnQ2twYkFqc01Jb1lFQ0lzTjZYQmRYWFJldmpmNHFmMEE?oc=5",
+      "pubDate": "2026-06-12T17:00:01.000Z",
+      "matchedTerms": [
+        "Women's health"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.mychamplainvalley.com/news/national-news/1-dead-11-known-victims-in-texas-shooting/",
+      "url": "https://www.mychamplainvalley.com/news/national-news/1-dead-11-known-victims-in-texas-shooting/",
+      "title": "Shooter, one victim dead in Texas shooting",
+      "content_text": "A shooting in Texas ended with a shooter and one victim dead, occurring near a veterinary hospital. Why included: Out-of-region incident with incidental health mention.",
+      "date_published": "2026-06-12T16:29:57.000Z",
+      "tags": [
+        "Hospitals"
+      ],
+      "sourceName": "MyChamplainValley",
+      "sourceFeedUrl": "https://www.mychamplainvalley.com/feed/",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.mychamplainvalley.com/news/national-news/1-dead-11-known-victims-in-texas-shooting/",
+      "guid": "https://www.mychamplainvalley.com/news/national-news/1-dead-11-known-victims-in-texas-shooting/",
+      "pubDate": "2026-06-12T16:29:57.000Z",
+      "matchedTerms": [
+        "Hospitals"
+      ],
+      "category": "VT Health Care",
+      "snippet": "... hooter, one victim dead in Texas shooting Ppolice said the active shooter situation ended hours after the gunfire erupted in one part of Midland before ending up near a veterinary hospital. Ppolice said the active shooter situation ended hours after the gunfire erupted in one part of Midland before ending up near a veterinary hospital.",
+      "summary": "A shooting in Texas ended with a shooter and one victim dead, occurring near a veterinary hospital.",
+      "reason": "Out-of-region incident with incidental health mention.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -318,6 +433,34 @@
       "summary": "A federal watchdog report indicates that major Medicare Advantage insurers may be denying care for profit.",
       "reason": "Medicare Advantage insurer practices and potential profit motive.",
       "relevant": true,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.mychamplainvalley.com/news/local-news/three-injured-one-seriously-in-townshend-crash/",
+      "url": "https://www.mychamplainvalley.com/news/local-news/three-injured-one-seriously-in-townshend-crash/",
+      "title": "Three injured, one seriously, in Townshend crash",
+      "content_text": "A car crash in Townshend left three people injured, with one seriously injured person airlifted to Dartmouth-Hitchcock Medical Center. Why included: Mentions a Vermont hospital, but is an accident report.",
+      "date_published": "2026-06-12T16:17:29.000Z",
+      "tags": [
+        "Vermont hospitals & providers"
+      ],
+      "sourceName": "MyChamplainValley",
+      "sourceFeedUrl": "https://www.mychamplainvalley.com/feed/",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.mychamplainvalley.com/news/local-news/three-injured-one-seriously-in-townshend-crash/",
+      "guid": "https://www.mychamplainvalley.com/news/local-news/three-injured-one-seriously-in-townshend-crash/",
+      "pubDate": "2026-06-12T16:17:29.000Z",
+      "matchedTerms": [
+        "Vermont hospitals & providers"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Three injured, one seriously, in Townshend crash An 18-year-old from Dorset reportedly suffered serious injuries and was taken by a UMass helicopter to Dartmouth-Hitchcock Medical Center. An 18-year-old from Dorset reportedly suffered serious injuries and was taken by a UMass helicopter to Dartmouth-Hitchcock Medical Center.",
+      "summary": "A car crash in Townshend left three people injured, with one seriously injured person airlifted to Dartmouth-Hitchcock Medical Center.",
+      "reason": "Mentions a Vermont hospital, but is an accident report.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -394,6 +537,34 @@
       "matchSource": ""
     },
     {
+      "id": "https://thehill.com/policy/healthcare/5921668-measles-outbreak-virginia/",
+      "url": "https://thehill.com/policy/healthcare/5921668-measles-outbreak-virginia/",
+      "title": "Measles outbreak in Virginia county grows to nearly 90 cases",
+      "content_text": "Measles outbreak in Virginia county grows to nearly 90 cases State health officials are asking anyone who may be sick, or those who are not vaccinated, to avoid large gatherings. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-12T14:48:08.000Z",
+      "tags": [
+        "Vaccines"
+      ],
+      "sourceName": "The Hill Health Care",
+      "sourceFeedUrl": "https://thehill.com/policy/healthcare/feed/",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://thehill.com/policy/healthcare/5921668-measles-outbreak-virginia/",
+      "guid": "https://thehill.com/policy/healthcare/5921668-measles-outbreak-virginia/",
+      "pubDate": "2026-06-12T14:48:08.000Z",
+      "matchedTerms": [
+        "Vaccines"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Measles outbreak in Virginia county grows to nearly 90 cases State health officials are asking anyone who may be sick, or those who are not vaccinated, to avoid large gatherings.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOOFlkdXZnUmRQaXVkYXJObEdKM1FoaktSX3BPQ0o2R1ZlNFJua054T196TDVpM0ZoeFhORWpNRTNIVmRuWExjUVgyeE42NExfOG1mV0swZXBheHJoYmxJVDlNMGtyQmNmT19zckh5ZE9TR1M2UWdtaVpmMXhjdV9QQlNpZUFQQVI0Q1lELUFpS0I1VXJFWkhWbXptMmduM09tZ3NNdHhJSVhCOVZEb0pKcm5CVWk2b3BvMlBFVlpVaVYtN3hyeEVB?oc=5",
       "url": "https://adanews.ada.org/ada-news/2026/june/ada-urges-dentalspecificapproach-incms-interoperability-prior-authorization-proposal/",
       "title": "ADA urges dental-specific approach in CMS interoperability, prior authorization proposal - American Dental Association",
@@ -424,6 +595,34 @@
       "matchSource": "text"
     },
     {
+      "id": "https://www.mychamplainvalley.com/news/national-news/massive-measles-outbreak-in-virginia-county-continues-to-grow-nearly-90-cases-reported/",
+      "url": "https://www.mychamplainvalley.com/news/national-news/massive-measles-outbreak-in-virginia-county-continues-to-grow-nearly-90-cases-reported/",
+      "title": "Massive measles outbreak in Virginia county continues to grow, nearly 90 cases reported",
+      "content_text": "A significant measles outbreak in Virginia has reached nearly 90 cases, prompting public health officials to advise caution for the sick and unvaccinated. Why included: Out-of-region public health item without payer or policy angle.",
+      "date_published": "2026-06-12T14:37:18.000Z",
+      "tags": [
+        "Vaccines"
+      ],
+      "sourceName": "MyChamplainValley",
+      "sourceFeedUrl": "https://www.mychamplainvalley.com/feed/",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.mychamplainvalley.com/news/national-news/massive-measles-outbreak-in-virginia-county-continues-to-grow-nearly-90-cases-reported/",
+      "guid": "https://www.mychamplainvalley.com/news/national-news/massive-measles-outbreak-in-virginia-county-continues-to-grow-nearly-90-cases-reported/",
+      "pubDate": "2026-06-12T14:37:18.000Z",
+      "matchedTerms": [
+        "Vaccines"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Massive measles outbreak in Virginia county continues to grow, nearly 90 cases reported State health officials are asking anyone who may be sick, or those who are not vaccinated, to avoid large gatherings. State health officials are asking anyone who may be sick, or those who are not vaccinated, to avoid large gatherings.",
+      "summary": "A significant measles outbreak in Virginia has reached nearly 90 cases, prompting public health officials to advise caution for the sick and unvaccinated.",
+      "reason": "Out-of-region public health item without payer or policy angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://www.healthcaredive.com/news/cms-increases-oversight-of-state-medicaid-demonstrations/822778/",
       "url": "https://www.healthcaredive.com/news/cms-increases-oversight-of-state-medicaid-demonstrations/822778/",
       "title": "CMS increases oversight of state Medicaid demonstrations",
@@ -446,6 +645,38 @@
       "snippet": "CMS increases oversight of state Medicaid demonstrations States will have to provide more rigorous financial analyses for their Medicaid demonstrations beginning in 2027, according to new federal guidance.",
       "summary": "",
       "reason": "",
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://thehill.com/policy/healthcare/5920779-healthcare-reforms-democratic-momentum/",
+      "url": "https://thehill.com/policy/healthcare/5920779-healthcare-reforms-democratic-momentum/",
+      "title": "Democrats seek next ObamaCare ahead of midterms amid rising health costs",
+      "content_text": "Democrats seek next ObamaCare ahead of midterms amid rising health costs There is growing momentum within the Democratic Party to find its next ObamaCare heading into the midterms, as healthcare costs become more untenable and American anger over affordability persists. Healthcar ... Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-12T10:00:00.000Z",
+      "tags": [
+        "ACA & marketplace",
+        "Health care",
+        "Medical costs & billing"
+      ],
+      "sourceName": "The Hill Health Care",
+      "sourceFeedUrl": "https://thehill.com/policy/healthcare/feed/",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://thehill.com/policy/healthcare/5920779-healthcare-reforms-democratic-momentum/",
+      "guid": "https://thehill.com/policy/healthcare/5920779-healthcare-reforms-democratic-momentum/",
+      "pubDate": "2026-06-12T10:00:00.000Z",
+      "matchedTerms": [
+        "ACA & marketplace",
+        "Health care",
+        "Medical costs & billing"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Democrats seek next ObamaCare ahead of midterms amid rising health costs There is growing momentum within the Democratic Party to find its next ObamaCare heading into the midterms, as healthcare costs become more untenable and American anger over affordability persists. Healthcar ...",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -502,6 +733,62 @@
       "snippet": "1 in 4 Covered California Enrollees Could Get State Aid Under Newsom Proposal California is considering expanding financial help for low-income residents struggling to pay high health insurance premiums after losing federal subsidies. But relief for state marketplace customers will be limited. Here’s who may get help and what it could mean for premiums.",
       "summary": "",
       "reason": "",
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.npr.org/2026/06/12/nx-s1-5855728/transgender-youth-healthcare-trump-subpoena",
+      "url": "https://www.npr.org/2026/06/12/nx-s1-5855728/transgender-youth-healthcare-trump-subpoena",
+      "title": "Trump's DOJ can't get names and medical files of trans youth in California, for now",
+      "content_text": "... youth in California, for now Trump's Department of Justice is seeking patient files that include the names of young people who have been treated in transgender clinics, as well as hospital staff who have provided care. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-12T09:00:00.000Z",
+      "tags": [
+        "Hospitals"
+      ],
+      "sourceName": "NPR Health",
+      "sourceFeedUrl": "https://www.npr.org/rss/rss.php?id=1128",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.npr.org/2026/06/12/nx-s1-5855728/transgender-youth-healthcare-trump-subpoena",
+      "guid": "https://www.npr.org/2026/06/12/nx-s1-5855728/transgender-youth-healthcare-trump-subpoena",
+      "pubDate": "2026-06-12T09:00:00.000Z",
+      "matchedTerms": [
+        "Hospitals"
+      ],
+      "category": "VT Health Care",
+      "snippet": "... youth in California, for now Trump's Department of Justice is seeking patient files that include the names of young people who have been treated in transgender clinics, as well as hospital staff who have provided care.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.statnews.com/2026/06/12/hfma-conference-healthcare-affordability-revenue-cycle-vendors/?utm_campaign=rss",
+      "url": "https://www.statnews.com/2026/06/12/hfma-conference-healthcare-affordability-revenue-cycle-vendors/?utm_campaign=rss",
+      "title": "STAT+: At hospital finance conference, a call to end the friction that’s keeping costs high",
+      "content_text": "STAT+: At hospital finance conference, a call to end the friction that’s keeping costs high Hospital execs agree that affordability is a major issue. What to do about it is less clear. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-12T08:30:00.000Z",
+      "tags": [
+        "Hospitals"
+      ],
+      "sourceName": "STAT Health News",
+      "sourceFeedUrl": "https://www.statnews.com/feed/",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "https://www.statnews.com/2026/06/12/hfma-conference-healthcare-affordability-revenue-cycle-vendors/?utm_campaign=rss",
+      "guid": "https://www.statnews.com/2026/06/12/hfma-conference-healthcare-affordability-revenue-cycle-vendors/?utm_campaign=rss",
+      "pubDate": "2026-06-12T08:30:00.000Z",
+      "matchedTerms": [
+        "Hospitals"
+      ],
+      "category": "VT Health Care",
+      "snippet": "STAT+: At hospital finance conference, a call to end the friction that’s keeping costs high Hospital execs agree that affordability is a major issue. What to do about it is less clear.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -709,6 +996,70 @@
       "matchSource": "text"
     },
     {
+      "id": "https://www.fiercehealthcare.com/payers/healthcare-costs-poised-jump-9-2027-health-plans-blame-ai-adoption-drug-prices",
+      "url": "https://www.fiercehealthcare.com/payers/healthcare-costs-poised-jump-9-2027-health-plans-blame-ai-adoption-drug-prices",
+      "title": "Healthcare costs poised to jump 9% in 2027 as health plans blame AI adoption, drug prices",
+      "content_text": "Healthcare costs poised to jump 9% in 2027 as health plans blame AI adoption, drug prices Health plans are projecting the highest medical cost trend in nearly two decades in 2027, with commercial health costs expected to rise 9%, according to a new analysis fr ... Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-11T21:00:00.000Z",
+      "tags": [
+        "Health insurance",
+        "Health care",
+        "Prescription drugs & pharmacy",
+        "Medical costs & billing"
+      ],
+      "sourceName": "Fierce Healthcare",
+      "sourceFeedUrl": "https://www.fiercehealthcare.com/rss/xml",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.fiercehealthcare.com/payers/healthcare-costs-poised-jump-9-2027-health-plans-blame-ai-adoption-drug-prices",
+      "guid": "https://www.fiercehealthcare.com/payers/healthcare-costs-poised-jump-9-2027-health-plans-blame-ai-adoption-drug-prices",
+      "pubDate": "2026-06-11T21:00:00.000Z",
+      "matchedTerms": [
+        "Health insurance",
+        "Health care",
+        "Prescription drugs & pharmacy",
+        "Medical costs & billing"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Healthcare costs poised to jump 9% in 2027 as health plans blame AI adoption, drug prices Health plans are projecting the highest medical cost trend in nearly two decades in 2027, with commercial health costs expected to rise 9%, according to a new analysis fr ...",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://thehill.com/policy/healthcare/5920740-planned-parenthood-sues-alaska-telehealth-ban/",
+      "url": "https://thehill.com/policy/healthcare/5920740-planned-parenthood-sues-alaska-telehealth-ban/",
+      "title": "Planned Parenthood affiliate sues Alaska over telehealth abortion ban",
+      "content_text": "Planned Parenthood affiliate sues Alaska over telehealth abortion ban Planned Parenthood’s Northwest affiliate is suing Alaska to challenge the state’s ban on telehealth abortion. In a lawsuit filed Thursday in Alaska state court, Planned Parenthood Great Northwest, Hawaii, Alaska, Indiana, Kentucky said ... Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-11T20:58:01.000Z",
+      "tags": [
+        "Telehealth",
+        "Reproductive health"
+      ],
+      "sourceName": "The Hill Health Care",
+      "sourceFeedUrl": "https://thehill.com/policy/healthcare/feed/",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://thehill.com/policy/healthcare/5920740-planned-parenthood-sues-alaska-telehealth-ban/",
+      "guid": "https://thehill.com/policy/healthcare/5920740-planned-parenthood-sues-alaska-telehealth-ban/",
+      "pubDate": "2026-06-11T20:58:01.000Z",
+      "matchedTerms": [
+        "Telehealth",
+        "Reproductive health"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Planned Parenthood affiliate sues Alaska over telehealth abortion ban Planned Parenthood’s Northwest affiliate is suing Alaska to challenge the state’s ban on telehealth abortion. In a lawsuit filed Thursday in Alaska state court, Planned Parenthood Great Northwest, Hawaii, Alaska, Indiana, Kentucky said ...",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://www.vermontpublic.org/local-news/2026-06-11/regulators-approve-surgery-center-upper-valley",
       "url": "https://www.vermontpublic.org/local-news/2026-06-11/regulators-approve-surgery-center-upper-valley",
       "title": "State regulators approve new surgery center for the Upper Valley",
@@ -794,6 +1145,64 @@
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": ""
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQM3lYSk51dEk1OXl1OWR0dFpGZXlMQmdLU1VmZWlfdkFlajNqbUZfRllmMHlVYy1WcEkwNjdxSUUwc1ByS1hhVmRpWmVfNWZNSmVPbWFXaldXY2M3cF83TVdCSmRQRVdqeGpEejJqLUJaUk9rTDRPeTBWdDVtbXkyQjVkTEhSdw?oc=5",
+      "url": "https://www.modernhealthcare.com/providers/mh-healthcare-costs-2027-pwc-report/",
+      "title": "Healthcare costs to grow 9% in 2027: PwC - Modern Healthcare",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-11T18:59:00.000Z",
+      "tags": [
+        "Health care"
+      ],
+      "sourceName": "Google News Health Trade Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Amodernhealthcare.com+OR+site%3Abeckerspayer.com%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+PBM+OR+%22No+Surprises+Act%22+OR+Medicaid+OR+Medicare+OR+%22health+insurers%22+OR+%22health+plans%22+OR+%22medical+debt%22+OR+%22GLP-1+coverage%22+OR+payer%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "https://www.modernhealthcare.com/providers/mh-healthcare-costs-2027-pwc-report/",
+      "guid": "https://news.google.com/rss/articles/CBMihgFBVV95cUxQM3lYSk51dEk1OXl1OWR0dFpGZXlMQmdLU1VmZWlfdkFlajNqbUZfRllmMHlVYy1WcEkwNjdxSUUwc1ByS1hhVmRpWmVfNWZNSmVPbWFXaldXY2M3cF83TVdCSmRQRVdqeGpEejJqLUJaUk9rTDRPeTBWdDVtbXkyQjVkTEhSdw?oc=5",
+      "pubDate": "2026-06-11T18:59:00.000Z",
+      "matchedTerms": [
+        "Health care"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.healthcaredive.com/news/ai-push-healthcare-costs-higher-health-plans-say-pwc/822645/",
+      "url": "https://www.healthcaredive.com/news/ai-push-healthcare-costs-higher-health-plans-say-pwc/822645/",
+      "title": "Health plans say AI is pushing healthcare costs higher",
+      "content_text": "Health plans say AI is pushing healthcare costs higher Nearly 70% of surveyed health plans said providers’ use of AI documentation and coding tools was a top three trend inflating commercial healthcare costs next year, according to a new report from PwC. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-11T18:54:00.000Z",
+      "tags": [
+        "Health insurance",
+        "Health care"
+      ],
+      "sourceName": "Healthcare Dive",
+      "sourceFeedUrl": "https://www.healthcaredive.com/feeds/news/",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.healthcaredive.com/news/ai-push-healthcare-costs-higher-health-plans-say-pwc/822645/",
+      "guid": "https://www.healthcaredive.com/news/ai-push-healthcare-costs-higher-health-plans-say-pwc/822645/",
+      "pubDate": "2026-06-11T18:54:00.000Z",
+      "matchedTerms": [
+        "Health insurance",
+        "Health care"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Health plans say AI is pushing healthcare costs higher Nearly 70% of surveyed health plans said providers’ use of AI documentation and coding tools was a top three trend inflating commercial healthcare costs next year, according to a new report from PwC.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
     },
     {
       "id": "https://vnews.com/2026/06/11/gifford-medical-center-opioid-treatment/",
@@ -1041,6 +1450,62 @@
       "matchSource": "text"
     },
     {
+      "id": "https://www.healthcaredive.com/news/uhs-deal-exposes-pitfalls-of-physician-group-acquisitions/822630/",
+      "url": "https://www.healthcaredive.com/news/uhs-deal-exposes-pitfalls-of-physician-group-acquisitions/822630/",
+      "title": "UHS deal exposes pitfalls of physician group acquisitions",
+      "content_text": "UHS deal exposes pitfalls of physician group acquisitions Despite major financial struggles, some providers at a physician group in Washington, D.C. say their new — and much larger — parent is not offering the lifeline they want. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-11T14:31:04.000Z",
+      "tags": [
+        "Physician workforce"
+      ],
+      "sourceName": "Healthcare Dive",
+      "sourceFeedUrl": "https://www.healthcaredive.com/feeds/news/",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.healthcaredive.com/news/uhs-deal-exposes-pitfalls-of-physician-group-acquisitions/822630/",
+      "guid": "https://www.healthcaredive.com/news/uhs-deal-exposes-pitfalls-of-physician-group-acquisitions/822630/",
+      "pubDate": "2026-06-11T14:31:04.000Z",
+      "matchedTerms": [
+        "Physician workforce"
+      ],
+      "category": "VT Health Care",
+      "snippet": "UHS deal exposes pitfalls of physician group acquisitions Despite major financial struggles, some providers at a physician group in Washington, D.C. say their new — and much larger — parent is not offering the lifeline they want.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.statnews.com/2026/06/11/biotech-news-novartis-doubles-down-on-molecular-glue-strategy/?utm_campaign=rss",
+      "url": "https://www.statnews.com/2026/06/11/biotech-news-novartis-doubles-down-on-molecular-glue-strategy/?utm_campaign=rss",
+      "title": "STAT+: Novartis doubles down on molecular glue strategy",
+      "content_text": "STAT+: Novartis doubles down on molecular glue strategy Seniors' drug costs rise sharply, Enliven's leukemia drugs, and more biotech news from The Readout Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-11T14:11:20.000Z",
+      "tags": [
+        "Prescription drugs & pharmacy"
+      ],
+      "sourceName": "STAT Health News",
+      "sourceFeedUrl": "https://www.statnews.com/feed/",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "https://www.statnews.com/2026/06/11/biotech-news-novartis-doubles-down-on-molecular-glue-strategy/?utm_campaign=rss",
+      "guid": "https://www.statnews.com/2026/06/11/biotech-news-novartis-doubles-down-on-molecular-glue-strategy/?utm_campaign=rss",
+      "pubDate": "2026-06-11T14:11:20.000Z",
+      "matchedTerms": [
+        "Prescription drugs & pharmacy"
+      ],
+      "category": "VT Health Care",
+      "snippet": "STAT+: Novartis doubles down on molecular glue strategy Seniors' drug costs rise sharply, Enliven's leukemia drugs, and more biotech news from The Readout",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://news.google.com/rss/articles/CBMisgFBVV95cUxNalJxRS1EbEx6ckpsXy0xN1lrbWdpVnhNNm1UTTVScWprSlZ4YjZfcFVLejlCZG9Bd0VUd21FWTlza2hjamxlbG5NUjhuaWd2VnYwc2hzOWxjQVZibzdrYXNpa1RrLWNEa0FQRmF4bW8zQkE2NkwyWDk2RzFsb1JUbzZaTEtiVHAxMDVWVEZWTFllbm5iWE9sZG8tRkVWcWRwQzd6NDFkX2lwb0pmWVdxSnZn?oc=5",
       "url": "https://www.kff.org/medicare/how-medicare-advantage-rebates-disadvantage-medicares-stand-alone-drug-plan-market/",
       "title": "How Medicare Advantage Rebates Disadvantage Medicare’s Stand-Alone Drug Plan Market - KFF",
@@ -1071,6 +1536,34 @@
       "matchSource": "text"
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQbHd0U0ZDZGxCcEJqNWZUbmVIcGtvREFVaG9DOGpvSHlhSENjVGRubVpYV2RGZWtqMzhQNFdtSEdTNHJSTG9TeG9kRV9mLWlIekZ5MTJySDhhVXE0VjN5ck54eGtIQS1sdFl1V1hEa0xaUXU2REtJSEpqWHRKUXdNN0ZOQ283S2J5S2RF?oc=5",
+      "url": "https://www.nytimes.com/2026/06/11/business/aca-health-care-costs-medical-debt.html",
+      "title": "Can’t Pay Medical Bills? Trump Administration Suggests Getting a Loan - The New York Times",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-11T13:53:12.000Z",
+      "tags": [
+        "Medical costs & billing"
+      ],
+      "sourceName": "Google News National Health Policy Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Aapnews.com+OR+site%3Anbcnews.com+OR+site%3Anytimes.com+OR+site%3Awashingtonpost.com+OR+site%3Aaxios.com%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+Medicaid+OR+Medicare+OR+Obamacare+OR+ACA+OR+%22medical+debt%22+OR+%22No+Surprises+Act%22+OR+GLP-1+OR+vaccines+OR+%22health+insurance%22+OR+%22health+care+costs%22%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "https://www.nytimes.com/2026/06/11/business/aca-health-care-costs-medical-debt.html",
+      "guid": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxQbHd0U0ZDZGxCcEJqNWZUbmVIcGtvREFVaG9DOGpvSHlhSENjVGRubVpYV2RGZWtqMzhQNFdtSEdTNHJSTG9TeG9kRV9mLWlIekZ5MTJySDhhVXE0VjN5ck54eGtIQS1sdFl1V1hEa0xaUXU2REtJSEpqWHRKUXdNN0ZOQ283S2J5S2RF?oc=5",
+      "pubDate": "2026-06-11T13:53:12.000Z",
+      "matchedTerms": [
+        "Medical costs & billing"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://www.healthcaredive.com/news/humana-divests-gentiva-interest-valued-900m/822616/",
       "url": "https://www.healthcaredive.com/news/humana-divests-gentiva-interest-valued-900m/822616/",
       "title": "Humana divests interest in end-of-life provider Gentiva valued at $900M",
@@ -1095,6 +1588,34 @@
       "snippet": "Humana divests interest in end-of-life provider Gentiva valued at $900M The insurer is offloading its interest in the massive end-of-life care provider to an undisclosed group of investors, amid widespread concern about private investors’ activity in healthcare.",
       "summary": "",
       "reason": "",
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.statnews.com/pharmalot/2026/06/11/employer-overage-of-obesity-drugs-another-sanofi-setback/?utm_campaign=rss",
+      "url": "https://www.statnews.com/pharmalot/2026/06/11/employer-overage-of-obesity-drugs-another-sanofi-setback/?utm_campaign=rss",
+      "title": "STAT+: Pharmalittle: We’re reading about employer coverage of obesity drugs, another Sanofi setback, and more",
+      "content_text": "STAT+: Pharmalittle: We’re reading about employer coverage of obesity drugs, another Sanofi setback, and more More employers are planning to drop coverage of GLP-1 drugs for weight loss next year as increasing numbers of people take the medications Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-11T13:21:55.000Z",
+      "tags": [
+        "GLP-1 & weight-loss drugs"
+      ],
+      "sourceName": "STAT Health News",
+      "sourceFeedUrl": "https://www.statnews.com/feed/",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "https://www.statnews.com/pharmalot/2026/06/11/employer-overage-of-obesity-drugs-another-sanofi-setback/?utm_campaign=rss",
+      "guid": "https://www.statnews.com/pharmalot/2026/06/11/employer-overage-of-obesity-drugs-another-sanofi-setback/?utm_campaign=rss",
+      "pubDate": "2026-06-11T13:21:55.000Z",
+      "matchedTerms": [
+        "GLP-1 & weight-loss drugs"
+      ],
+      "category": "VT Health Care",
+      "snippet": "STAT+: Pharmalittle: We’re reading about employer coverage of obesity drugs, another Sanofi setback, and more More employers are planning to drop coverage of GLP-1 drugs for weight loss next year as increasing numbers of people take the medications",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -1150,6 +1671,34 @@
       "snippet": "Listen to the Latest ‘KFF Health News Minute’ The \"KFF Health News Minute\" brings original healthcare and health policy reporting from our newsroom to the airwaves each week.",
       "summary": "",
       "reason": "",
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPcWxfLVBLRElSSjJxVmFEWm4zTlJ5WnpvTUVBZWlaQ1VLZWp0UVFHRzAyR1pHUEkxNjItNnc3M3RIZEM2ZVlpcVM2X1Y5aVN4QWRqSXhDSzdDak1rZHN0Y2lLRXBTS3ZjZjZRMGdrY1BrMmFhMGdNSXJGUDBweFBUWjRMQ1lNSkpkWE1lUjZSY3lGVlVidlFOdg?oc=5",
+      "url": "https://tradeoffs.org/2026/06/11/where-did-the-no-surprises-act-go-wrong-and-can-it-be-fixed/",
+      "title": "Where Did the No Surprises Act Go Wrong? And Can It Be Fixed? - Tradeoffs",
+      "content_text": "This article discusses potential issues with the No Surprises Act and explores possibilities for its improvement. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-11T07:01:00.000Z",
+      "tags": [
+        "Medical costs & billing"
+      ],
+      "sourceName": "Google News Health Insurance Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+%22medical+debt%22+OR+%22health+insurance+premiums%22+OR+%22PBM%22+OR+%22No+Surprises+Act%22+OR+%22ACA+coverage+losses%22+OR+%22GLP-1+coverage%22+OR+%22payer+issues%22+when%3A7d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Access varies",
+      "link": "https://tradeoffs.org/2026/06/11/where-did-the-no-surprises-act-go-wrong-and-can-it-be-fixed/",
+      "guid": "https://news.google.com/rss/articles/CBMimAFBVV95cUxPcWxfLVBLRElSSjJxVmFEWm4zTlJ5WnpvTUVBZWlaQ1VLZWp0UVFHRzAyR1pHUEkxNjItNnc3M3RIZEM2ZVlpcVM2X1Y5aVN4QWRqSXhDSzdDak1rZHN0Y2lLRXBTS3ZjZjZRMGdrY1BrMmFhMGdNSXJGUDBweFBUWjRMQ1lNSkpkWE1lUjZSY3lGVlVidlFOdg?oc=5",
+      "pubDate": "2026-06-11T07:01:00.000Z",
+      "matchedTerms": [
+        "Medical costs & billing"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "This article discusses potential issues with the No Surprises Act and explores possibilities for its improvement.",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -1387,6 +1936,66 @@
       "matchSource": "text"
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNd25GMFVEOWFRMEpBdmlsSDA1bjZiNTlmQzlFcWVDZHJ2bmVpVVJodlJIcnVCM2tlZ2VXNjF2VENqVU4yN1MzRnpCbjRzbUdCT2dUU2JRdEo1VHJsX3lBZF84a184QUZPbkJRSHE2cjktNENzXzV5YlgwMlA4elBhSTBJVklRd1RBRkVYNG9JdlBTejJsX1o3SUZtU3l2YmpwZEt0VnRpMEpUWDQ?oc=5",
+      "url": "https://apnews.com/article/vaccines-acog-obstetricians-gynecologists-obgyn-556197bbb09fc03fa8a2f67506b1fea4",
+      "title": "OB-GYN group makes vaccine recommendations for the first time - AP News",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-10T18:33:00.000Z",
+      "tags": [
+        "Vaccines",
+        "Maternity & birthing"
+      ],
+      "sourceName": "Google News National Health Policy Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Aapnews.com+OR+site%3Anbcnews.com+OR+site%3Anytimes.com+OR+site%3Awashingtonpost.com+OR+site%3Aaxios.com%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+Medicaid+OR+Medicare+OR+Obamacare+OR+ACA+OR+%22medical+debt%22+OR+%22No+Surprises+Act%22+OR+GLP-1+OR+vaccines+OR+%22health+insurance%22+OR+%22health+care+costs%22%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://apnews.com/article/vaccines-acog-obstetricians-gynecologists-obgyn-556197bbb09fc03fa8a2f67506b1fea4",
+      "guid": "https://news.google.com/rss/articles/CBMiqwFBVV95cUxNd25GMFVEOWFRMEpBdmlsSDA1bjZiNTlmQzlFcWVDZHJ2bmVpVVJodlJIcnVCM2tlZ2VXNjF2VENqVU4yN1MzRnpCbjRzbUdCT2dUU2JRdEo1VHJsX3lBZF84a184QUZPbkJRSHE2cjktNENzXzV5YlgwMlA4elBhSTBJVklRd1RBRkVYNG9JdlBTejJsX1o3SUZtU3l2YmpwZEt0VnRpMEpUWDQ?oc=5",
+      "pubDate": "2026-06-10T18:33:00.000Z",
+      "matchedTerms": [
+        "Vaccines",
+        "Maternity & birthing"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://thehill.com/policy/healthcare/5918591-obgyn-group-vaccine-recommendations-cdc-trump-admin/",
+      "url": "https://thehill.com/policy/healthcare/5918591-obgyn-group-vaccine-recommendations-cdc-trump-admin/",
+      "title": "Leading OB-GYN group issues vaccine recommendations, breaks with CDC",
+      "content_text": "Leading OB-GYN group issues vaccine recommendations, breaks with CDC The American College of Obstetricians & Gynecologists (ACOG) released a recommended maternal vaccine schedule Wednesday that for the first time diverges with guidance from the Centers for Disease Con ... Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-10T18:17:28.000Z",
+      "tags": [
+        "Vaccines",
+        "Maternity & birthing"
+      ],
+      "sourceName": "The Hill Health Care",
+      "sourceFeedUrl": "https://thehill.com/policy/healthcare/feed/",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://thehill.com/policy/healthcare/5918591-obgyn-group-vaccine-recommendations-cdc-trump-admin/",
+      "guid": "https://thehill.com/policy/healthcare/5918591-obgyn-group-vaccine-recommendations-cdc-trump-admin/",
+      "pubDate": "2026-06-10T18:17:28.000Z",
+      "matchedTerms": [
+        "Vaccines",
+        "Maternity & birthing"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Leading OB-GYN group issues vaccine recommendations, breaks with CDC The American College of Obstetricians & Gynecologists (ACOG) released a recommended maternal vaccine schedule Wednesday that for the first time diverges with guidance from the Centers for Disease Con ...",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://news.google.com/rss/articles/CBMi4gFBVV95cUxNTWVBOUZjUmtpY2hSTGRRcWZJN20wNmlvYjBRSFN5RDZvN3UyZDlpcUUwTEpyWjJfcTlEalg4c0NGdm1jQlFzY1ZLXzJEY3JmZGkxMW04V2prSG95YmxxT0VNdFN6dDVCRmtRWmRka2lERmRxM3cxS1d2VkNuOS1jQXI3UEJOT2JMQmxzOFBLNFZldHVBbEw2VWttcUU3QlhoVkt2ck5ZdVIzVmJudkZBbWN5VVUzTVJPeUxYTXpVTFVLc1dzdmloV2lNd0FkWVlfTW1QVEhJQzgwMlpSMnVpdGNn?oc=5",
       "url": "https://www.nny360.com/top_stories/uvm-health-to-cut-76-jobs-30-at-alice-hyde-and-champlain-valley/article_0e21d7db-639e-5b52-aab0-dcd6470d8d0c.html",
       "title": "UVM Health to cut 76 jobs; 30 at Alice Hyde and Champlain Valley - Watertown Daily Times",
@@ -1510,6 +2119,34 @@
       "matchSource": "text"
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPc2UzZEEwbmpCQklkRW5uZVdGZnN3MXVSR0FlVGVQa09vSGhXZVkxS2c4T08tT3o3em9odk9xNUhUZlkzWWJjUHhNR3hDV3IxMHhkdFVMTVByUUR4SFl5bWxCTmlkRk9Sd3g0Q210ZGNYbkdlTk5WZzJNTUhzU2dwZHdzRWxMRlRlUWJXd1F4cy05dUZwajYwbS1SRWZUTF9FZm1fS3hoZTlhZzJScnItdm9FMFI4dDZ4RV9V?oc=5",
+      "url": "https://www.wkyt.com/2026/06/10/nonprofit-eliminates-over-4-million-medical-debt-third-wave-relief-lexington-residents/",
+      "title": "Nonprofit eliminates over $4 million in medical debt in third wave of relief for Lexington residents - WKYT",
+      "content_text": "A nonprofit organization has eliminated over $4 million in medical debt for residents of Lexington through a third round of financial relief. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-10T15:51:00.000Z",
+      "tags": [
+        "Medical costs & billing"
+      ],
+      "sourceName": "Google News Health Insurance Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+%22medical+debt%22+OR+%22health+insurance+premiums%22+OR+%22PBM%22+OR+%22No+Surprises+Act%22+OR+%22ACA+coverage+losses%22+OR+%22GLP-1+coverage%22+OR+%22payer+issues%22+when%3A7d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Access varies",
+      "link": "https://www.wkyt.com/2026/06/10/nonprofit-eliminates-over-4-million-medical-debt-third-wave-relief-lexington-residents/",
+      "guid": "https://news.google.com/rss/articles/CBMiuwFBVV95cUxPc2UzZEEwbmpCQklkRW5uZVdGZnN3MXVSR0FlVGVQa09vSGhXZVkxS2c4T08tT3o3em9odk9xNUhUZlkzWWJjUHhNR3hDV3IxMHhkdFVMTVByUUR4SFl5bWxCTmlkRk9Sd3g0Q210ZGNYbkdlTk5WZzJNTUhzU2dwZHdzRWxMRlRlUWJXd1F4cy05dUZwajYwbS1SRWZUTF9FZm1fS3hoZTlhZzJScnItdm9FMFI4dDZ4RV9V?oc=5",
+      "pubDate": "2026-06-10T15:51:00.000Z",
+      "matchedTerms": [
+        "Medical costs & billing"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Nonprofit eliminates over $4 million in medical debt in third wave of relief for Lexington residents - WKYT Nonprofit eliminates over $4 million in medical debt in third wave of relief for Lexington residents WKYT Nonprofit eliminates over $4 million in medical debt in third wave of relief for Lexin ...",
+      "summary": "A nonprofit organization has eliminated over $4 million in medical debt for residents of Lexington through a third round of financial relief.",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://news.google.com/rss/articles/CBMilgFBVV95cUxPRmhZZW9IR19Xalh6OXlnc1RKb1Bsa21aY1ZleE9KY2duWG9OVk5Id1pPRnpmY0F4S3FBd050S1JqOHhLRTFTYkU2cHVlZ2dqbXByaW5KNkhIVXBCM2x3VEc0dTZCZzI2cFpLRTJFUEVHR0lNLXFPeXlBLUc3S3Bqc2xyMVZkLVdNY2RwSlRYWlY1YzNJdlE?oc=5",
       "url": "https://rollcall.com/2026/06/10/prior-authorization-bill-now-eligible-for-house-fast-track/",
       "title": "Prior authorization bill now eligible for House fast track - Roll Call",
@@ -1564,6 +2201,34 @@
       "snippet": "Americans mostly blame insurers for rising healthcare costs, survey finds AHIP argued the survey, which was commissioned by a pro-hospital advocacy group, is a blatant attempt by hospitals to deflect the blame for ever-higher spending.",
       "summary": "",
       "reason": "",
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMingFBVV95cUxPZ2hIRUoyMWhaOGYtVE5IUVNvb2plYmlyNFFZbmFZNU5EdU5VWjVJWnloUThGdnZrS0ZLZ2FCTHpKWDVZWXdQaFB1WEI3SXhqbkk1ZEtXRWxSaU9NN0dCZjJJZlBCdGkxc2Rjb0ZDT3ZHU1pWbV84dHB0X3RVZ3ZJZldWYVB2ekJpeWdSN1pBNlZHS3F2YnJILWZSMi1fUQ?oc=5",
+      "url": "https://www.modernhealthcare.com/providers/staffing/mh-upmc-layoffs-employees-unfilled-positions/",
+      "title": "UPMC eliminates 500 positions - Modern Healthcare",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-10T14:53:00.000Z",
+      "tags": [
+        "Health care"
+      ],
+      "sourceName": "Google News Health Trade Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Amodernhealthcare.com+OR+site%3Abeckerspayer.com%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+PBM+OR+%22No+Surprises+Act%22+OR+Medicaid+OR+Medicare+OR+%22health+insurers%22+OR+%22health+plans%22+OR+%22medical+debt%22+OR+%22GLP-1+coverage%22+OR+payer%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "https://www.modernhealthcare.com/providers/staffing/mh-upmc-layoffs-employees-unfilled-positions/",
+      "guid": "https://news.google.com/rss/articles/CBMingFBVV95cUxPZ2hIRUoyMWhaOGYtVE5IUVNvb2plYmlyNFFZbmFZNU5EdU5VWjVJWnloUThGdnZrS0ZLZ2FCTHpKWDVZWXdQaFB1WEI3SXhqbkk1ZEtXRWxSaU9NN0dCZjJJZlBCdGkxc2Rjb0ZDT3ZHU1pWbV84dHB0X3RVZ3ZJZldWYVB2ekJpeWdSN1pBNlZHS3F2YnJILWZSMi1fUQ?oc=5",
+      "pubDate": "2026-06-10T14:53:00.000Z",
+      "matchedTerms": [
+        "Health care"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -1692,6 +2357,36 @@
       "matchSource": "text"
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMimgFBVV95cUxQbVRtY1BWNDVNM2JVOEl5R0lWRlpiZ1VPUjNSOTZxMXA1RlhhNi1BOUwwYm1heEhUM3paYU43NmdHN0lGWUFHcThyelROTTZ0bU0wb3ZRd20talFTWmo1aUYwYkhvS2c4MlQ2cVdsOGZPcTYwNW1CeEtwU0wtbmFaNkI4QWpYY2dHbFhLYmVKQ0dmWkVUazluUy1n?oc=5",
+      "url": "https://www.modernhealthcare.com/politics-regulation/mh-no-surprises-act-idr-rule-enforcement/",
+      "title": "What the new No Surprises Act rule doesn’t fix - Modern Healthcare",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-10T10:00:00.000Z",
+      "tags": [
+        "Health care",
+        "Medical costs & billing"
+      ],
+      "sourceName": "Google News Health Trade Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Amodernhealthcare.com+OR+site%3Abeckerspayer.com+OR+site%3Afiercehealthcare.com+OR+site%3Astatnews.com+OR+site%3Ahealthcaredive.com%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+PBM+OR+%22No+Surprises+Act%22+OR+Medicaid+OR+Medicare+OR+%22health+insurers%22+OR+%22health+plans%22+OR+%22medical+debt%22+OR+%22GLP-1%22+OR+payer+OR+%22price+transparency%22+OR+%22reimbursement+cuts%22+OR+%22claim+denials%22+OR+%22rural+hospitals%22+OR+physicians+OR+%22340B%22%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "https://www.modernhealthcare.com/politics-regulation/mh-no-surprises-act-idr-rule-enforcement/",
+      "guid": "https://news.google.com/rss/articles/CBMimgFBVV95cUxQbVRtY1BWNDVNM2JVOEl5R0lWRlpiZ1VPUjNSOTZxMXA1RlhhNi1BOUwwYm1heEhUM3paYU43NmdHN0lGWUFHcThyelROTTZ0bU0wb3ZRd20talFTWmo1aUYwYkhvS2c4MlQ2cVdsOGZPcTYwNW1CeEtwU0wtbmFaNkI4QWpYY2dHbFhLYmVKQ0dmWkVUazluUy1n?oc=5",
+      "pubDate": "2026-06-10T10:00:00.000Z",
+      "matchedTerms": [
+        "Health care",
+        "Medical costs & billing"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://kffhealthnews.org/medicaid/seiu-uhw-union-healthcare-industry-california-ballot-initiatives-clinic-executive-pay/",
       "url": "https://kffhealthnews.org/medicaid/seiu-uhw-union-healthcare-industry-california-ballot-initiatives-clinic-executive-pay/",
       "title": "Looming Medicaid Cuts Supercharge California’s Latest Labor-Industry Fight",
@@ -1720,6 +2415,36 @@
       "snippet": "Looming Medicaid Cuts Supercharge California’s Latest Labor-Industry Fight One of California’s largest healthcare unions is sponsoring two initiatives that would regulate community clinics and cap executive and managerial pay at hospitals and physician groups. In the ...",
       "summary": "",
       "reason": "",
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://kffhealthnews.org/public-health/utah-measles-outbreak-vaccines-preventable-diseases-doctors-strained-new-normal/",
+      "url": "https://kffhealthnews.org/public-health/utah-measles-outbreak-vaccines-preventable-diseases-doctors-strained-new-normal/",
+      "title": "Anguished Parents. Doctors in Tears. Utah’s Long Measles Outbreak Takes a Toll.",
+      "content_text": "Anguished Parents. Doctors in Tears. Utah’s Long Measles Outbreak Takes a Toll. Measles has been spreading in Utah for nearly a year, straining hospitals, schools, and parents. The state’s outbreak provides a glimpse into a new era in America’s health, in which vaccine-preventable diseases become common again. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-10T09:00:00.000Z",
+      "tags": [
+        "Hospitals",
+        "Vaccines"
+      ],
+      "sourceName": "KFF Health News",
+      "sourceFeedUrl": "https://kffhealthnews.org/feed/",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://kffhealthnews.org/public-health/utah-measles-outbreak-vaccines-preventable-diseases-doctors-strained-new-normal/",
+      "guid": "https://kffhealthnews.org/public-health/utah-measles-outbreak-vaccines-preventable-diseases-doctors-strained-new-normal/",
+      "pubDate": "2026-06-10T09:00:00.000Z",
+      "matchedTerms": [
+        "Hospitals",
+        "Vaccines"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Anguished Parents. Doctors in Tears. Utah’s Long Measles Outbreak Takes a Toll. Measles has been spreading in Utah for nearly a year, straining hospitals, schools, and parents. The state’s outbreak provides a glimpse into a new era in America’s health, in which vaccine-preventable diseases become common again.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -2011,6 +2736,64 @@
       "matchSource": "text"
     },
     {
+      "id": "https://www.npr.org/2026/06/09/nx-s1-5850364/why-ultra-processed-foods-could-become-the-new-war-on-tobacco",
+      "url": "https://www.npr.org/2026/06/09/nx-s1-5850364/why-ultra-processed-foods-could-become-the-new-war-on-tobacco",
+      "title": "Big Tobacco hooked us on ultra-processed foods. It might teach us how to cut back",
+      "content_text": "Big Tobacco hooked us on ultra-processed foods. It might teach us how to cut back Research published in the American Journal of Public Health details the connection between ultra-processed foods and the tobacco industry when it comes to production, strategy and marketing. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-09T17:02:24.000Z",
+      "tags": [
+        "Public health"
+      ],
+      "sourceName": "NPR Health",
+      "sourceFeedUrl": "https://www.npr.org/rss/rss.php?id=1128",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.npr.org/2026/06/09/nx-s1-5850364/why-ultra-processed-foods-could-become-the-new-war-on-tobacco",
+      "guid": "https://www.npr.org/2026/06/09/nx-s1-5850364/why-ultra-processed-foods-could-become-the-new-war-on-tobacco",
+      "pubDate": "2026-06-09T17:02:24.000Z",
+      "matchedTerms": [
+        "Public health"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Big Tobacco hooked us on ultra-processed foods. It might teach us how to cut back Research published in the American Journal of Public Health details the connection between ultra-processed foods and the tobacco industry when it comes to production, strategy and marketing.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMiggFBVV95cUxNYUh4ZERKdkhOdDJ5NXVKeFZRelJVWWYydW0yYnBjOFJuT1dLT2JvLTNtOTJsV2x0eUhWbkUzb1g5S2xYTWFFb2cxTDN3QzlORXhPY3E0eFRldUVZd21VcHhqbmllWGtEUW5kcnc4N2p3UlFMOTJyZ1luc1lYamRSR0NB?oc=5",
+      "url": "http://www.modernhealthcare.com/insurance/mh-employer-pbm-models-psg-survey/",
+      "title": "Employers are rethinking pharmacy benefits: 5 things to know - Modern Healthcare",
+      "content_text": "Employers are re-evaluating their pharmacy benefit plans, with five key considerations highlighted. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-09T13:00:00.000Z",
+      "tags": [
+        "Health care",
+        "Prescription drugs & pharmacy"
+      ],
+      "sourceName": "Google News Health Insurance Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+%22medical+debt%22+OR+%22health+insurance+premiums%22+OR+%22PBM%22+OR+%22No+Surprises+Act%22+OR+%22ACA+coverage+losses%22+OR+%22GLP-1+coverage%22+OR+%22payer+issues%22+when%3A7d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "http://www.modernhealthcare.com/insurance/mh-employer-pbm-models-psg-survey/",
+      "guid": "https://news.google.com/rss/articles/CBMiggFBVV95cUxNYUh4ZERKdkhOdDJ5NXVKeFZRelJVWWYydW0yYnBjOFJuT1dLT2JvLTNtOTJsV2x0eUhWbkUzb1g5S2xYTWFFb2cxTDN3QzlORXhPY3E0eFRldUVZd21VcHhqbmllWGtEUW5kcnc4N2p3UlFMOTJyZ1luc1lYamRSR0NB?oc=5",
+      "pubDate": "2026-06-09T13:00:00.000Z",
+      "matchedTerms": [
+        "Health care",
+        "Prescription drugs & pharmacy"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "Employers are re-evaluating their pharmacy benefit plans, with five key considerations highlighted.",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://www.bluecrossvt.org/health-community/blog/listing/locally-grown-berries-are-summers-finest-eating",
       "url": "https://www.bluecrossvt.org/health-community/blog/listing/locally-grown-berries-are-summers-finest-eating",
       "title": "Locally Grown Berries Are Summer’s Finest Eating",
@@ -2064,6 +2847,34 @@
       "snippet": "UVM Health Announces Elimination of 76 Positions UVM Health Vermont health care",
       "summary": "",
       "reason": "",
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPemtDYzdGcVdoNXF4NkFwRHo1T2dPQ1ppUVVIMkRwbFRHTlg1cFJleTBnNk5CYU9Na0ZveXJwemQwdVYyaUxRaS05b0hBVGJEa09URTZKWEJ3WE5hQTBydGVTUG5EVS1kVzgtNWJwRFp2MVo4WlUybmc2X0d5YzlhbE15M3dMQU5wQ0RMZlNSQU84RG0xbHF2QS1HTjVLbnVwRnRZcEM2enN6OGFnS2c?oc=5",
+      "url": "https://www.washingtonpost.com/ripple/2026/06/08/when-closest-hospital-hour-away-rural-healthcare-crossroads/",
+      "title": "When the closest hospital is an hour away - The Washington Post",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-09T01:46:59.000Z",
+      "tags": [
+        "Hospitals"
+      ],
+      "sourceName": "Google News National Health Policy Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Aapnews.com+OR+site%3Anbcnews.com+OR+site%3Anytimes.com+OR+site%3Awashingtonpost.com+OR+site%3Aaxios.com%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+Medicaid+OR+Medicare+OR+Obamacare+OR+ACA+OR+%22medical+debt%22+OR+%22No+Surprises+Act%22+OR+GLP-1+OR+vaccines+OR+%22health+insurance%22+OR+%22health+care+costs%22%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "https://www.washingtonpost.com/ripple/2026/06/08/when-closest-hospital-hour-away-rural-healthcare-crossroads/",
+      "guid": "https://news.google.com/rss/articles/CBMirgFBVV95cUxPemtDYzdGcVdoNXF4NkFwRHo1T2dPQ1ppUVVIMkRwbFRHTlg1cFJleTBnNk5CYU9Na0ZveXJwemQwdVYyaUxRaS05b0hBVGJEa09URTZKWEJ3WE5hQTBydGVTUG5EVS1kVzgtNWJwRFp2MVo4WlUybmc2X0d5YzlhbE15M3dMQU5wQ0RMZlNSQU84RG0xbHF2QS1HTjVLbnVwRnRZcEM2enN6OGFnS2c?oc=5",
+      "pubDate": "2026-06-09T01:46:59.000Z",
+      "matchedTerms": [
+        "Hospitals"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -2129,6 +2940,34 @@
       "matchSource": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNQ3NNU1R2ZzI2VFR5eHUxdk50YnN3akQ1LWlwT3h6a0NXcTI4ZlN5NklOUFNBbEZhR1hTUmx4N01QTF9CNWRVaWRXV3ptNUo3ZkcybkQ3S1Rwbkt4dklHUGo4dG9MR0ZBNTFDNmhvTVljOXlfSjRBSFdUOFNESk15NkdrREcxOHh5VE5sRDIwN1JyaDBVQVE?oc=5",
+      "url": "http://www.modernhealthcare.com/insurance/mh-gohealth-chapter-11-bankruptcy-reorganization/",
+      "title": "GoHealth files for Chapter 11 bankruptcy reorganization - Modern Healthcare",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-08T17:09:00.000Z",
+      "tags": [
+        "Health care"
+      ],
+      "sourceName": "Google News Health Trade Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Amodernhealthcare.com+OR+site%3Abeckerspayer.com%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+PBM+OR+%22No+Surprises+Act%22+OR+Medicaid+OR+Medicare+OR+%22health+insurers%22+OR+%22health+plans%22+OR+%22medical+debt%22+OR+%22GLP-1+coverage%22+OR+payer%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "http://www.modernhealthcare.com/insurance/mh-gohealth-chapter-11-bankruptcy-reorganization/",
+      "guid": "https://news.google.com/rss/articles/CBMilgFBVV95cUxNQ3NNU1R2ZzI2VFR5eHUxdk50YnN3akQ1LWlwT3h6a0NXcTI4ZlN5NklOUFNBbEZhR1hTUmx4N01QTF9CNWRVaWRXV3ptNUo3ZkcybkQ3S1Rwbkt4dklHUGo4dG9MR0ZBNTFDNmhvTVljOXlfSjRBSFdUOFNESk15NkdrREcxOHh5VE5sRDIwN1JyaDBVQVE?oc=5",
+      "pubDate": "2026-06-08T17:09:00.000Z",
+      "matchedTerms": [
+        "Health care"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://news.google.com/rss/articles/CBMirAFBVV95cUxPd1licFJ6SkVaOFdpZ0xHdnZHczl5MjdxQ1Q5VVo5VGRkQms0UHlkT1VVLUEzNG5LYlJuR2JBTm94NzVUN1VRV3oyekFuTHczSGJ0ZXJDd2cycGFQTE5JRzFxdEQ5aE55M29JbUREWVpPcnZLNXVoU0VMU3lfWkxaMmNfWmlPYkRqUlFkd0hUR1VRWkx3dzNTTHYwRlhnYlFaRGFzMXBSdG1jSExo?oc=5",
       "url": "https://www.healthcarefinancenews.com/news/coverage-denials-tied-medical-debt-among-privately-insured-adults",
       "title": "Coverage denials tied to medical debt among privately insured adults - Healthcare Finance News",
@@ -2156,6 +2995,64 @@
       "summary": "Coverage denials are linked to medical debt for privately insured adults.",
       "reason": "Coverage denials tied to medical debt.",
       "relevant": true,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNNzFMOHNnNkJFdFNQdmtTc0ZXZVlJMER0cFFTWVo5d1hXYUFBWVRvQlFNUHRUOTJtakdaMVJKMHBEMnE2ak5fcjhhZmd5aGhiajZhekYycjR6UWVpSl9PeHE3ZlJWZ05CSklONjBMQlVRZTlxaTlkOHR5RGJQcDFKREVFeFhxRW0ydVZXT1FfRTNrNDJ0WHZSVUthX3o4ekVadERxamRiXy1wNWdmWXZsa3dJanIwVHRxVUs4MGtNZTJzcE1P?oc=5",
+      "url": "http://www.modernhealthcare.com/awards/50-most-influential-clinicians/mh-50-most-influential-clinical-executives-2026-winners/",
+      "title": "Meet the 50 Most Influential Clinical Executives of 2026 - Modern Healthcare",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-08T13:09:00.000Z",
+      "tags": [
+        "Health care"
+      ],
+      "sourceName": "Google News Health Trade Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Amodernhealthcare.com+OR+site%3Abeckerspayer.com%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+PBM+OR+%22No+Surprises+Act%22+OR+Medicaid+OR+Medicare+OR+%22health+insurers%22+OR+%22health+plans%22+OR+%22medical+debt%22+OR+%22GLP-1+coverage%22+OR+payer%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "http://www.modernhealthcare.com/awards/50-most-influential-clinicians/mh-50-most-influential-clinical-executives-2026-winners/",
+      "guid": "https://news.google.com/rss/articles/CBMixAFBVV95cUxNNzFMOHNnNkJFdFNQdmtTc0ZXZVlJMER0cFFTWVo5d1hXYUFBWVRvQlFNUHRUOTJtakdaMVJKMHBEMnE2ak5fcjhhZmd5aGhiajZhekYycjR6UWVpSl9PeHE3ZlJWZ05CSklONjBMQlVRZTlxaTlkOHR5RGJQcDFKREVFeFhxRW0ydVZXT1FfRTNrNDJ0WHZSVUthX3o4ekVadERxamRiXy1wNWdmWXZsa3dJanIwVHRxVUs4MGtNZTJzcE1P?oc=5",
+      "pubDate": "2026-06-08T13:09:00.000Z",
+      "matchedTerms": [
+        "Health care"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMiywFBVV95cUxNZnVoREhUcHE5RktTZVJMSXVVczRIZHVIRDhRQXhJU29BRnpZT3l6RHpUbWd0Q0c4NFpwSHFrSVZ6UzR1TWQ5dTZQdE9lMWQ4X1FMMWF4akR0aE5tYk9tLXlaQnFzdlBvOVRraGM4dTN5cW5nb0xrd1NkWXZPM2JKaTFraGc3MEdxbkxyTDV4ajFvVFdBUUk3UF85MkdXLVNDTkVXMzJHNHgweHB2YXVIMXhudFB1YjVtZnJVMHNZNXpKWWlQdlRhd05TWQ?oc=5",
+      "url": "https://www.jonesday.com/en/insights/2026/06/new-rule-amends-no-surprises-act-dispute-process-for-outofnetwork-health-care-payments",
+      "title": "New Rule Amends No Surprises Act Dispute Process for Out-of-Network Health Care Payments - Jones Day",
+      "content_text": "A new rule modifies the dispute resolution process for out-of-network healthcare payments under the No Surprises Act. Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-06-08T12:00:00.000Z",
+      "tags": [
+        "Health care",
+        "Medical costs & billing"
+      ],
+      "sourceName": "Google News Health Insurance Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+%22medical+debt%22+OR+%22health+insurance+premiums%22+OR+%22PBM%22+OR+%22No+Surprises+Act%22+OR+%22ACA+coverage+losses%22+OR+%22GLP-1+coverage%22+OR+%22payer+issues%22+when%3A7d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Access varies",
+      "link": "https://www.jonesday.com/en/insights/2026/06/new-rule-amends-no-surprises-act-dispute-process-for-outofnetwork-health-care-payments",
+      "guid": "https://news.google.com/rss/articles/CBMiywFBVV95cUxNZnVoREhUcHE5RktTZVJMSXVVczRIZHVIRDhRQXhJU29BRnpZT3l6RHpUbWd0Q0c4NFpwSHFrSVZ6UzR1TWQ5dTZQdE9lMWQ4X1FMMWF4akR0aE5tYk9tLXlaQnFzdlBvOVRraGM4dTN5cW5nb0xrd1NkWXZPM2JKaTFraGc3MEdxbkxyTDV4ajFvVFdBUUk3UF85MkdXLVNDTkVXMzJHNHgweHB2YXVIMXhudFB1YjVtZnJVMHNZNXpKWWlQdlRhd05TWQ?oc=5",
+      "pubDate": "2026-06-08T12:00:00.000Z",
+      "matchedTerms": [
+        "Health care",
+        "Medical costs & billing"
+      ],
+      "category": "VT Health Care",
+      "snippet": "New Rule Amends No Surprises Act Dispute Process for Out-of-Network Health Care Payments - Jones Day New Rule Amends No Surprises Act Dispute Process for Out-of-Network Health Care Payments Jones Day New Rule Amends No Surprises Act Dispute Process for Out-of-Network Health C ...",
+      "summary": "A new rule modifies the dispute resolution process for out-of-network healthcare payments under the No Surprises Act.",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -2593,6 +3490,36 @@
       "summary": "Following ICE detention, Steven Tendo is advocating for protections related to UVM Health.",
       "reason": "Mentions UVM Health.",
       "relevant": true,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNTndSSjFBc2ZkSXlLTWhNQmZMYTI1ZGNfaDRiemhfbUlYdHJsZllFTTVRMW5lM0JYZHZQMmJfeEl5VnFTLTdDaUI4RFJZZzhYTGswOEhfQ2x4ZGprb3JsVW9MLVhJTjd5Ylc0dkFRN2VzV2F5T2l5c1loTmZGeHV5QlNDczV0N1A2WXhtSWktMzNUUGp0bFVSXw?oc=5",
+      "url": "https://www.healthcaredive.com/news/surprise-billing-idr-final-rule-insurers-lash-out/821407/",
+      "title": "‘A missed opportunity’: Payers lash out against surprise billing final rule - Healthcare Dive",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-05-29T07:00:00.000Z",
+      "tags": [
+        "Health care",
+        "Medical costs & billing"
+      ],
+      "sourceName": "Google News Health Trade Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Amodernhealthcare.com+OR+site%3Abeckerspayer.com+OR+site%3Afiercehealthcare.com+OR+site%3Astatnews.com+OR+site%3Ahealthcaredive.com%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+PBM+OR+%22No+Surprises+Act%22+OR+Medicaid+OR+Medicare+OR+%22health+insurers%22+OR+%22health+plans%22+OR+%22medical+debt%22+OR+%22GLP-1%22+OR+payer+OR+%22price+transparency%22+OR+%22reimbursement+cuts%22+OR+%22claim+denials%22+OR+%22rural+hospitals%22+OR+physicians+OR+%22340B%22%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.healthcaredive.com/news/surprise-billing-idr-final-rule-insurers-lash-out/821407/",
+      "guid": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNTndSSjFBc2ZkSXlLTWhNQmZMYTI1ZGNfaDRiemhfbUlYdHJsZllFTTVRMW5lM0JYZHZQMmJfeEl5VnFTLTdDaUI4RFJZZzhYTGswOEhfQ2x4ZGprb3JsVW9MLVhJTjd5Ylc0dkFRN2VzV2F5T2l5c1loTmZGeHV5QlNDczV0N1A2WXhtSWktMzNUUGp0bFVSXw?oc=5",
+      "pubDate": "2026-05-29T07:00:00.000Z",
+      "matchedTerms": [
+        "Health care",
+        "Medical costs & billing"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
@@ -3829,6 +4756,34 @@
       "matchSource": "text"
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOc2t2Y2loY0VsNkxpYmU2Ums1eXVoaFJuWXJXOGRFd1pvODJpY0J5enhKTXRkM3FxWUhQZC1rem5DZDNIYjJFV2ZqU1FibnJYZmtNWmRqQTI1dDlMZ0hlcHBPY1ZsUkFtYy1HQjhiY0pWRmVQeTBEY2Q2aFFiZGZ0VGctS2pzNkZ3eldRbVNuVmxsMkUzbFhEVGRvejFiemFFMWRoMGxUeEpRMEpCSjhvRXBfWmhPU1hYTUE?oc=5",
+      "url": "https://www.statnews.com/2026/03/23/no-surprises-act-arbitration-halomd-medicare-advantage-default-enrollment-weighed/",
+      "title": "The intersection of ‘Apprentice’ and the No Surprises Act - statnews.com",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-03-23T07:00:00.000Z",
+      "tags": [
+        "Medical costs & billing"
+      ],
+      "sourceName": "Google News Health Trade Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Amodernhealthcare.com+OR+site%3Abeckerspayer.com+OR+site%3Afiercehealthcare.com+OR+site%3Astatnews.com+OR+site%3Ahealthcaredive.com%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+PBM+OR+%22No+Surprises+Act%22+OR+Medicaid+OR+Medicare+OR+%22health+insurers%22+OR+%22health+plans%22+OR+%22medical+debt%22+OR+%22GLP-1%22+OR+payer+OR+%22price+transparency%22+OR+%22reimbursement+cuts%22+OR+%22claim+denials%22+OR+%22rural+hospitals%22+OR+physicians+OR+%22340B%22%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "https://www.statnews.com/2026/03/23/no-surprises-act-arbitration-halomd-medicare-advantage-default-enrollment-weighed/",
+      "guid": "https://news.google.com/rss/articles/CBMiugFBVV95cUxOc2t2Y2loY0VsNkxpYmU2Ums1eXVoaFJuWXJXOGRFd1pvODJpY0J5enhKTXRkM3FxWUhQZC1rem5DZDNIYjJFV2ZqU1FibnJYZmtNWmRqQTI1dDlMZ0hlcHBPY1ZsUkFtYy1HQjhiY0pWRmVQeTBEY2Q2aFFiZGZ0VGctS2pzNkZ3eldRbVNuVmxsMkUzbFhEVGRvejFiemFFMWRoMGxUeEpRMEpCSjhvRXBfWmhPU1hYTUE?oc=5",
+      "pubDate": "2026-03-23T07:00:00.000Z",
+      "matchedTerms": [
+        "Medical costs & billing"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://news.google.com/rss/articles/CBMiswFBVV95cUxPTGRrS0NPd05QZjBsajFPOTdqWTc5Y3c2VGUtUnpTWXJlRzhXYjlYVEkxQ3VLa0FvTHpYVTNIcUwycERKOUhQYWZtYzhIblZDZ3UzVHV1LTdsd2g5YmE4SThNODBMc1NjNVk2NXM2VnBXNTQ1SlkzLWU3RDQ3RmU1ZUdtMHU2MUVtTDQzQ0pHc21rN05IMGczWllzN3NtM1VaS1BXUmpVa2FRWkk2RmhveXdzZw?oc=5",
       "url": "https://www.beckerspayer.com/payer/medicare-advantage/the-explosion-of-the-medicare-advantage-special-needs-plan/",
       "title": "The explosion of the Medicare Advantage special needs plan - beckerspayer.com",
@@ -3887,6 +4842,171 @@
       "matchSource": "text"
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPVWZ0cmxuUjBRRVNHVW8zNlZyRFFRNVJzUnk3TlVMelE5aDFaUDBTOHBfdUdCYTJJN2I3dDRvMEx5Y09RUHJ5NTBGdVdUUWk3QlZ5Z2hyZllmSG8wdUluTUljOTRhc2tIRGtCbEo1LUM4OGlINnRRay1QYk9McWdvazhBNVNDZEFDai1saDJvTnNaaE5fbzJUeTNQYTlyempz?oc=5",
+      "url": "http://www.modernhealthcare.com/politics-regulation/mh-prior-authorization-ai-legislation-congress/",
+      "title": "A raft of health business awaits Congress. What can pass? - Modern Healthcare",
+      "content_text": "Why included: Broad national health item without payer, policy, or regional angle.",
+      "date_published": "2026-03-13T07:00:00.000Z",
+      "tags": [
+        "Health care"
+      ],
+      "sourceName": "Google News Health Trade Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%28site%3Amodernhealthcare.com+OR+site%3Abeckerspayer.com+OR+site%3Afiercehealthcare.com+OR+site%3Astatnews.com+OR+site%3Ahealthcaredive.com%29+%28%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+PBM+OR+%22No+Surprises+Act%22+OR+Medicaid+OR+Medicare+OR+%22health+insurers%22+OR+%22health+plans%22+OR+%22medical+debt%22+OR+%22GLP-1%22+OR+payer+OR+%22price+transparency%22+OR+%22reimbursement+cuts%22+OR+%22claim+denials%22+OR+%22rural+hospitals%22+OR+physicians+OR+%22340B%22%29+when%3A14d&hl=en-US&gl=US&ceid=US%3Aen",
+      "sourceType": "News",
+      "access": "Paywall likely",
+      "link": "http://www.modernhealthcare.com/politics-regulation/mh-prior-authorization-ai-legislation-congress/",
+      "guid": "https://news.google.com/rss/articles/CBMioAFBVV95cUxPVWZ0cmxuUjBRRVNHVW8zNlZyRFFRNVJzUnk3TlVMelE5aDFaUDBTOHBfdUdCYTJJN2I3dDRvMEx5Y09RUHJ5NTBGdVdUUWk3QlZ5Z2hyZllmSG8wdUluTUljOTRhc2tIRGtCbEo1LUM4OGlINnRRay1QYk9McWdvazhBNVNDZEFDai1saDJvTnNaaE5fbzJUeTNQYTlyempz?oc=5",
+      "pubDate": "2026-03-13T07:00:00.000Z",
+      "matchedTerms": [
+        "Health care"
+      ],
+      "category": "VT Health Care",
+      "snippet": "",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.fiercehealthcare.com/ai-and-machine-learning/nvidia-abridge-collaborate-develop-healthcare-specific-ai-model",
+      "url": "https://www.fiercehealthcare.com/ai-and-machine-learning/nvidia-abridge-collaborate-develop-healthcare-specific-ai-model",
+      "title": "Nvidia, Abridge collaborate to develop healthcare-specific AI model",
+      "content_text": "Nvidia, Abridge collaborate to develop healthcare-specific AI model Chip giant Nvidia is working with startup Abridge to train a healthcare-specific artificial intelligence foundation model tailored to clinical conversations. Why included: Broad national health item without payer, policy, or regional angle.",
+      "tags": [
+        "Health care"
+      ],
+      "sourceName": "Fierce Healthcare",
+      "sourceFeedUrl": "https://www.fiercehealthcare.com/rss/xml",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.fiercehealthcare.com/ai-and-machine-learning/nvidia-abridge-collaborate-develop-healthcare-specific-ai-model",
+      "guid": "https://www.fiercehealthcare.com/ai-and-machine-learning/nvidia-abridge-collaborate-develop-healthcare-specific-ai-model",
+      "pubDate": null,
+      "matchedTerms": [
+        "Health care"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Nvidia, Abridge collaborate to develop healthcare-specific AI model Chip giant Nvidia is working with startup Abridge to train a healthcare-specific artificial intelligence foundation model tailored to clinical conversations.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.fiercehealthcare.com/special-reports/healthcare-conferences-put-your-calendar-2024-2025",
+      "url": "https://www.fiercehealthcare.com/special-reports/healthcare-conferences-put-your-calendar-2024-2025",
+      "title": "Healthcare conferences to put on your calendar for 2026-2027",
+      "content_text": "Healthcare conferences to put on your calendar for 2026-2027 Here's our roundup of some of the top events in healthcare scheduled in 2026 and 2027. Why included: Broad national health item without payer, policy, or regional angle.",
+      "tags": [
+        "Health care"
+      ],
+      "sourceName": "Fierce Healthcare",
+      "sourceFeedUrl": "https://www.fiercehealthcare.com/rss/xml",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.fiercehealthcare.com/special-reports/healthcare-conferences-put-your-calendar-2024-2025",
+      "guid": "https://www.fiercehealthcare.com/special-reports/healthcare-conferences-put-your-calendar-2024-2025",
+      "pubDate": null,
+      "matchedTerms": [
+        "Health care"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Healthcare conferences to put on your calendar for 2026-2027 Here's our roundup of some of the top events in healthcare scheduled in 2026 and 2027.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.fiercehealthcare.com/finance/fierce-healthcare-layoff-tracker-2026-job-cuts-eliminations-health-systems-hospitals",
+      "url": "https://www.fiercehealthcare.com/finance/fierce-healthcare-layoff-tracker-2026-job-cuts-eliminations-health-systems-hospitals",
+      "title": "Fierce Healthcare Layoff Tracker—Cuts at two Ardent Healthcare systems; UPMC lays off 200",
+      "content_text": "Fierce Healthcare Layoff Tracker—Cuts at two Ardent Healthcare systems; UPMC lays off 200 Stick with this tracker for the latest layoff and workforce updates from across healthcare. Why included: Broad national health item without payer, policy, or regional angle.",
+      "tags": [
+        "Health care"
+      ],
+      "sourceName": "Fierce Healthcare",
+      "sourceFeedUrl": "https://www.fiercehealthcare.com/rss/xml",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.fiercehealthcare.com/finance/fierce-healthcare-layoff-tracker-2026-job-cuts-eliminations-health-systems-hospitals",
+      "guid": "https://www.fiercehealthcare.com/finance/fierce-healthcare-layoff-tracker-2026-job-cuts-eliminations-health-systems-hospitals",
+      "pubDate": null,
+      "matchedTerms": [
+        "Health care"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Fierce Healthcare Layoff Tracker—Cuts at two Ardent Healthcare systems; UPMC lays off 200 Stick with this tracker for the latest layoff and workforce updates from across healthcare.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.fiercehealthcare.com/providers/industry-voices-why-health-systems-need-physicians-engaged-it-leadership",
+      "url": "https://www.fiercehealthcare.com/providers/industry-voices-why-health-systems-need-physicians-engaged-it-leadership",
+      "title": "Industry Voices—Why health systems need physicians engaged in IT leadership",
+      "content_text": "Industry Voices—Why health systems need physicians engaged in IT leadership The next decade of healthcare transformation will be defined by health systems that bring together clinicians, CIOs and IT leaders as true partners in shaping technology, writes Phoenix Children's associate CMIO. Why included: Broad national health item without payer, policy, or regional angle.",
+      "tags": [
+        "Health care",
+        "Physician workforce"
+      ],
+      "sourceName": "Fierce Healthcare",
+      "sourceFeedUrl": "https://www.fiercehealthcare.com/rss/xml",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.fiercehealthcare.com/providers/industry-voices-why-health-systems-need-physicians-engaged-it-leadership",
+      "guid": "https://www.fiercehealthcare.com/providers/industry-voices-why-health-systems-need-physicians-engaged-it-leadership",
+      "pubDate": null,
+      "matchedTerms": [
+        "Health care",
+        "Physician workforce"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Industry Voices—Why health systems need physicians engaged in IT leadership The next decade of healthcare transformation will be defined by health systems that bring together clinicians, CIOs and IT leaders as true partners in shaping technology, writes Phoenix Children's associate CMIO.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.fiercehealthcare.com/digital-health/partners-launch-remote-patient-monitoring-solution-support-pharmacies",
+      "url": "https://www.fiercehealthcare.com/digital-health/partners-launch-remote-patient-monitoring-solution-support-pharmacies",
+      "title": "Virtual care tech companies launch 'out-of-the-box' RPM tool for pharmacies",
+      "content_text": "Virtual care tech companies launch 'out-of-the-box' RPM tool for pharmacies The program's goal is to empower pharmacies, particularly independent ones in rural areas, to oversee and support chronic care patients between scheduled office visits. Why included: Broad national health item without payer, policy, or regional angle.",
+      "tags": [
+        "Prescription drugs & pharmacy"
+      ],
+      "sourceName": "Fierce Healthcare",
+      "sourceFeedUrl": "https://www.fiercehealthcare.com/rss/xml",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.fiercehealthcare.com/digital-health/partners-launch-remote-patient-monitoring-solution-support-pharmacies",
+      "guid": "https://www.fiercehealthcare.com/digital-health/partners-launch-remote-patient-monitoring-solution-support-pharmacies",
+      "pubDate": null,
+      "matchedTerms": [
+        "Prescription drugs & pharmacy"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Virtual care tech companies launch 'out-of-the-box' RPM tool for pharmacies The program's goal is to empower pharmacies, particularly independent ones in rural areas, to oversee and support chronic care patients between scheduled office visits.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
       "id": "https://www.fiercehealthcare.com/providers/provider-groups-file-lawsuit-against-hhs-over-new-ryan-white-funding-rules",
       "url": "https://www.fiercehealthcare.com/providers/provider-groups-file-lawsuit-against-hhs-over-new-ryan-white-funding-rules",
       "title": "Provider groups file lawsuit against HHS over anti-trans Ryan White funding rules",
@@ -3934,6 +5054,35 @@
       "snippet": "From Medicaid work requirement exemptions to AI safeguards in coverage: New AMA policies from annual meeting The organization released a series of new policy announcements, alongside a new president-elect, at its Annual Meeting of the House of Delegates.",
       "summary": "",
       "reason": "",
+      "comments": [],
+      "articleFetchFailed": false,
+      "matchSource": "text"
+    },
+    {
+      "id": "https://www.fiercehealthcare.com/health-tech/fierce-healthcare-fundraising-tracker-26",
+      "url": "https://www.fiercehealthcare.com/health-tech/fierce-healthcare-fundraising-tracker-26",
+      "title": "Fierce Healthcare Fundraising Tracker '26: Adaptive Innovations banks $50M for home health; Ilant Health nabs $15M",
+      "content_text": "Fierce Healthcare Fundraising Tracker '26: Adaptive Innovations banks $50M for home health; Ilant Health nabs $15M Keep up with all the venture capital&nbsp;dollars being funneled into the health tech and digital health industries. Why included: Broad national health item without payer, policy, or regional angle.",
+      "tags": [
+        "Health care",
+        "Senior & long-term care"
+      ],
+      "sourceName": "Fierce Healthcare",
+      "sourceFeedUrl": "https://www.fiercehealthcare.com/rss/xml",
+      "sourceType": "News",
+      "access": "Free to read",
+      "link": "https://www.fiercehealthcare.com/health-tech/fierce-healthcare-fundraising-tracker-26",
+      "guid": "https://www.fiercehealthcare.com/health-tech/fierce-healthcare-fundraising-tracker-26",
+      "pubDate": null,
+      "matchedTerms": [
+        "Health care",
+        "Senior & long-term care"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Fierce Healthcare Fundraising Tracker '26: Adaptive Innovations banks $50M for home health; Ilant Health nabs $15M Keep up with all the venture capital&nbsp;dollars being funneled into the health tech and digital health industries.",
+      "summary": "",
+      "reason": "Broad national health item without payer, policy, or regional angle.",
+      "relevant": false,
       "comments": [],
       "articleFetchFailed": false,
       "matchSource": "text"
