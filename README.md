@@ -91,6 +91,16 @@ The matcher includes exact and similar variants, including:
 | `JSON_FEED_URL` | empty | Public URL for the JSON Feed |
 | `SITE_URL` | empty | Public base URL for the channel link |
 | `GEMINI_API_KEY` | empty | Optional Gemini key for one-time batched summaries and reasons |
+| `SUMMARY_BATCH_SIZE` | `10` | Stories summarized per Gemini request |
+| `SUMMARY_BATCH_DELAY_MS` | `5000` | Delay between Gemini summary requests |
+| `SUMMARY_MAX_REQUESTS_PER_RUN` | `10` | Maximum Gemini summary requests per run |
+| `FACEBOOK_POST_URLS` | empty | Optional comma- or newline-separated `Name\|URL` public Facebook posts to include |
+| `FACEBOOK_PAGE_URLS` | empty | Optional comma- or newline-separated `Name\|URL` public Facebook pages to scan when Facebook exposes no-login post HTML |
+| `FACEBOOK_PAGE_MAX_POSTS` | `10` | Maximum post links to read from each configured Facebook page |
+
+Gemini's public docs say rate limits vary by project, model, and usage tier; use AI Studio as the source of truth for the active project. The default summarizer starts with `gemini-2.5-flash-lite`, batches stories, caches successful summaries in `feed.json`, and caps requests per run so hourly refreshes stay conservative.
+
+Configured Facebook pages are used as public post discovery pages; when a post URL is exposed without a login, the generator opens the post page and nests any extracted comments under that story.
 
 ## Automation
 
