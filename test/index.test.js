@@ -29,6 +29,38 @@ test("findMentionTerms catches requested and similar Blue Cross VT variants", ()
   ]);
 });
 
+test("findMentionTerms catches indirect and branded variants", () => {
+  assert.deepEqual(findMentionTerms("Blue Cross of Vermont announced a plan."), [
+    "Blue Cross of Vermont",
+    "Blue Cross",
+  ]);
+  assert.deepEqual(findMentionTerms("Enrollment opened for Vermont Blue Advantage."), [
+    "Vermont Blue Advantage",
+  ]);
+  assert.deepEqual(
+    findMentionTerms("Michigan, Vermont Blues plans finalize merger."),
+    ["Vermont Blues plan"],
+  );
+  // Curly apostrophe, as published by VTDigger
+  assert.deepEqual(
+    findMentionTerms("Vermont’s largest health insurer wants to offer a cheaper plan."),
+    ["Vermont's largest health insurer"],
+  );
+  // Straight apostrophe variant
+  assert.deepEqual(
+    findMentionTerms("Vermont's largest private insurer filed for rates."),
+    ["Vermont's largest health insurer"],
+  );
+});
+
+test("findMentionTerms ignores unrelated text", () => {
+  assert.deepEqual(
+    findMentionTerms("The Vermont blues festival drew a crowd in Burlington."),
+    [],
+  );
+  assert.deepEqual(findMentionTerms("New England's largest insurer reported earnings."), []);
+});
+
 test("parseFeedItems parses RSS items", () => {
   const xml = `<?xml version="1.0"?>
     <rss version="2.0">

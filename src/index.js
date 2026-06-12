@@ -93,7 +93,7 @@ export const DEFAULT_SOURCES = [
     name: "Google News Search",
     homepage: "https://news.google.com/",
     feedUrl:
-      "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22&hl=en-US&gl=US&ceid=US:en",
+      "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
     isSearchFeed: true,
   },
 ];
@@ -119,6 +119,22 @@ export const MENTION_TERMS = [
   {
     label: "Blue Cross/Blue Shield of Vermont",
     pattern: /\bblue\s+cross\s*\/\s*blue\s+shield\s+(?:of\s+)?vermont\b/i,
+  },
+  {
+    label: "Blue Cross of Vermont",
+    pattern: /\bblue\s+cross\s+of\s+vermont\b/i,
+  },
+  {
+    label: "Vermont Blue Advantage",
+    pattern: /\bvermont\s+blue\s+advantage\b/i,
+  },
+  {
+    label: "Vermont Blues plan",
+    pattern: /\bvermont\s+blues?\s+plans?\b/i,
+  },
+  {
+    label: "Vermont's largest health insurer",
+    pattern: /\bvermont[’']s\s+largest\s+(?:private\s+)?(?:health\s+)?insurer\b/i,
   },
   { label: "Blue Cross", pattern: /\bblue\s+cross\b/i },
   { label: "bluecrossvt.org", pattern: /\bbluecrossvt\.org\b/i },
