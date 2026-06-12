@@ -60,6 +60,9 @@ const BLUE_CROSS_CURRENT_SEARCH_QUERY =
 const BLUE_CROSS_VT_BACKFILL_QUERY =
   BLUE_CROSS_VT_BACKFILL_TERMS.join(" OR ");
 
+// Once maxPubDate passes, collectFeedItems skips this source automatically
+// (see isSourceWindowClosed); its items persist via the archive. The
+// definition is kept for provenance and can be deleted at leisure.
 function blueCrossVtBackfillSource(name, minPubDate, maxPubDate) {
   return {
     name,
@@ -1969,11 +1972,34 @@ function applySourceItemBounds(items, source) {
   return source.maxItems ? datedItems.slice(0, source.maxItems) : datedItems;
 }
 
-async function collectFeedItems(sources) {
+// A bounded source (e.g. the 2026 backfill search) whose maxPubDate has
+// passed can never contribute a new item: filterSourceItemsByDateWindow
+// would drop everything it returns, and everything inside the window is
+// already in the durable archive. Skip the fetch instead of making a dead
+// request every run.
+export function isSourceWindowClosed(source, now = new Date()) {
+  const maxDate = parseDate(source.maxPubDate);
+  return Boolean(maxDate) && maxDate.valueOf() <= now.valueOf();
+}
+
+export async function collectFeedItems(sources, now = new Date()) {
   const sourceResults = [];
   const items = [];
 
   for (const source of sources) {
+    if (isSourceWindowClosed(source, now)) {
+      sourceResults.push({
+        name: source.name,
+        feedUrl: source.feedUrl || source.facebookPostUrl || source.facebookPageUrl,
+        ok: true,
+        skipped: true,
+        itemCount: 0,
+        note: `Date window closed ${source.maxPubDate}; archived items are retained.`,
+      });
+      console.log(`Skipped ${source.name}: date window closed`);
+      continue;
+    }
+
     try {
       if (source.facebookPostUrl) {
         const { text: html } = await fetchText(
@@ -3036,7 +3062,7 @@ export async function generateFeed({
     auditJsonOutputPath,
     jsonOutputPath,
   );
-  const { items, sourceResults } = await collectFeedItems(sources);
+  const { items, sourceResults } = await collectFeedItems(sources, now);
 
   // Trigger alerts for failed feeds asynchronously
   const failedSources = sourceResults.filter(s => !s.ok);
@@ -3075,7 +3101,11 @@ export async function generateFeed({
 
 async function main() {
   const result = await generateFeed();
-  const healthySources = result.sourceResults.filter((source) => source.ok);
+  // Skipped sources are ok-by-definition; don't let them mask a run where
+  // every real fetch failed.
+  const healthySources = result.sourceResults.filter(
+    (source) => source.ok && !source.skipped,
+  );
 
   if (healthySources.length === 0) {
     throw new Error("No source feeds were fetched successfully.");

@@ -69,6 +69,8 @@ The default source list includes:
 
 BlueCrossVT.org, UVM Health, and BCBSA do not expose RSS/Atom at the usual feed URLs for these pages, so the generator parses the public dated listing rows on their newsroom/blog pages.
 
+Date-bounded sources (like the 2026 backfill search) are skipped automatically once their `maxPubDate` passes; their items persist in the archive, and the skip is recorded per source in the output JSON.
+
 ## Quick Start
 
 ```bash

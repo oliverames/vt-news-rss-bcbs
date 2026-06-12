@@ -25,8 +25,10 @@ import {
   parseFacebookPostHtml,
   parseSummaryResponse,
   parseUvmHealthNewsroomItems,
+  collectFeedItems,
   enrichAndFilterItems,
   filterSourceItemsByDateWindow,
+  isSourceWindowClosed,
   htmlToArticleText,
   readResponseTextWithLimit,
   TOPIC_TERMS,
@@ -657,6 +659,41 @@ test("mergeWithArchive drops future-dated stories beyond clock skew", () => {
     merged.map((item) => item.link),
     ["https://example.com/current"],
   );
+});
+
+test("collectFeedItems skips sources whose date window has closed", async () => {
+  // Closed-window sources are skipped before any fetch, so this test runs
+  // with zero network access.
+  const expired = {
+    name: "Google News Blue Cross VT Backfill Since Jan 1 2026",
+    feedUrl: "https://news.google.com/rss/search?q=backfill",
+    minPubDate: "2026-01-01T00:00:00Z",
+    maxPubDate: "2026-06-13T00:00:00Z",
+  };
+
+  const { items, sourceResults } = await collectFeedItems(
+    [expired],
+    new Date("2026-06-14T12:00:00Z"),
+  );
+
+  assert.deepEqual(items, []);
+  assert.equal(sourceResults.length, 1);
+  assert.equal(sourceResults[0].ok, true);
+  assert.equal(sourceResults[0].skipped, true);
+  assert.equal(sourceResults[0].itemCount, 0);
+  assert.match(sourceResults[0].note, /window closed/i);
+
+  // Still open one second before the boundary (would fetch, so only check
+  // the predicate, not collectFeedItems).
+  assert.equal(
+    isSourceWindowClosed(expired, new Date("2026-06-12T23:59:59Z")),
+    false,
+  );
+  assert.equal(
+    isSourceWindowClosed(expired, new Date("2026-06-13T00:00:00Z")),
+    true,
+  );
+  assert.equal(isSourceWindowClosed({ feedUrl: "https://x.example/" }), false);
 });
 
 test("filterSourceItemsByDateWindow enforces backfill boundaries", () => {
