@@ -14,6 +14,7 @@ import {
   mergeWithArchive,
   mergeFacebookPagePostItem,
   parseFeedItems,
+  parseFacebookEmbeddedPosts,
   parseFacebookPageHtml,
   parseFacebookPostHtml,
   parseSummaryResponse,
@@ -430,6 +431,70 @@ test("parseFacebookPageHtml extracts public post links when page HTML exposes th
   assert.match(items[0].feedContent, /cheaper health plans/);
 });
 
+test("parseFacebookEmbeddedPosts extracts the server-rendered post from real page HTML", () => {
+  // Facebook's no-login page HTML embeds the latest post as JSON-escaped
+  // script data; there are no post links in anchor tags.
+  const html = `<html><head><title>VTDigger</title></head><body>
+    <script>requireLazy(["JSScheduler"],{"post_id":"1602446425217693",
+    "message":{"text":"BlueCross BlueShield wants to offer a new suite of cheaper plans. \\u201cWe went hunting,\\u201d an executive said."},
+    "creation_time":1781270103,"unpublished_content_type":"PUBLISHED",
+    "wwwURL":"https:\\/\\/www.facebook.com\\/vtdigger\\/posts\\/pfbid02mozypSopS7PjQX3iFNX21rU8qKaVMk2aCvAL1qW3xTJg1gRMVE8B641tBJEorccCl",
+    "comment_rendering_instance":{"comments":{"total_count":3}}}</script>
+  </body></html>`;
+
+  const source = {
+    name: "VTDigger Facebook",
+    facebookPageUrl: "https://www.facebook.com/vtdigger",
+  };
+
+  const embedded = parseFacebookEmbeddedPosts(html, source);
+  assert.equal(embedded.length, 1);
+  assert.equal(
+    embedded[0].link,
+    "https://www.facebook.com/vtdigger/posts/pfbid02mozypSopS7PjQX3iFNX21rU8qKaVMk2aCvAL1qW3xTJg1gRMVE8B641tBJEorccCl",
+  );
+  assert.match(embedded[0].description, /cheaper plans/);
+  assert.match(embedded[0].description, /“We went hunting,”/);
+  assert.equal(
+    embedded[0].pubDate.toISOString(),
+    new Date(1781270103 * 1000).toISOString(),
+  );
+
+  // parseFacebookPageHtml prefers the embedded path on the same HTML
+  const items = parseFacebookPageHtml(html, source);
+  assert.equal(items.length, 1);
+  assert.equal(items[0].link, embedded[0].link);
+});
+
+test("enrichAndFilterItems drops brand-required items without a brand match", async () => {
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "false";
+  try {
+    const items = [
+      {
+        sourceName: "WCAX Facebook",
+        title: "WCAX post: Hospital announces new wing",
+        link: "https://www.facebook.com/wcaxtv/posts/pfbid0aaa",
+        feedContent: "Hospital announces new wing for primary care",
+        requireBrandMatch: true,
+      },
+      {
+        sourceName: "VTDigger Facebook",
+        title: "VTDigger post: BlueCross BlueShield offers cheaper plans",
+        link: "https://www.facebook.com/vtdigger/posts/pfbid0bbb",
+        feedContent: "BlueCross BlueShield of Vermont offers cheaper plans",
+        requireBrandMatch: true,
+      },
+    ];
+
+    const filtered = await enrichAndFilterItems(items);
+    assert.equal(filtered.length, 1);
+    assert.match(filtered[0].link, /pfbid0bbb/);
+  } finally {
+    process.env.RSS_ARTICLE_SCAN = originalScan;
+  }
+});
+
 test("mergeFacebookPagePostItem nests comments from enriched public posts", () => {
   const pageItem = {
     sourceName: "VTDigger Facebook page",
@@ -486,12 +551,14 @@ test("buildSourcesFromEnv adds configured Facebook post and page sources", () =>
         name: "VTDigger Facebook post",
         homepage: "https://www.facebook.com/vtdigger/posts/123",
         facebookPostUrl: "https://www.facebook.com/vtdigger/posts/123",
+        requireBrandMatch: true,
       },
       {
         name: "WCAX Facebook page",
         homepage: "https://www.facebook.com/WCAXTV",
         facebookPageUrl: "https://www.facebook.com/WCAXTV",
         maxItems: 4,
+        requireBrandMatch: true,
       },
     ]);
   } finally {

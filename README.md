@@ -16,7 +16,7 @@ This project fetches public RSS feeds from Vermont news outlets, fetches article
 
 The generator scans title, RSS summary, feed content, and article-page text. That matters because a story can mention Blue Cross in the article body without putting it in the headline.
 
-Coverage is limited to the items each outlet exposes through its public RSS feed at run time, plus configured public Facebook post URLs where the no-login HTML exposes Open Graph metadata. Facebook comments are included only when a public HTML response exposes parseable comment text; availability can vary by Facebook response and may be incomplete.
+Coverage is limited to the items each outlet exposes through its public RSS feed at run time, plus the major outlets' public Facebook pages. Facebook's no-login HTML exposes each page's most recent post, so the hourly schedule accumulates posts over time; posts are kept only when they mention Blue Cross. Facebook comments are included only when a public HTML response exposes parseable comment text; availability can vary by Facebook response and may be incomplete.
 
 The JSON output records source fetch failures, summaries, keyword matches, and comments when present, so a run can be checked before relying on it as complete. Stories are retained for a bounded archive window after they leave a source feed.
 
@@ -45,7 +45,7 @@ The default source list includes:
 | Google News brand search | capped BCBSVT/Blue Cross VT search RSS |
 | Google News Vermont health search | capped 7-day Vermont health care search RSS |
 | Google News health insurance search | capped 7-day national payer/coverage search RSS |
-| VTDigger Facebook post | configured public post URL, comments included when parseable |
+| Facebook pages (VTDigger, WCAX, Seven Days, Vermont Public, MyNBC5, VermontBiz) | each page's latest public post, kept only on a Blue Cross brand match; comments included when parseable |
 
 ## Quick Start
 

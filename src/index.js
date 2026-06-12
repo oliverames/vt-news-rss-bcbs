@@ -170,11 +170,45 @@ export const DEFAULT_SOURCES = [
     scanArticle: false,
     maxItems: 30,
   },
+  // Facebook pages of the major VT outlets. No-login HTML exposes each
+  // page's most recent post; hourly runs accumulate posts in the archive.
+  // Posts are kept only when they match a Blue Cross brand term (see
+  // enrichAndFilterItems) so the feed doesn't fill with general news posts.
   {
     name: "VTDigger Facebook",
     homepage: "https://www.facebook.com/vtdigger",
-    facebookPostUrl:
-      "https://m.facebook.com/vtdigger/posts/pfbid0nLoHEpYRfcE4UGgCixYUaZge22ZW4FP2TdzBsLaGynXVcfbgdL82gWNaSE6ED6Mgl",
+    facebookPageUrl: "https://www.facebook.com/vtdigger",
+    requireBrandMatch: true,
+  },
+  {
+    name: "WCAX Facebook",
+    homepage: "https://www.facebook.com/wcaxtv",
+    facebookPageUrl: "https://www.facebook.com/wcaxtv",
+    requireBrandMatch: true,
+  },
+  {
+    name: "Seven Days Facebook",
+    homepage: "https://www.facebook.com/sevendaysvt",
+    facebookPageUrl: "https://www.facebook.com/sevendaysvt",
+    requireBrandMatch: true,
+  },
+  {
+    name: "Vermont Public Facebook",
+    homepage: "https://www.facebook.com/vermontpublic",
+    facebookPageUrl: "https://www.facebook.com/vermontpublic",
+    requireBrandMatch: true,
+  },
+  {
+    name: "MyNBC5 Facebook",
+    homepage: "https://www.facebook.com/MyNBC5",
+    facebookPageUrl: "https://www.facebook.com/MyNBC5",
+    requireBrandMatch: true,
+  },
+  {
+    name: "Vermont Business Magazine Facebook",
+    homepage: "https://www.facebook.com/vermontbiz",
+    facebookPageUrl: "https://www.facebook.com/vermontbiz",
+    requireBrandMatch: true,
   },
 ];
 
@@ -211,6 +245,7 @@ export function buildSourcesFromEnv(baseSources = DEFAULT_SOURCES) {
       name: `${name} Facebook post`,
       homepage: url,
       facebookPostUrl: url,
+      requireBrandMatch: true,
     }),
   );
 
@@ -221,6 +256,7 @@ export function buildSourcesFromEnv(baseSources = DEFAULT_SOURCES) {
       homepage: url,
       facebookPageUrl: url,
       maxItems: parsePositiveInteger(process.env.FACEBOOK_PAGE_MAX_POSTS, 10),
+      requireBrandMatch: true,
     }),
   );
 
@@ -809,7 +845,74 @@ function isFacebookPostLink(href = "") {
   return /\/posts\/|story\.php|permalink\.php/i.test(href);
 }
 
+function decodeFacebookJsonString(value) {
+  try {
+    return JSON.parse(`"${value}"`);
+  } catch {
+    return value.replace(/\\\//g, "/");
+  }
+}
+
+// Facebook's no-login page HTML does not link posts in anchor tags — the
+// timeline is rendered client-side. But the server preloads the most recent
+// post as JSON-escaped script data containing the post permalink (wwwURL),
+// message text, creation_time, and comment count. Each hourly run captures
+// the page's current top post; the archive accumulates them over time.
+export function parseFacebookEmbeddedPosts(html, source) {
+  const items = [];
+  const seen = new Set();
+  const urlPattern =
+    /"wwwURL":"(https:\\\/\\\/www\.facebook\.com\\\/[^"]*?\\\/posts\\\/[^"]+?)"/g;
+
+  let match;
+  while ((match = urlPattern.exec(html)) !== null) {
+    const link = decodeFacebookJsonString(match[1]);
+    if (!link || seen.has(link)) {
+      continue;
+    }
+    seen.add(link);
+
+    // The post's fields live near its wwwURL in the same preloaded blob.
+    const windowStart = Math.max(0, match.index - 30000);
+    const windowText = html.slice(windowStart, match.index + 30000);
+    const messageMatch = /"message":\{"text":"((?:[^"\\]|\\.)*)"/.exec(
+      windowText,
+    );
+    const message = messageMatch
+      ? cleanText(decodeFacebookJsonString(messageMatch[1]))
+      : "";
+    if (!message) {
+      continue;
+    }
+
+    const timeMatch = /"creation_time":(\d{9,12})\b/.exec(windowText);
+    const pubDate = timeMatch
+      ? new Date(Number.parseInt(timeMatch[1], 10) * 1000)
+      : null;
+
+    items.push({
+      sourceName: source.name,
+      sourceFeedUrl: source.facebookPageUrl,
+      title: `${source.name} post: ${message.slice(0, 90)}`,
+      link,
+      guid: link,
+      pubDate,
+      description: message,
+      comments: [],
+      scanArticle: false,
+      feedContent: cleanText([source.name, message].join(" ")),
+    });
+  }
+
+  return items;
+}
+
 export function parseFacebookPageHtml(html, source) {
+  const embedded = parseFacebookEmbeddedPosts(html, source);
+  if (embedded.length > 0) {
+    return embedded;
+  }
+
   const $ = cheerio.load(html);
   const items = [];
   const seen = new Set();
@@ -1155,7 +1258,9 @@ async function collectFeedItems(sources) {
           "text/html, application/xhtml+xml, */*",
         );
         const facebookItem = parseFacebookPostHtml(html, source);
-        const sourceItems = facebookItem ? [facebookItem] : [];
+        const sourceItems = (facebookItem ? [facebookItem] : []).map(
+          (item) => ({ ...item, requireBrandMatch: !!source.requireBrandMatch }),
+        );
         sourceResults.push({
           name: source.name,
           feedUrl: source.facebookPostUrl,
@@ -1177,6 +1282,10 @@ async function collectFeedItems(sources) {
           sourceItems = sourceItems.slice(0, source.maxItems);
         }
         sourceItems = await enrichFacebookPageItemsFromPosts(sourceItems, source);
+        sourceItems = sourceItems.map((item) => ({
+          ...item,
+          requireBrandMatch: !!source.requireBrandMatch,
+        }));
         sourceResults.push({
           name: source.name,
           feedUrl: source.facebookPageUrl,
@@ -1590,6 +1699,18 @@ export async function enrichAndFilterItems(items, cache = new Map()) {
     const feedBrandMatches = findMentionTerms(item.feedContent, MENTION_TERMS);
     const articleBrandMatches = findMentionTerms(articleText, MENTION_TERMS);
     const topicMatches = findMentionTerms(item.feedContent, TOPIC_TERMS);
+
+    // Facebook posts (and any source flagged requireBrandMatch) are only
+    // kept when they mention Blue Cross itself — outlets post dozens of
+    // general health stories that would otherwise flood the feed.
+    if (
+      item.requireBrandMatch &&
+      feedBrandMatches.length === 0 &&
+      articleBrandMatches.length === 0
+    ) {
+      return null;
+    }
+
     const matchedTerms = [
       ...new Set([...feedBrandMatches, ...articleBrandMatches, ...topicMatches]),
     ];
