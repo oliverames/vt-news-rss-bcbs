@@ -478,6 +478,13 @@ test("mergeWithArchive keeps stories that left their source feeds", () => {
       summary: "pruned",
     },
     {
+      link: "https://example.com/ancient-brand",
+      title: "Ancient Blue Cross VT story",
+      pubDate: new Date("2024-01-01T12:00:00Z"),
+      matchedTerms: ["BCBSVT"],
+      summary: "kept indefinitely",
+    },
+    {
       link: "https://example.com/false-positive",
       title: "Premium connector",
       pubDate: new Date("2026-06-10T12:00:00Z"),
@@ -513,6 +520,7 @@ test("mergeWithArchive keeps stories that left their source feeds", () => {
   const merged = mergeWithArchive(current, archived, now);
   const links = merged.map((item) => item.link).sort();
   assert.deepEqual(links, [
+    "https://example.com/ancient-brand",
     "https://example.com/new",
     "https://example.com/old-but-kept",
     "https://example.com/online_features/press_releases/brand-wire.html",

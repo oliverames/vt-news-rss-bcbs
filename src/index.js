@@ -1921,6 +1921,10 @@ function isRejectedBySourceShape(item) {
   );
 }
 
+function isBrandCategoryItem(item) {
+  return (item.category || categorizeTerms(item.matchedTerms || [])) === CATEGORY_BRAND;
+}
+
 function hasCurrentMatchingEvidence(item) {
   if (item.matchSource === "searchFallback") {
     return true;
@@ -2181,12 +2185,13 @@ export function mergeWithArchive(currentItems, archivedItems, now = new Date()) 
 
     const time = item.pubDate?.valueOf();
     // Keep undated items; they are rare and usually recent.
-    return (
-      time === undefined ||
-      time === null ||
-      Number.isNaN(time) ||
-      (time >= cutoff && time <= maxFutureTime)
-    );
+    if (time === undefined || time === null || Number.isNaN(time)) {
+      return true;
+    }
+    if (time > maxFutureTime) {
+      return false;
+    }
+    return isBrandCategoryItem(item) || time >= cutoff;
   });
 }
 
