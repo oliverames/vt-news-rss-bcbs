@@ -17,6 +17,63 @@ function googleNewsSearchUrl(query) {
   return `https://news.google.com/rss/search?${params.toString()}`;
 }
 
+const BLUE_CROSS_CURRENT_SEARCH_TERMS = [
+  "bluecrossvt.org",
+  "site:bcbs.com",
+  "site:bluewebportal.bcbs.com",
+  '"BCBSVT"',
+  '"BCBS VT"',
+  '"BlueCrossVT"',
+  '"Blue CrossVT"',
+  '"BlueCross VT"',
+  '"Blue Cross VT"',
+  '"Blue Cross Vermont"',
+  '"Blue Cross and Blue Shield of Vermont"',
+  '"BlueCross and BlueShield of Vermont"',
+  '"BlueCross & BlueShield of Vermont"',
+  '"Blue Cross of Vermont"',
+  '"Blue Cross Blue Shield Association"',
+  '"Vermont Blue Advantage"',
+];
+
+const BLUE_CROSS_VT_BACKFILL_TERMS = [
+  "bluecrossvt.org",
+  '"BCBSVT"',
+  '"BCBS VT"',
+  '"BlueCrossVT"',
+  '"Blue CrossVT"',
+  '"BlueCross VT"',
+  '"Blue Cross VT"',
+  '"Blue Cross Vermont"',
+  '"Blue Cross and Blue Shield of Vermont"',
+  '"BlueCross and BlueShield of Vermont"',
+  '"BlueCross & BlueShield of Vermont"',
+  '"Blue Cross of Vermont"',
+  '"Vermont Blue Advantage"',
+  '"Vermont Blues plan"',
+  '"Vermont largest health insurer"',
+  '"Vermont largest private insurer"',
+];
+
+const BLUE_CROSS_CURRENT_SEARCH_QUERY =
+  BLUE_CROSS_CURRENT_SEARCH_TERMS.join(" OR ");
+const BLUE_CROSS_VT_BACKFILL_QUERY =
+  BLUE_CROSS_VT_BACKFILL_TERMS.join(" OR ");
+
+function blueCrossVtBackfillSource(name, minPubDate, maxPubDate) {
+  return {
+    name,
+    homepage: "https://news.google.com/",
+    feedUrl: googleNewsSearchUrl(`(${BLUE_CROSS_VT_BACKFILL_QUERY}) when:180d`),
+    isSearchFeed: true,
+    searchFallbackTerms: ["Blue Cross"],
+    scanArticle: false,
+    minPubDate: `${minPubDate}T00:00:00Z`,
+    maxPubDate: `${maxPubDate}T00:00:00Z`,
+    maxItems: 100,
+  };
+}
+
 export const DEFAULT_SOURCES = [
   {
     name: "WCAX",
@@ -78,6 +135,15 @@ export const DEFAULT_SOURCES = [
     scanArticle: false,
   },
   {
+    name: "BCBSA Association News",
+    homepage: "https://www.bcbs.com/about-us/association-news",
+    listingUrl: "https://www.bcbs.com/about-us/association-news",
+    listingParser: "bcbsAssociationNews",
+    searchFallbackTerms: ["Blue Cross Blue Shield Association"],
+    scanArticle: false,
+    maxItems: 20,
+  },
+  {
     name: "Addison Independent",
     homepage: "https://www.addisonindependent.com/",
     feedUrl: "https://www.addisonindependent.com/feed/",
@@ -137,29 +203,29 @@ export const DEFAULT_SOURCES = [
       "https://www.newportvermontdailyexpress.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
   },
   {
+    name: "Vermont Daily Chronicle",
+    homepage: "https://vermontdailychronicle.com/",
+    feedUrl: "https://vermontdailychronicle.com/feed/",
+  },
+  {
+    name: "St. Albans Messenger",
+    homepage: "https://www.samessenger.com/",
+    feedUrl:
+      "https://www.samessenger.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+  },
+  {
     name: "Google News Search",
     homepage: "https://news.google.com/",
-    feedUrl: googleNewsSearchUrl(
-      [
-        "bluecrossvt.org",
-        '"BCBSVT"',
-        '"BCBS VT"',
-        '"BlueCrossVT"',
-        '"Blue CrossVT"',
-        '"BlueCross VT"',
-        '"Blue Cross VT"',
-        '"Blue Cross Vermont"',
-        '"Blue Cross and Blue Shield of Vermont"',
-        '"BlueCross and BlueShield of Vermont"',
-        '"BlueCross & BlueShield of Vermont"',
-        '"Blue Cross of Vermont"',
-        '"Vermont Blue Advantage"',
-      ].join(" OR "),
-    ),
+    feedUrl: googleNewsSearchUrl(BLUE_CROSS_CURRENT_SEARCH_QUERY),
     isSearchFeed: true,
     searchFallbackTerms: ["Blue Cross"],
     maxItems: 50,
   },
+  blueCrossVtBackfillSource(
+    "Google News Blue Cross VT Backfill Since Jan 1 2026",
+    "2026-01-01",
+    "2026-06-13",
+  ),
   {
     name: "Google News Vermont Health Search",
     homepage: "https://news.google.com/",
@@ -182,6 +248,19 @@ export const DEFAULT_SOURCES = [
     maxItems: 30,
   },
   {
+    name: "Google News Kristina Source Search",
+    homepage: "https://news.google.com/",
+    feedUrl: googleNewsSearchUrl(
+      [
+        "(site:burlingtonfreepress.com OR site:wsj.com OR site:abcnews.go.com OR site:cbsnews.com OR site:cnn.com OR site:beckershospitalreview.com OR site:samessenger.com OR site:vermontdailychronicle.com)",
+        '("Vermont" OR "Blue Cross" OR "health care" OR healthcare OR "health insurance" OR Medicare OR Medicaid OR hospital OR insurer OR payer)',
+      ].join(" ") + " when:14d",
+    ),
+    isSearchFeed: true,
+    scanArticle: false,
+    maxItems: 75,
+  },
+  {
     name: "Google News Health Insurance Search",
     homepage: "https://news.google.com/",
     feedUrl: googleNewsSearchUrl(
@@ -200,6 +279,27 @@ export const DEFAULT_SOURCES = [
     isSearchFeed: true,
     scanArticle: false,
     maxItems: 30,
+  },
+  {
+    name: "ABC News Health",
+    homepage: "https://abcnews.go.com/Health",
+    feedUrl: "https://abcnews.go.com/abcnews/healthheadlines",
+    scanArticle: false,
+    maxItems: 50,
+  },
+  {
+    name: "CBS News Health",
+    homepage: "https://www.cbsnews.com/health/",
+    feedUrl: "https://www.cbsnews.com/latest/rss/health",
+    scanArticle: false,
+    maxItems: 50,
+  },
+  {
+    name: "CNN Health",
+    homepage: "https://www.cnn.com/health",
+    feedUrl: "http://rss.cnn.com/rss/cnn_health.rss",
+    scanArticle: false,
+    maxItems: 50,
   },
   {
     name: "STAT Health News",
@@ -248,7 +348,7 @@ export const DEFAULT_SOURCES = [
     homepage: "https://news.google.com/",
     feedUrl: googleNewsSearchUrl(
       [
-        "(site:modernhealthcare.com OR site:beckerspayer.com OR site:fiercehealthcare.com OR site:statnews.com OR site:healthcaredive.com)",
+        "(site:modernhealthcare.com OR site:beckerspayer.com OR site:beckershospitalreview.com OR site:fiercehealthcare.com OR site:statnews.com OR site:healthcaredive.com)",
         '("Medicare Advantage" OR "prior authorization" OR PBM OR "No Surprises Act" OR Medicaid OR Medicare OR "health insurers" OR "health plans" OR "medical debt" OR "GLP-1" OR payer OR "price transparency" OR "reimbursement cuts" OR "claim denials" OR "rural hospitals" OR physicians OR "340B")',
       ].join(" ") + " when:14d",
     ),
@@ -261,7 +361,7 @@ export const DEFAULT_SOURCES = [
     homepage: "https://news.google.com/",
     feedUrl: googleNewsSearchUrl(
       [
-        "(site:apnews.com OR site:nbcnews.com OR site:nytimes.com OR site:washingtonpost.com OR site:axios.com OR site:npr.org OR site:thehill.com OR site:kffhealthnews.org OR site:newsfromthestates.com OR site:stateline.org)",
+        "(site:abcnews.go.com OR site:apnews.com OR site:cbsnews.com OR site:cnn.com OR site:nbcnews.com OR site:nytimes.com OR site:washingtonpost.com OR site:wsj.com OR site:axios.com OR site:npr.org OR site:thehill.com OR site:kffhealthnews.org OR site:newsfromthestates.com OR site:stateline.org)",
         '("Medicare Advantage" OR "prior authorization" OR Medicaid OR Medicare OR Obamacare OR ACA OR "medical debt" OR "No Surprises Act" OR GLP-1 OR vaccines OR "health insurance" OR "health care costs" OR "price transparency" OR menopause OR maternity OR "private equity")',
       ].join(" ") + " when:14d",
     ),
@@ -409,7 +509,7 @@ export const MENTION_TERMS = [
 // Dartmouth-Hitchcock Medical Center"). Stripped from text before testing
 // hospital-related terms so accident stories don't read as health news.
 const TRANSPORT_IDIOM =
-  /\b(?:taken|airlifted|transported|rushed|flown|brought|treated|died)\s+(?:to|at)\s+(?:(?:a|the|an)\s+)?(?:(?:area|local|nearby)\s+)?(?:[\w'’.-]+\s+){0,4}?(?:hospitals?\b|medical\s+cent(?:er|re)\b)/gi;
+  /\b(?:taken|airlifted|transported|rushed|flown|brought|treated|died|sent|sends?)\b(?:\s+(?!(?:to|at)\b)[\w'’.-]+){0,5}\s+(?:to|at)\s+(?:(?:a|the|an)\s+)?(?:(?:area|local|nearby)\s+)?(?:[\w'’.-]+\s+){0,5}?(?:hospitals?\b|medical\s+cent(?:er|re)\b)/gi;
 
 export const TOPIC_TERMS = [
   // Regulators, agencies, and associations
@@ -585,27 +685,33 @@ const VERMONT_SOURCE_NAMES = new Set([
   "MyNBC5",
   "Newport Daily Express",
   "Rutland Herald",
+  "St. Albans Messenger",
   "Seven Days",
   "The Mountain Times",
   "Times Argus",
   "Valley News",
   "Vermont Business Magazine",
   "Vermont Community Newspaper Group",
+  "Vermont Daily Chronicle",
   "Vermont Public",
   "VTDigger",
   "WCAX",
 ]);
 
 const PAYWALL_HOST_PATTERN =
-  /(?:burlingtonfreepress\.com|modernhealthcare\.com|nytimes\.com|statnews\.com|timesargus\.com|vnews\.com|washingtonpost\.com)/i;
+  /(?:burlingtonfreepress\.com|modernhealthcare\.com|nytimes\.com|statnews\.com|timesargus\.com|vnews\.com|washingtonpost\.com|wsj\.com)/i;
 
 const FREE_ACCESS_HOST_PATTERN =
-  /(?:addisonindependent\.com|apnews\.com|axios\.com|beckerspayer\.com|benningtonbanner\.com|bluecrossvt\.org|compassvermont\.com|fiercehealthcare\.com|healthcaredive\.com|kffhealthnews\.org|mynbc5\.com|mychamplainvalley\.com|npr\.org|reformer\.com|sevendaysvt\.com|thehill\.com|uvmhealth\.org|vermontbiz\.com|vermontpublic\.org|vtcng\.com|vtdigger\.org|wcax\.com)/i;
+  /(?:abcnews\.go\.com|addisonindependent\.com|apnews\.com|axios\.com|bcbs\.com|beckershospitalreview\.com|beckerspayer\.com|benningtonbanner\.com|bluecrossvt\.org|cbsnews\.com|cnn\.com|compassvermont\.com|fiercehealthcare\.com|healthcaredive\.com|kffhealthnews\.org|mynbc5\.com|mychamplainvalley\.com|npr\.org|reformer\.com|samessenger\.com|sevendaysvt\.com|thehill\.com|uvmhealth\.org|vermontbiz\.com|vermontdailychronicle\.com|vermontpublic\.org|vtcng\.com|vtdigger\.org|wcax\.com)/i;
 
 const BROAD_NATIONAL_SOURCE_NAMES = new Set([
+  "ABC News Health",
+  "CBS News Health",
+  "CNN Health",
   "Fierce Healthcare",
   "Google News Health Insurance Search",
   "Google News Health Trade Search",
+  "Google News Kristina Source Search",
   "Google News National Health Policy Search",
   "Healthcare Dive",
   "KFF Health News",
@@ -666,6 +772,12 @@ const NATIONAL_POLICY_TOPIC_LABELS = new Set([
 
 const POLICY_SIGNAL_PATTERN =
   /\b(?:340B|aca|affordable\s+care\s+act|AHIP|AMA|CMS|denials?|federal|fraud\s+scrutiny|health\s+coverage|health\s+policy|HHS|hidden\s+fees?|insurers?|insurance|lawmakers?|legislation|medicaid|medicare|payer|pbms?|policy|premiums?|price\s+transparency|prior\s+authorization|regulat(?:e|es|ed|ion|or|ors|ory)|reimbursement|state\s+laws?|transparency|watchdog|WISeR|work\s+requirements?)\b/i;
+
+const REGIONAL_INFRASTRUCTURE_GRANT_PATTERN =
+  /\b(?:commission|economic\s+development|grant|grants|funded|funding|infrastructure|municipal|transportation|water|wastewater)\b/i;
+
+const HEALTH_CARE_DELIVERY_SIGNAL_PATTERN =
+  /\b(?:bcbs|blue\s+cross|birthing|care\s+access|claim|claims|clinic|coverage|dental|doctor|emergency\s+department|er\s+visits?|health\s+care\s+system|healthcare\s+system|health\s+center|hospital|insurers?|insurance|maternity|medical\s+center|medicaid|medicare|mental\s+health|nurse|patient|patients|pharmacy|physician|premium|primary\s+care|prior\s+authorization|provider|public\s+health|rural\s+health\s+care|surgery|treatment)\b/i;
 
 const TERM_LABEL_ALIASES = new Map([
   ["Blue Cross Vermont", "Blue Cross VT"],
@@ -1015,6 +1127,64 @@ export function parseBlueCrossVtListingItems(html, source) {
       description,
       feedContent: cleanText(
         [title, description, category, "bluecrossvt.org"]
+          .filter(Boolean)
+          .join(" "),
+      ),
+    });
+  });
+
+  return items;
+}
+
+export function parseBcbsAssociationNewsItems(html, source) {
+  const $ = cheerio.load(html);
+  const items = [];
+
+  $(".bcbs-news-item-listing-content").each((_, element) => {
+    const card = $(element);
+    const linkElement = card
+      .find("a.bcbs-news-item-listing-content__link")
+      .first();
+    const title = cleanText(linkElement.text());
+    const href = linkElement.attr("href");
+    const link = resolveUrl(href, source.homepage || source.listingUrl);
+    const dateText =
+      card.find("time[datetime]").first().attr("datetime") ||
+      card.find("time").first().text();
+    const pubDate = parseDate(dateText);
+    const description = cleanText(
+      card.find(".bcbs-news-item-listing-content__text").first().text(),
+    );
+    const categories = cleanText(
+      card
+        .find(".bcbs-categories-chips__item")
+        .map((__, category) => $(category).text())
+        .get()
+        .join(" "),
+    );
+
+    if (!title || !link || !/bcbs\.com\/about-us\/association-news\//i.test(link)) {
+      return;
+    }
+
+    items.push({
+      sourceName: source.name,
+      sourceFeedUrl: source.listingUrl,
+      searchFallbackTerms: source.searchFallbackTerms || [],
+      scanArticle: source.scanArticle !== false,
+      title,
+      link,
+      guid: link,
+      pubDate,
+      description,
+      feedContent: cleanText(
+        [
+          title,
+          description,
+          categories,
+          "bcbs.com",
+          "Blue Cross Blue Shield Association",
+        ]
           .filter(Boolean)
           .join(" "),
       ),
@@ -1713,6 +1883,33 @@ function dedupeItems(items) {
   return [...byKey.values()];
 }
 
+export function filterSourceItemsByDateWindow(items, source) {
+  if (!source.minPubDate && !source.maxPubDate) {
+    return items;
+  }
+
+  const minDate = parseDate(source.minPubDate);
+  const maxDate = parseDate(source.maxPubDate);
+  return items.filter((item) => {
+    const time = item.pubDate?.valueOf();
+    if (time === undefined || time === null || Number.isNaN(time)) {
+      return false;
+    }
+    if (minDate && time < minDate.valueOf()) {
+      return false;
+    }
+    if (maxDate && time >= maxDate.valueOf()) {
+      return false;
+    }
+    return true;
+  });
+}
+
+function applySourceItemBounds(items, source) {
+  const datedItems = filterSourceItemsByDateWindow(items, source);
+  return source.maxItems ? datedItems.slice(0, source.maxItems) : datedItems;
+}
+
 async function collectFeedItems(sources) {
   const sourceResults = [];
   const items = [];
@@ -1745,9 +1942,7 @@ async function collectFeedItems(sources) {
           "text/html, application/xhtml+xml, */*",
         );
         let sourceItems = parseFacebookPageHtml(html, source);
-        if (source.maxItems) {
-          sourceItems = sourceItems.slice(0, source.maxItems);
-        }
+        sourceItems = applySourceItemBounds(sourceItems, source);
         sourceItems = await enrichFacebookPageItemsFromPosts(sourceItems, source);
         sourceItems = sourceItems.map((item) => ({
           ...item,
@@ -1769,13 +1964,15 @@ async function collectFeedItems(sources) {
           source.listingUrl,
           "text/html, application/xhtml+xml, */*",
         );
-        let sourceItems =
-          source.listingParser === "uvmHealthNewsroom"
-            ? parseUvmHealthNewsroomItems(html, source)
-            : parseBlueCrossVtListingItems(html, source);
-        if (source.maxItems) {
-          sourceItems = sourceItems.slice(0, source.maxItems);
+        let sourceItems;
+        if (source.listingParser === "uvmHealthNewsroom") {
+          sourceItems = parseUvmHealthNewsroomItems(html, source);
+        } else if (source.listingParser === "bcbsAssociationNews") {
+          sourceItems = parseBcbsAssociationNewsItems(html, source);
+        } else {
+          sourceItems = parseBlueCrossVtListingItems(html, source);
         }
+        sourceItems = applySourceItemBounds(sourceItems, source);
         sourceResults.push({
           name: source.name,
           feedUrl: source.listingUrl,
@@ -1792,9 +1989,7 @@ async function collectFeedItems(sources) {
         "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
       );
       let sourceItems = parseFeedItems(xml, source);
-      if (source.maxItems) {
-        sourceItems = sourceItems.slice(0, source.maxItems);
-      }
+      sourceItems = applySourceItemBounds(sourceItems, source);
       sourceResults.push({
         name: source.name,
         feedUrl: source.feedUrl,
@@ -2070,6 +2265,20 @@ export function applyDeterministicRelevance(item) {
     };
   }
 
+  if (
+    hasRegional &&
+    !hasPolicy &&
+    hasOnlyLowPriorityTopicTerms(matchedTerms) &&
+    REGIONAL_INFRASTRUCTURE_GRANT_PATTERN.test(contentEvidence) &&
+    !HEALTH_CARE_DELIVERY_SIGNAL_PATTERN.test(contentEvidence)
+  ) {
+    return {
+      ...item,
+      relevant: false,
+      reason: "Regional funding item with only incidental health care mention.",
+    };
+  }
+
   if (!hasRegional && !hasPolicy && hasOnlyLowPriorityTopicTerms(matchedTerms)) {
     return {
       ...item,
@@ -2239,7 +2448,7 @@ export function buildSummaryPrompt(batch) {
     "For each article below, write:",
     '- "summary": 1-2 plain sentences describing what the story reports. Use only the title and excerpt; do not invent facts.',
     '- "reason": under 14 words, why this story matters to the team (e.g. "Names BCBSVT directly", "Hospital cost pressure affects premiums", "Legislative action on coverage").',
-    '- "relevant": true or false, applying the priority order above. Geography matters: a Vermont story involving a Vermont hospital or provider is relevant even if minor (a crash victim airlifted to a named Vermont hospital is relevant — it touches the local care system). A story OUTSIDE Vermont/New England is relevant ONLY if it concerns the insurance/payer industry, health policy, or coverage — an out-of-state crime story, accident, or local disease outbreak with no payer/policy angle is NOT relevant, even when it mentions hospitals or vaccines. When in doubt about a Vermont story, use true; when in doubt about a national story, use false.',
+    '- "relevant": true or false, applying the priority order above. Geography matters: a Vermont story involving hospital operations, providers, coverage, regulators, access, public health, or costs is relevant. Crime, crash, and accident briefs are not relevant just because someone was taken, sent, treated, or airlifted to a hospital. A story OUTSIDE Vermont/New England is relevant ONLY if it concerns the insurance/payer industry, health policy, or coverage. When in doubt about a Vermont story, use true; when in doubt about a national story, use false.',
     "",
     "Respond with a JSON array of objects: [{\"id\": <article number>, \"summary\": \"...\", \"reason\": \"...\", \"relevant\": true}].",
     "",
