@@ -801,6 +801,13 @@ const REQUEST_TIMEOUT_MS = parsePositiveInteger(
   12000,
 );
 const CONCURRENCY = parsePositiveInteger(process.env.RSS_CONCURRENCY, 6);
+// Sources fetched in parallel. Kept modest: most sources are distinct
+// domains, and throttleRequest keeps same-domain requests (the Google News
+// searches, the Facebook pages) a second apart regardless.
+const SOURCE_CONCURRENCY = parsePositiveInteger(
+  process.env.RSS_SOURCE_CONCURRENCY,
+  4,
+);
 const SCAN_ARTICLE_PAGES = process.env.RSS_ARTICLE_SCAN !== "false";
 const SITE_URL = process.env.SITE_URL?.trim() || "";
 const FEED_URL = resolveFeedUrl();
@@ -1766,23 +1773,28 @@ async function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
-const DOMAIN_DELAYS = new Map();
-const PER_DOMAIN_DELAY_MS = 1000; // 1 second politeness delay
+const DOMAIN_QUEUES = new Map();
+const PER_DOMAIN_DELAY_MS = 1000; // 1 second politeness delay between request starts
 
+// Serialize request starts per domain: each caller awaits the previous
+// caller's slot, and the next slot opens one delay later. The get/set pair
+// below runs synchronously (no await between them), so concurrent callers
+// cannot grab the same slot — the previous timestamp-based check raced when
+// multiple workers hit the same domain at once.
 async function throttleRequest(url) {
+  let hostname = "";
   try {
-    const hostname = new URL(url).hostname;
-    const now = Date.now();
-    const lastTime = DOMAIN_DELAYS.get(hostname) || 0;
-    const elapsed = now - lastTime;
-    if (elapsed < PER_DOMAIN_DELAY_MS) {
-      const delay = PER_DOMAIN_DELAY_MS - elapsed;
-      await sleep(delay);
-    }
-    DOMAIN_DELAYS.set(hostname, Date.now());
+    hostname = new URL(url).hostname;
   } catch {
-    // If URL parsing fails, ignore throttling
+    return; // Unparseable URL: skip throttling, the fetch will fail anyway
   }
+
+  const previousSlot = DOMAIN_QUEUES.get(hostname) || Promise.resolve();
+  DOMAIN_QUEUES.set(
+    hostname,
+    previousSlot.then(() => sleep(PER_DOMAIN_DELAY_MS)),
+  );
+  await previousSlot;
 }
 
 // Equivalent to response.text() (UTF-8 decode, BOM handled by TextDecoder)
@@ -1910,6 +1922,7 @@ async function mapWithConcurrency(items, limit, mapper) {
 async function enrichFacebookPageItemsFromPosts(pageItems, source) {
   return mapWithConcurrency(pageItems, 2, async (pageItem) => {
     try {
+      await throttleRequest(pageItem.link);
       const { text: postHtml } = await fetchText(
         pageItem.link,
         "text/html, application/xhtml+xml, */*",
@@ -1982,120 +1995,119 @@ export function isSourceWindowClosed(source, now = new Date()) {
   return Boolean(maxDate) && maxDate.valueOf() <= now.valueOf();
 }
 
-export async function collectFeedItems(sources, now = new Date()) {
-  const sourceResults = [];
-  const items = [];
-
-  for (const source of sources) {
-    if (isSourceWindowClosed(source, now)) {
-      sourceResults.push({
+// Fetch one source and return its items plus a result row. Never throws:
+// failures become an ok:false result so one broken source cannot stop a run.
+async function fetchItemsForSource(source, now) {
+  if (isSourceWindowClosed(source, now)) {
+    console.log(`Skipped ${source.name}: date window closed`);
+    return {
+      sourceResult: {
         name: source.name,
         feedUrl: source.feedUrl || source.facebookPostUrl || source.facebookPageUrl,
         ok: true,
         skipped: true,
         itemCount: 0,
         note: `Date window closed ${source.maxPubDate}; archived items are retained.`,
-      });
-      console.log(`Skipped ${source.name}: date window closed`);
-      continue;
-    }
+      },
+      items: [],
+    };
+  }
 
-    try {
-      if (source.facebookPostUrl) {
-        const { text: html } = await fetchText(
-          source.facebookPostUrl,
-          "text/html, application/xhtml+xml, */*",
-        );
-        const facebookItem = parseFacebookPostHtml(html, source);
-        const sourceItems = (facebookItem ? [facebookItem] : []).map(
-          (item) => ({ ...item, requireBrandMatch: !!source.requireBrandMatch }),
-        );
-        sourceResults.push({
-          name: source.name,
-          feedUrl: source.facebookPostUrl,
-          ok: true,
-          itemCount: sourceItems.length,
-        });
-        items.push(...sourceItems);
-        console.log(`Fetched ${sourceItems.length} items from ${source.name}`);
-        continue;
+  try {
+    let feedUrl;
+    let sourceItems;
+
+    if (source.facebookPostUrl) {
+      feedUrl = source.facebookPostUrl;
+      await throttleRequest(feedUrl);
+      const { text: html } = await fetchText(
+        feedUrl,
+        "text/html, application/xhtml+xml, */*",
+      );
+      const facebookItem = parseFacebookPostHtml(html, source);
+      sourceItems = (facebookItem ? [facebookItem] : []).map(
+        (item) => ({ ...item, requireBrandMatch: !!source.requireBrandMatch }),
+      );
+    } else if (source.facebookPageUrl) {
+      feedUrl = source.facebookPageUrl;
+      await throttleRequest(feedUrl);
+      const { text: html } = await fetchText(
+        feedUrl,
+        "text/html, application/xhtml+xml, */*",
+      );
+      sourceItems = parseFacebookPageHtml(html, source);
+      sourceItems = applySourceItemBounds(sourceItems, source);
+      sourceItems = await enrichFacebookPageItemsFromPosts(sourceItems, source);
+      sourceItems = sourceItems.map((item) => ({
+        ...item,
+        requireBrandMatch: !!source.requireBrandMatch,
+      }));
+    } else if (source.listingUrl) {
+      feedUrl = source.listingUrl;
+      await throttleRequest(feedUrl);
+      const { text: html } = await fetchText(
+        feedUrl,
+        "text/html, application/xhtml+xml, */*",
+      );
+      if (source.listingParser === "uvmHealthNewsroom") {
+        sourceItems = parseUvmHealthNewsroomItems(html, source);
+      } else if (source.listingParser === "bcbsAssociationNews") {
+        sourceItems = parseBcbsAssociationNewsItems(html, source);
+      } else {
+        sourceItems = parseBlueCrossVtListingItems(html, source);
       }
-
-      if (source.facebookPageUrl) {
-        const { text: html } = await fetchText(
-          source.facebookPageUrl,
-          "text/html, application/xhtml+xml, */*",
-        );
-        let sourceItems = parseFacebookPageHtml(html, source);
-        sourceItems = applySourceItemBounds(sourceItems, source);
-        sourceItems = await enrichFacebookPageItemsFromPosts(sourceItems, source);
-        sourceItems = sourceItems.map((item) => ({
-          ...item,
-          requireBrandMatch: !!source.requireBrandMatch,
-        }));
-        sourceResults.push({
-          name: source.name,
-          feedUrl: source.facebookPageUrl,
-          ok: true,
-          itemCount: sourceItems.length,
-        });
-        items.push(...sourceItems);
-        console.log(`Fetched ${sourceItems.length} items from ${source.name}`);
-        continue;
-      }
-
-      if (source.listingUrl) {
-        const { text: html } = await fetchText(
-          source.listingUrl,
-          "text/html, application/xhtml+xml, */*",
-        );
-        let sourceItems;
-        if (source.listingParser === "uvmHealthNewsroom") {
-          sourceItems = parseUvmHealthNewsroomItems(html, source);
-        } else if (source.listingParser === "bcbsAssociationNews") {
-          sourceItems = parseBcbsAssociationNewsItems(html, source);
-        } else {
-          sourceItems = parseBlueCrossVtListingItems(html, source);
-        }
-        sourceItems = applySourceItemBounds(sourceItems, source);
-        sourceResults.push({
-          name: source.name,
-          feedUrl: source.listingUrl,
-          ok: true,
-          itemCount: sourceItems.length,
-        });
-        items.push(...sourceItems);
-        console.log(`Fetched ${sourceItems.length} items from ${source.name}`);
-        continue;
-      }
-
+      sourceItems = applySourceItemBounds(sourceItems, source);
+    } else {
+      feedUrl = source.feedUrl;
+      await throttleRequest(feedUrl);
       const { text: xml } = await fetchText(
-        source.feedUrl,
+        feedUrl,
         "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
       );
-      let sourceItems = parseFeedItems(xml, source);
+      sourceItems = parseFeedItems(xml, source);
       sourceItems = applySourceItemBounds(sourceItems, source);
-      sourceResults.push({
+    }
+
+    console.log(`Fetched ${sourceItems.length} items from ${source.name}`);
+    return {
+      sourceResult: {
         name: source.name,
-        feedUrl: source.feedUrl,
+        feedUrl,
         ok: true,
         itemCount: sourceItems.length,
-      });
-      items.push(...sourceItems);
-      console.log(`Fetched ${sourceItems.length} items from ${source.name}`);
-    } catch (error) {
-      sourceResults.push({
+      },
+      items: sourceItems,
+    };
+  } catch (error) {
+    console.warn(`Failed to fetch ${source.name}: ${error.message}`);
+    return {
+      sourceResult: {
         name: source.name,
         feedUrl: source.feedUrl || source.facebookPostUrl || source.facebookPageUrl,
         ok: false,
         itemCount: 0,
         error: error.message,
-      });
-      console.warn(`Failed to fetch ${source.name}: ${error.message}`);
-    }
+      },
+      items: [],
+    };
   }
+}
 
-  return { items: dedupeItems(items), sourceResults };
+// Sources fetch concurrently (most are independent domains; throttleRequest
+// keeps same-domain requests a second apart), but results are assembled in
+// source-list order so dedupeItems keeps the same first-seen winner
+// regardless of completion timing.
+export async function collectFeedItems(sources, now = new Date()) {
+  const results = await mapWithConcurrency(
+    sources,
+    SOURCE_CONCURRENCY,
+    (source) => fetchItemsForSource(source, now),
+  );
+
+  return {
+    items: dedupeItems(results.flatMap((result) => result.items)),
+    sourceResults: results.map((result) => result.sourceResult),
+  };
 }
 
 async function loadPreviousState(...jsonOutputPaths) {

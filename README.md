@@ -107,6 +107,7 @@ The matcher includes exact and similar variants, including:
 | `JSON_OUTPUT_PATH` | output path next to RSS as `feed.json` | Output path for the public JSON feed |
 | `AUDIT_JSON_OUTPUT_PATH` | output path next to RSS as `feed-audit.json` | Output path for the audit JSON and summary cache |
 | `RSS_CONCURRENCY` | `6` | Number of article pages to fetch at once |
+| `RSS_SOURCE_CONCURRENCY` | `4` | Number of sources to fetch at once (same-domain requests stay 1s apart) |
 | `RSS_TIMEOUT_MS` | `12000` | Request timeout in milliseconds |
 | `RSS_FETCH_ATTEMPTS` | `3` | Fetch attempts before a source or article is marked failed |
 | `RSS_MAX_RESPONSE_BYTES` | `10485760` (10 MB) | Maximum decompressed response size before a fetch is abandoned |
