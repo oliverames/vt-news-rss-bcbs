@@ -719,13 +719,22 @@ test("collectFeedItems skips sources whose date window has closed", async () => 
     maxPubDate: "2026-06-13T00:00:00Z",
   };
 
+  const expiredToo = {
+    ...expired,
+    name: "Second Closed Window",
+    feedUrl: "https://news.google.com/rss/search?q=other",
+  };
   const { items, sourceResults } = await collectFeedItems(
-    [expired],
+    [expired, expiredToo],
     new Date("2026-06-14T12:00:00Z"),
   );
 
   assert.deepEqual(items, []);
-  assert.equal(sourceResults.length, 1);
+  // Results stay in source-list order even though sources fetch concurrently.
+  assert.deepEqual(
+    sourceResults.map((result) => result.name),
+    [expired.name, expiredToo.name],
+  );
   assert.equal(sourceResults[0].ok, true);
   assert.equal(sourceResults[0].skipped, true);
   assert.equal(sourceResults[0].itemCount, 0);
