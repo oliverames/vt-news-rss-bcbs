@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   buildJsonSummary,
   buildRss,
+  DEFAULT_SOURCES,
   cleanStorySnippet,
   buildSourcesFromEnv,
   buildSnippet,
@@ -17,6 +18,7 @@ import {
   mergeWithArchive,
   mergeFacebookPagePostItem,
   parseBlueCrossVtListingItems,
+  parseBcbsAssociationNewsItems,
   parseFeedItems,
   parseFacebookEmbeddedPosts,
   parseFacebookPageHtml,
@@ -24,6 +26,7 @@ import {
   parseSummaryResponse,
   parseUvmHealthNewsroomItems,
   enrichAndFilterItems,
+  filterSourceItemsByDateWindow,
   htmlToArticleText,
   TOPIC_TERMS,
 } from "../src/index.js";
@@ -116,6 +119,42 @@ test("findMentionTerms ignores unrelated text", () => {
   assert.deepEqual(findMentionTerms("New England's largest insurer reported earnings."), []);
 });
 
+test("default sources cover recurring Kristina export outlets", () => {
+  const sourceText = decodeURIComponent(
+    DEFAULT_SOURCES.map((source) =>
+      [
+        source.name,
+        source.homepage,
+        source.feedUrl,
+        source.listingUrl,
+        source.minPubDate,
+        source.maxPubDate,
+      ]
+        .filter(Boolean)
+        .join(" "),
+    ).join(" "),
+  ).replaceAll("+", " ");
+  const expectedHosts = [
+    "bcbs.com",
+    "burlingtonfreepress.com",
+    "abcnews.go.com",
+    "cbsnews.com",
+    "wsj.com",
+    "cnn.com",
+    "vermontdailychronicle.com",
+    "beckershospitalreview.com",
+    "samessenger.com",
+  ];
+
+  for (const host of expectedHosts) {
+    assert.match(sourceText, new RegExp(host.replaceAll(".", "\\.")));
+  }
+  assert.match(sourceText, /Google News Blue Cross VT Backfill Since Jan 1 2026/);
+  assert.match(sourceText, /when:180d/);
+  assert.match(sourceText, /2026-01-01T00:00:00Z/);
+  assert.match(sourceText, /2026-06-13T00:00:00Z/);
+});
+
 test("topic terms catch the healthcare stories the comms team pulls", () => {
   const cases = [
     ["UVM Health cuts 142 jobs as budget strains continue", "UVM Health"],
@@ -169,6 +208,13 @@ test("transport idiom strip covers named facilities and treatment phrasing", () 
   assert.deepEqual(
     findMentionTerms(
       "Driver treated at a nearby hospital after the collision.",
+      TOPIC_TERMS,
+    ).filter((t) => t === "Hospitals"),
+    [],
+  );
+  assert.deepEqual(
+    findMentionTerms(
+      "DUI driver sends teen biker to hospital after crash.",
       TOPIC_TERMS,
     ).filter((t) => t === "Hospitals"),
     [],
@@ -279,6 +325,32 @@ test("deterministic relevance rejects out-of-region low-priority false positives
 
   assert.equal(
     applyDeterministicRelevance({
+      sourceName: "MyChamplainValley",
+      title:
+        "Northern Border Regional Commission grants announced for Vermont",
+      description:
+        "The awards support water, transportation, and healthcare improvements.",
+      matchedTerms: ["Health care"],
+      category: CATEGORY_TOPIC,
+    }).relevant,
+    false,
+  );
+
+  assert.equal(
+    applyDeterministicRelevance({
+      sourceName: "Vermont Daily Chronicle",
+      title:
+        "Deadline approaches for Vermont to receive $195M for rural health care",
+      description:
+        "Federal funding would support rural health care access for patients.",
+      matchedTerms: ["Rural health"],
+      category: CATEGORY_TOPIC,
+    }).relevant,
+    undefined,
+  );
+
+  assert.equal(
+    applyDeterministicRelevance({
       sourceName: "Google News Health Trade Search",
       title: "CMS proposes new deadlines for prior authorizations for drugs",
       description: "Federal policy update affects coverage operations.",
@@ -286,6 +358,30 @@ test("deterministic relevance rejects out-of-region low-priority false positives
       category: CATEGORY_TOPIC,
       relevant: false,
       reason: "Low-priority health mention outside Vermont or New England.",
+    }).relevant,
+    undefined,
+  );
+
+  assert.equal(
+    applyDeterministicRelevance({
+      sourceName: "CNN Health",
+      title: "The best coupons at CVS Pharmacy",
+      description: "A shopping coupon page.",
+      matchedTerms: ["Prescription drugs & pharmacy"],
+      category: CATEGORY_TOPIC,
+    }).relevant,
+    false,
+  );
+
+  assert.equal(
+    applyDeterministicRelevance({
+      sourceName: "CBS News Health",
+      title:
+        'Americans on health insurance: "I pay a lot of money for and it covers very little"',
+      description:
+        "Consumers describe frustration with what their insurance covers.",
+      matchedTerms: ["Health insurance"],
+      category: CATEGORY_TOPIC,
     }).relevant,
     undefined,
   );
@@ -562,6 +658,24 @@ test("mergeWithArchive drops future-dated stories beyond clock skew", () => {
   );
 });
 
+test("filterSourceItemsByDateWindow enforces backfill boundaries", () => {
+  const source = {
+    minPubDate: "2026-01-01T00:00:00Z",
+    maxPubDate: "2026-06-13T00:00:00Z",
+  };
+  const items = [
+    { title: "Too old", pubDate: new Date("2025-12-31T23:59:59Z") },
+    { title: "In range", pubDate: new Date("2026-05-13T12:00:00Z") },
+    { title: "Too new", pubDate: new Date("2026-06-13T00:00:00Z") },
+    { title: "Undated" },
+  ];
+
+  assert.deepEqual(
+    filterSourceItemsByDateWindow(items, source).map((item) => item.title),
+    ["In range"],
+  );
+});
+
 test("parseFeedItems parses RSS items", () => {
   const xml = `<?xml version="1.0"?>
     <rss version="2.0">
@@ -654,6 +768,49 @@ test("parseBlueCrossVtListingItems extracts dated Newsroom and blog rows", () =>
   assert.match(items[1].feedContent, /bluecrossvt\.org/);
   assert.deepEqual(items[1].searchFallbackTerms, ["bluecrossvt.org"]);
   assert.equal(items[1].scanArticle, false);
+});
+
+test("parseBcbsAssociationNewsItems extracts dated BCBSA listing cards", () => {
+  const html = `<!doctype html>
+    <html>
+      <body>
+        <article class="bcbs-news-item-listing-content">
+          <ul class="bcbs-categories-chips">
+            <li class="bcbs-categories-chips__item">Press Release</li>
+          </ul>
+          <h1 class="bcbs-news-item-listing-content__title">
+            <a class="bcbs-news-item-listing-content__link" href="/about-us/association-news/prior-authorization-standardization">Health Plans Take Next Step to Streamline and Simplify Prior Authorization for Patients and Providers</a>
+          </h1>
+          <p class="bcbs-news-item-listing-content__text">Leading health plans announced a new initiative to accelerate patient access to care.</p>
+          <time class="bcbs-news-item-listing-content__date" dateTime="2026-04-24">April 24, 2026</time>
+        </article>
+        <article class="bcbs-news-item-listing-content">
+          <h1 class="bcbs-news-item-listing-content__title">
+            <a class="bcbs-news-item-listing-content__link" href="/support-resources/terminology-glossary-dictionary">Glossary</a>
+          </h1>
+        </article>
+      </body>
+    </html>`;
+
+  const items = parseBcbsAssociationNewsItems(html, {
+    name: "BCBSA Association News",
+    homepage: "https://www.bcbs.com/about-us/association-news",
+    listingUrl: "https://www.bcbs.com/about-us/association-news",
+    searchFallbackTerms: ["Blue Cross Blue Shield Association"],
+    scanArticle: false,
+  });
+
+  assert.equal(items.length, 1);
+  assert.equal(
+    items[0].link,
+    "https://www.bcbs.com/about-us/association-news/prior-authorization-standardization",
+  );
+  assert.equal(items[0].pubDate.toISOString().slice(0, 10), "2026-04-24");
+  assert.match(items[0].feedContent, /Blue Cross Blue Shield Association/);
+  assert.deepEqual(items[0].searchFallbackTerms, [
+    "Blue Cross Blue Shield Association",
+  ]);
+  assert.equal(items[0].scanArticle, false);
 });
 
 test("parseUvmHealthNewsroomItems extracts dated newsroom cards", () => {
