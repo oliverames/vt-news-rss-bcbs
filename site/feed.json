@@ -1,7 +1,7 @@
 {
   "title": "Blue Cross VT News Mentions",
-  "generatedAt": "2026-06-12T12:53:04.653Z",
-  "itemCount": 37,
+  "generatedAt": "2026-06-12T12:59:52.270Z",
+  "itemCount": 48,
   "sources": [
     {
       "name": "WCAX",
@@ -95,9 +95,9 @@
     },
     {
       "name": "Google News Search",
-      "feedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22&hl=en-US&gl=US&ceid=US:en",
+      "feedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "ok": true,
-      "itemCount": 34
+      "itemCount": 45
     }
   ],
   "items": [
@@ -107,7 +107,8 @@
       "link": "https://vtdigger.org/2026/06/11/vermonts-largest-health-insurer-wants-to-offer-a-cheaper-plan-can-it-actually-help-vermonters/",
       "pubDate": "2026-06-11T19:25:19.000Z",
       "matchedTerms": [
-        "BlueCross BlueShield of Vermont"
+        "BlueCross BlueShield of Vermont",
+        "Vermont's largest health insurer"
       ],
       "snippet": "...  of Vermonters receiving that assistance dropped by more than 9,000. The number of people buying any insurance at all on Vermont’s marketplace fell by more than 2,000, too. Since, BlueCross BlueShield of Vermont has looked for ways to offer less expensive plans. “We went hunting,” Andrew Garland, BCBS’s vice president of client relations and external affairs, told the Green Mountain Care Board in a May 6 hearing outlining a new suite of ...",
       "articleError": ""
@@ -134,7 +135,7 @@
         "Blue Cross and Blue Shield of Vermont",
         "bluecrossvt.org"
       ],
-      "snippet": "Submitted by tim on Tue, 05/19/2026 - 13:53 Related Company Blue Cross and Blue Shield of Vermont Customer Service team honored for quickly and accurately addressing members’ needs (left to right: Lindsay Segale, Janalee Willett and Michelle Leduc). Vermont Business Magazine Blue Cross and Blue Shield of Vermont (Blue  ...",
+      "snippet": "Customer Service team honored for quickly and accurately addressing members’ needs (left to right: Lindsay Segale, Janalee Willett and Michelle Leduc). Vermont Business Magazine Blue Cross and Blue Shield of Vermont (Blue Cross VT) today announced it has been recognized as a Best Performing Call Center for small- to mid-sized organizations, by the Service Quality Measurement Group (SQM). Blue Cross VT’s Customer Service Call Center wa ...",
       "articleError": ""
     },
     {
@@ -158,10 +159,22 @@
       "matchedTerms": [
         "Blue Cross VT",
         "Blue Cross",
-        "Blue Cross and Blue Shield of Vermont",
         "bluecrossvt.org"
       ],
-      "snippet": "Submitted by tim on Wed, 05/06/2026 - 05:17 Related Company Blue Cross and Blue Shield of Vermont Mt. Wantastiquet is across the Connecticut River from Brattleboro in Hinsdale, NH. Vermont Business Magazine Blue Cross VT is again hosting its annual Mountain Days event this Saturday, May 9 from 10am-2pm at Mt. Wantastiq ...",
+      "snippet": "Mt. Wantastiquet is across the Connecticut River from Brattleboro in Hinsdale, NH. Vermont Business Magazine Blue Cross VT is again hosting its annual Mountain Days event this Saturday, May 9 from 10am-2pm at Mt. Wantastiquet. All Vermonters are invited to hike and connect with neighbors and friends. The event promotes physical activity and social connection and is p ...",
+      "articleError": ""
+    },
+    {
+      "title": "Blue Cross of Vermont Rebounds After Near Collapse - Seven Days Vermont",
+      "sourceName": "Google News Search",
+      "link": "https://www.sevendaysvt.com/uncategorized/blue-cross-of-vermont-rebounds-after-near-collapse/",
+      "pubDate": "2026-03-02T08:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross of Vermont",
+        "Blue Cross",
+        "Blue Cross Blue Shield of Vermont"
+      ],
+      "snippet": "Updated at 8:14 p.m. Blue Cross Blue Shield of Vermont, the state’s largest health insurer, reported operating gains of more than $50 million in 2025, marking a dramatic turnaround for the nonprofit insurer after years of mounting losses that brought it to the brink of insolvency. ...",
       "articleError": ""
     },
     {
@@ -175,7 +188,7 @@
         "Blue Cross VT",
         "bluecrossvt.org"
       ],
-      "snippet": "Submitted by tim on Mon, 01/12/2026 - 12:28 Related Company Blue Cross and Blue Shield of Vermont Following Two-Month Transition Period, Roberts Officially Takes Leadership of the Organization Vermont Business Magazine Blue Cross and Blue Shield of Vermont (Blue Cross VT) today announced that Beth Roberts is president  ...",
+      "snippet": "Following Two-Month Transition Period, Roberts Officially Takes Leadership of the Organization Vermont Business Magazine Blue Cross and Blue Shield of Vermont (Blue Cross VT) today announced that Beth Roberts is president and CEO following a two-month transition period with outgoing President and CEO Don George. Roberts joins Blue Cross VT from Beth Israel Lahey Health Performan ...",
       "articleError": ""
     },
     {
@@ -188,7 +201,34 @@
         "BCBSVT",
         "BlueCross BlueShield of Vermont"
       ],
-      "snippet": "Battle of the Giants: Understanding the Public Split Between Blue Cross and UVM Health NetworkAccording to the Blue Cross campaign, a standard MRI scan at UVM Medical Center costs approximately $6,520 compared to $1,799 at an independent facility.Compass VermontDec 24, 202521ShareBCBSVT launched a marketing campaign tit ...",
+      "snippet": "The landscape of Vermont healthcare is shifting beneath our feet. For decades, the relationship between the state’s largest insurer, BlueCross BlueShield of Vermont (BCBSVT), and its largest hospital system, the University of Vermont Health Network (UVMHN), was defined by private negotiation. As of late 2025, that dynamic has dissolved into a public confrontation that places Vermont patient ...",
+      "articleError": ""
+    },
+    {
+      "title": "These Vermonters are about to lose their Medicare Advantage plans and they're scrambling - Burlington Free Press",
+      "sourceName": "Google News Search",
+      "link": "https://www.burlingtonfreepress.com/story/news/local/vermont/2025/11/03/bcbs-medicare-blue-advantage-cut-in-vermont-health-insurance/86963398007/",
+      "pubDate": "2025-11-03T08:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross Blue Shield of Vermont",
+        "Vermont Blue Advantage",
+        "Blue Cross"
+      ],
+      "snippet": "... yers doesn’t know what she’s going to do. The 54-year-old from Chittenden County lives with a disability. When she needed better health insurance, she said her doctors recommended Vermont Blue Advantage, a type of Medicare provided by Blue Cross Blue Shield that could offer her extra benefits and reduced costs. She's been on the plan for five years, she said, and it covers all her frequent doctor visits and monthly prescriptions. But sh ...",
+      "articleError": ""
+    },
+    {
+      "title": "Vermont Blue Advantage will not sell plans at all in 2026 - VTDigger",
+      "sourceName": "Google News Search",
+      "link": "https://vtdigger.org/2025/10/13/vermont-blue-advantage-will-not-sell-plans-at-all-in-2026/",
+      "pubDate": "2025-10-13T07:00:00.000Z",
+      "matchedTerms": [
+        "Vermont Blue Advantage",
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross Blue Shield of Vermont",
+        "Blue Cross"
+      ],
+      "snippet": "Vermont Blue Advantage will no longer offer any Medicare Advantage plans in the state for 2026. On October 1, Blue Cross Blue Shield of Vermont announced Vermont Blue Advantage would not continue coverage for the 26,000 people in the state on its individual Me ...",
       "articleError": ""
     },
     {
@@ -200,6 +240,54 @@
         "Blue Cross"
       ],
       "snippet": "These are the health insurers that quit Medicare Advantage - Modern Healthcare These are the health insurers that quit Medicare Advantage Modern Healthcare These are the health insurers that quit Medicare Advantage Modern Healthcare",
+      "articleError": ""
+    },
+    {
+      "title": "Blue Cross Blue Shield to drop Medicare Advantage plans by year’s end - WCAX",
+      "sourceName": "Google News Search",
+      "link": "https://www.wcax.com/2025/10/01/blue-cross-blue-shield-drop-medicare-advantage-plans-by-end-year/",
+      "pubDate": "2025-10-01T07:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross",
+        "Vermont Blue Advantage"
+      ],
+      "snippet": "BERLIN, Vt. (WCAX) - Vermont Medicare Advantage recipients won’t be able to access plans through Vermont Blue Advantage starting next year. It comes after Blue Cross Blue Shield says it lost millions of dollars in the last few years, in part due to an uptick in claims. The insurance company lost more than $62 million last year alone. Medicare Advantage pl ...",
+      "articleError": ""
+    },
+    {
+      "title": "Vermont Blue Advantage to end Medicare plans - MyChamplainValley.com",
+      "sourceName": "Google News Search",
+      "link": "https://www.mychamplainvalley.com/news/vermont-blue-advantage-to-end-medicare-plans/",
+      "pubDate": "2025-10-01T07:00:00.000Z",
+      "matchedTerms": [
+        "Vermont Blue Advantage"
+      ],
+      "snippet": "Vermont Blue Advantage to end Medicare plans - MyChamplainValley.com Vermont Blue Advantage to end Medicare plans MyChamplainValley.com Vermont Blue Advantage to end Medicare plans MyChamplainValley.com",
+      "articleError": "HTTP 403 while fetching https://www.mychamplainvalley.com/news/vermont-blue-advantage-to-end-medicare-plans/"
+    },
+    {
+      "title": "Tens of thousands Vermonters are set to lose Medicare Advantage option in 2026 - VTDigger",
+      "sourceName": "Google News Search",
+      "link": "https://vtdigger.org/2025/10/01/tens-of-thousands-vermonters-are-set-to-lose-medicare-advantage-option-in-2026/",
+      "pubDate": "2025-10-01T07:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross Blue Shield of Vermont",
+        "Vermont Blue Advantage",
+        "Blue Cross"
+      ],
+      "snippet": "... ance for 2026. New data from the Centers for Medicare & Medicaid Services reveal all but one provider in the state will discontinue coverage for 2026. Neither UnitedHealthcare nor Vermont Blue Advantage has renewed its individual Medicare Advantage plans for the 2026 year, CMS data show. These plans cover the large majority of the more than 51,600 people insured by Medicare Advantage plans in Vermont. Vermont Blue Advantage’s individual ...",
+      "articleError": ""
+    },
+    {
+      "title": "Vermont Blue Advantage to end Medicare Advantage plans this year - WPTZ",
+      "sourceName": "Google News Search",
+      "link": "https://www.mynbc5.com/article/vermont-blue-advantage-medicare-advantage/68154633",
+      "pubDate": "2025-10-01T07:00:00.000Z",
+      "matchedTerms": [
+        "Vermont Blue Advantage"
+      ],
+      "snippet": "Vermont Blue Advantage has announced that it will end all Medicare Advantage plans at the end of the calendar year. Medicare Advantage PPO and HMO plans include all Medicare Part A and Medicare Part B medical coverage, as well as additional benefits including  ...",
       "articleError": ""
     },
     {
@@ -227,8 +315,19 @@
         "Blue Cross and Blue Shield of Vermont",
         "bluecrossvt.org"
       ],
-      "snippet": "Submitted by tim on Tue, 09/30/2025 - 16:13 Related Company Blue Cross and Blue Shield of Vermont Vermont Business Magazine The Board of Directors for Blue Cross and Blue Shield of Vermont (Blue Cross VT) is pleased to announce that Beth-Ann Roberts, MBA, has been selected as the organization’s next President and CEO,  ...",
+      "snippet": "Vermont Business Magazine The Board of Directors for Blue Cross and Blue Shield of Vermont (Blue Cross VT) is pleased to announce that Beth-Ann Roberts, MBA, has been selected as the organization’s next President and CEO, effective January 10, 2026. Roberts will join Blue Cross VT as CEO-elect on November 10, 20 ...",
       "articleError": ""
+    },
+    {
+      "title": "Blue Cross Blue Shield and MVP Health rate increases approved - MyChamplainValley.com",
+      "sourceName": "Google News Search",
+      "link": "https://www.mychamplainvalley.com/news/local-news/vermont/blue-cross-blue-shield-and-mvp-health-rate-increases-approved/",
+      "pubDate": "2025-08-22T07:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross"
+      ],
+      "snippet": "Blue Cross Blue Shield and MVP Health rate increases approved - MyChamplainValley.com Blue Cross Blue Shield and MVP Health rate increases approved MyChamplainValley.com Blue Cross Blue Shield and MVP Health rate increases approved MyChamplainValley.com",
+      "articleError": "HTTP 403 while fetching https://www.mychamplainvalley.com/news/local-news/vermont/blue-cross-blue-shield-and-mvp-health-rate-increases-approved/"
     },
     {
       "title": "Vermont regulators approve a trimmed increase to 2026 health insurance premiums for large employers - VTDigger",
@@ -236,7 +335,6 @@
       "link": "https://vtdigger.org/2025/06/19/vermont-regulators-approve-a-trimmed-increase-to-2026-health-insurance-premiums-for-large-employers/",
       "pubDate": "2025-06-19T07:00:00.000Z",
       "matchedTerms": [
-        "Blue Cross and Blue Shield of Vermont",
         "Blue Cross Blue Shield of Vermont",
         "Blue Cross"
       ],
@@ -256,7 +354,7 @@
         "Blue Cross Blue Shield of Vermont",
         "Blue Cross"
       ],
-      "snippet": "Submitted by tim on Sat, 06/07/2025 - 16:48 Related Company Blue Cross and Blue Shield of Vermont Insurance rate requests increase by double digits Photo: Graphic courtesy UVMHN by Timothy McQuiston, Vermont Business Magazine Blue Cross Vermont President and CEO Don George has once again expressed concern about the fin ...",
+      "snippet": "Insurance rate requests increase by double digits Photo: Graphic courtesy UVMHN by Timothy McQuiston, Vermont Business Magazine Blue Cross Vermont President and CEO Don George has once again expressed concern about the financial stability of his company and the health insurance industry. He also emphasized the financial vulnerability of the broader health care system, a view shared acr ...",
       "articleError": ""
     },
     {
@@ -267,10 +365,9 @@
       "matchedTerms": [
         "Blue Cross VT",
         "Blue Cross",
-        "BCBSVT",
         "Blue Cross Blue Shield of Vermont"
       ],
-      "snippet": "...  Progress has been made, but health care costs 'simply unsustainable' Dan D'AmbrosioBurlington Free PressMay 8, 2025, 8:00 p.m. ETHear this storyBlue Cross Blue Shield of Vermont (BCBSVT) faced financial difficulties due to rising hospital and prescription drug costs.BCBSVT implemented a recovery plan including expense reduction and support for legislative changes.High claims costs, especially from members with complex needs, significan ...",
+      "snippet": "Blue Cross Blue Shield of Vermont CEO Don George has been ringing the alarm on the finances of the largest health insurance provider since last July, when he sent an open letter via email describing Blue Cross VT's \"fragile financial situation.\" George said th ...",
       "articleError": ""
     },
     {
@@ -279,12 +376,12 @@
       "link": "https://vtdigger.org/2025/05/07/financial-struggles-have-pushed-vermonts-largest-health-insurer-to-the-brink/",
       "pubDate": "2025-05-07T07:00:00.000Z",
       "matchedTerms": [
-        "Blue Cross and Blue Shield of Vermont",
+        "Vermont's largest health insurer",
         "Blue Cross Blue Shield of Vermont",
-        "BlueCross BlueShield of Vermont",
+        "Vermont Blue Advantage",
         "Blue Cross"
       ],
-      "snippet": "Posted inHealth Financial struggles have pushed Vermont’s largest health insurer to the brink Blue Cross and Blue Shield of Vermont has lost over $150 million in the past four years. If it fails, the state’s entire health care apparatus could fall apart, officials say. by Peter D'Auria May 7, 2025, 1:34 pmJune 6, 2025, 11:34 am Share this: Share on Fac ...",
+      "snippet": "Over the past several months, Vermont lawmakers and state officials have been preoccupied with the fate of the state’s largest health insurance company. Blue Cross Blue Shield of Vermont, the Vermont-based member of the nationwide health insurance organization, is also the only health insurance company based in Vermont. The nonprofit covers roughly a third of the state’s population across all its plans. Now, w ...",
       "articleError": ""
     },
     {
@@ -301,7 +398,21 @@
         "Blue Cross",
         "bluecrossvt.org"
       ],
-      "snippet": "Submitted by tim on Tue, 03/25/2025 - 05:54 Related Company Blue Cross and Blue Shield of Vermont Green Mountain Care Board chart from March 12, 2025, shows nine hospitals reported negative operating margin in FY2023, six in FY2024 and nine so far in FY2025. by Timothy McQuiston, Vermont Business Magazine Blue Cross Ve ...",
+      "snippet": "... rt from March 12, 2025, shows nine hospitals reported negative operating margin in FY2023, six in FY2024 and nine so far in FY2025. by Timothy McQuiston, Vermont Business Magazine Blue Cross Vermont CEO Don George sent a letter in mid-January to key healthcare stakeholders discussing the dire situation of Blue Cross Vermont in particular and the state's healthcare industry in general. On Wednesday, March 26, the Green Mountain Care Boar ...",
+      "articleError": ""
+    },
+    {
+      "title": "Amy Stoll receives the Distinguished Young Pharmacist of the Year Award for 2024 - Vermont Business Magazine",
+      "sourceName": "Google News Search",
+      "link": "https://vermontbiz.com/news/2025/march/11/amy-stoll-receives-distinguished-young-pharmacist-year-award-2024",
+      "pubDate": "2025-03-11T07:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross VT",
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross",
+        "bluecrossvt.org"
+      ],
+      "snippet": "Vermont Business Magazine Amy Stoll, Pharm.D., MPH, CDCES, BCACP, who serves as a Clinical Pharmacist at Blue Cross and Blue Shield of Vermont since 2021, is the recipient of the “2025 Distinguished Young Pharmacist of the Year Award” from the Vermont Pharmacists Association in recognition of her active participation in the association, volunteering in her commun ...",
       "articleError": ""
     },
     {
@@ -312,10 +423,9 @@
       "matchedTerms": [
         "Blue Cross VT",
         "Blue Cross",
-        "BCBSVT",
         "Blue Cross and Blue Shield of Vermont"
       ],
-      "snippet": "... erve fund falls even lower: What is driving the freefall? Dan D'AmbrosioBurlington Free PressMarch 3, 2025Updated March 4, 2025, 8:24 a.m. ETBlue Cross and Blue Shield of Vermont (BCBSVT) announced a $62.1 million deficit for 2024, citing a 15.5% increase in medical and drug costs.The insurer attributes the deficit to inadequate premium funding and escalating healthcare costs, particularly hospital and drug prices.BCBSVT's reserve fund  ...",
+      "snippet": "This story has been updated with additional information. Things have not gotten any better financially for the state's largest health insurer, Blue Cross and Blue Shield of Vermont, which last year it was revealed was threatened with insolvency because of its declining reserves. On Monday, Blue Cross VT President and Chief Executive Officer Don George said health care expenses for the insurer soared  ...",
       "articleError": ""
     },
     {
@@ -331,7 +441,7 @@
         "Blue Cross and Blue Shield of Vermont",
         "bluecrossvt.org"
       ],
-      "snippet": "Submitted by tim on Mon, 02/10/2025 - 10:45 Related Company Blue Cross and Blue Shield of Vermont Don George, President and CEO of Blue Cross and Blue Shield of Vermont. VermontBiz file photo. Vermont Business Magazine Don George, President and CEO of Blue Cross and Blue Shield of Vermont, has informed the company’s Bo ...",
+      "snippet": "Don George, President and CEO of Blue Cross and Blue Shield of Vermont. VermontBiz file photo. Vermont Business Magazine Don George, President and CEO of Blue Cross and Blue Shield of Vermont, has informed the company’s Board of Directors and employees of his plan to retire, effective January ...",
       "articleError": ""
     },
     {
@@ -358,7 +468,7 @@
         "Blue Cross and Blue Shield of Vermont",
         "Blue Cross"
       ],
-      "snippet": "Posted inHealth Major Vermont health care players in dispute over alleged overcharges Blue Cross Blue Shield says that the University of Vermont Medical Center charged prices higher than allowed by state regulators — something the hospital denies. by Peter D'Auria August 28, 2024, 1:21 pmAugust 28, 2024, 1:21 pm Share this: Share on Facebook (O ...",
+      "snippet": "Blue Cross and Blue Shield of Vermont told a state regulator that the University of Vermont Medical Center has been overcharging it for the past two years, and is asking for a refund. The alleged overpayments, from the state’s largest private insurer to the st ...",
       "articleError": ""
     },
     {
@@ -371,9 +481,10 @@
         "BCBSVT",
         "Blue Cross VT",
         "Blue Cross Blue Shield of Vermont",
+        "Vermont's largest health insurer",
         "Blue Cross"
       ],
-      "snippet": "... olvency because of its declining reserves, according to a state regulator.Kevin Gaffney, commissioner of the Vermont Department of Financial Regulation, said Friday he's confident BCBSVT will remain solvent, which is his department's responsibility to ensure.\"As solvency regulator, our primary role is protecting the market,\" Gaffney said. \"We have to have a place for people to purchase insurance or we haven't done a good job of protecti ...",
+      "snippet": "BlueCross BlueShield of Vermont − the largest health insurer in Vermont with a 66% market share − is threatened with insolvency because of its declining reserves, according to a state regulator. Kevin Gaffney, commissioner of the Vermont Department of Financia ...",
       "articleError": ""
     },
     {
@@ -382,12 +493,9 @@
       "link": "https://vtdigger.org/2024/07/23/citing-extraordinary-cost-pressures-bluecross-blueshield-of-vermont-seeks-to-raise-insurance-rates-further/",
       "pubDate": "2024-07-23T07:00:00.000Z",
       "matchedTerms": [
-        "BlueCross BlueShield of Vermont",
-        "BCBSVT",
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross"
+        "BlueCross BlueShield of Vermont"
       ],
-      "snippet": "Posted inHealth Citing ‘extraordinary cost pressures,’ BlueCross BlueShield of Vermont seeks to raise insurance rates further If accepted, the new request to state regulators would increase premiums for individual health plans by 21% and small group plans by 24% in 2025. by Peter D'Auria July 23, 2024, 2:01 pmJuly ...",
+      "snippet": "BlueCross BlueShield of Vermont is seeking to raise health insurance premiums by an additional 4.3% next year, further increasing a request for already near-record-high rate hikes. The proposed increase would increase premiums for individual BlueCross BlueShie ...",
       "articleError": ""
     },
     {
@@ -412,7 +520,7 @@
         "BlueCross BlueShield of Vermont",
         "BCBSVT"
       ],
-      "snippet": "... iums in 2025 Dan D'AmbrosioBurlington Free PressUpdated May 15, 2024, 1:10 p.m. ETMore double-digit increases to health insurance premiums are headed our way in 2025, according to BlueCross BlueShield of Vermont. It's the price we have to pay for cutting wait times for health care and for getting older.Vermont's largest health care insurer said it will require rate increases of 16.3% for individual health plans and 19.1% for small group ...",
+      "snippet": "More double-digit increases to health insurance premiums are headed our way in 2025, according to BlueCross BlueShield of Vermont. It's the price we have to pay for cutting wait times for health care and for getting older. Vermont's largest health care insurer said it will require rate increases of 16.3% for individual health plans and 19.1% for small grou ...",
       "articleError": ""
     },
     {
@@ -425,7 +533,22 @@
         "Blue Cross",
         "Blue Cross and Blue Shield of Vermont"
       ],
-      "snippet": "... st medical insurance company is making it easier for patients to get cheaper MRIs at the only independent provider of the scans in the state − Vermont Open MRI in South Burlington.Blue Cross and Blue Shield of Vermont announced on Monday that as of Feb. 1, 2024, it will no longer require prior authorization for health care providers to refer their patients to Vermont Open MRI. The cost of MRIs at Vermont Open MRI is four times lower tha ...",
+      "snippet": "... t medical insurance company is making it easier for patients to get cheaper MRIs at the only independent provider of the scans in the state − Vermont Open MRI in South Burlington. Blue Cross and Blue Shield of Vermont announced on Monday that as of Feb. 1, 2024, it will no longer require prior authorization for health care providers to refer their patients to Vermont Open MRI. The cost of MRIs at Vermont Open MRI is four times lower tha ...",
+      "articleError": ""
+    },
+    {
+      "title": "What the deal between Blue Cross of Vermont and Michigan means for local policyholders - Vermont Public",
+      "sourceName": "Google News Search",
+      "link": "https://www.vermontpublic.org/show/vermont-edition/2023-10-17/what-the-blue-cross-of-michigan-vermont-merger-means-for-local-policyholders",
+      "pubDate": "2023-10-17T07:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross of Vermont",
+        "Blue Cross",
+        "BCBS of Vermont",
+        "Blue Cross Blue Shield of Vermont",
+        "Vermont's largest health insurer"
+      ],
+      "snippet": "Vermont’s largest private health insurer, Blue Cross Blue Shield of Vermont, is now a subsidiary of a much larger counterpart in Michigan. State regulators approved the new relationship last week. Blue Cross Blue Shield of Michigan insures about 5.2 million pe ...",
       "articleError": ""
     },
     {
@@ -434,10 +557,24 @@
       "link": "https://www.fiercehealthcare.com/payers/state-regulators-approve-merger-between-michigan-and-vermont-blues-plans",
       "pubDate": "2023-10-12T07:00:00.000Z",
       "matchedTerms": [
+        "Vermont Blues plan"
+      ],
+      "snippet": "Michigan, Vermont Blues plans finalize merger after securing key regulatory approval - Fierce Healthcare Michigan, Vermont Blues plans finalize merger after securing key regulatory approval Fierce Healthcare Michigan, Vermont Blues plans finalize merger after securing k ...",
+      "articleError": "HTTP 403 while fetching https://www.fiercehealthcare.com/payers/state-regulators-approve-merger-between-michigan-and-vermont-blues-plans"
+    },
+    {
+      "title": "16,000 Vermont health insurance customers affected by data theft, more than previously known - VTDigger",
+      "sourceName": "Google News Search",
+      "link": "https://vtdigger.org/2023/06/19/16000-vermont-health-insurance-customers-affected-by-data-theft-more-than-previously-known/",
+      "pubDate": "2023-06-19T07:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross Vermont",
+        "Blue Cross Blue Shield of Vermont",
+        "Vermont Blue Advantage",
         "Blue Cross"
       ],
-      "snippet": "Michigan, Vermont Blues plans finalize merger after securing key regulatory approval - Fierce Healthcare Michigan, Vermont Blues plans finalize merger after securing key regulatory approval Fierce Healthcare Michigan, Vermont Blues plans finalize merger after securing key regulatory approval Fierce Healthcare",
-      "articleError": "HTTP 403 while fetching https://www.fiercehealthcare.com/payers/state-regulators-approve-merger-between-michigan-and-vermont-blues-plans"
+      "snippet": "... was stolen in a cyberattack in January — more than twice the number originally reported. The affected people included over 14,000 Vermont residents, of whom 13,700 were members of Vermont Blue Advantage health insurance plans, the state Attorney General’s Office said in response to a VTDigger inquiry. It said the other residents were on different insurance plans: nearly 300 with Aetna ACE and about 50 with UAW Retiree Medical Benefits T ...",
+      "articleError": ""
     },
     {
       "title": "Blue Cross and Blue Shield of Vermont to affiliate with Michigan counterpart - VTDigger",
@@ -449,10 +586,9 @@
         "Blue Cross",
         "BCBSVT",
         "BCBS of Vermont",
-        "Blue Cross Blue Shield of Vermont",
-        "BlueCross BlueShield of Vermont"
+        "Vermont Blue Advantage"
       ],
-      "snippet": "Posted inHealth Blue Cross and Blue Shield of Vermont to affiliate with Michigan counterpart by Kristen Fountain May 1, 2023, 1:46 pmOctober 17, 2024, 12:51 pm Share this: Share on Facebook (Opens in new window) Facebook Share on Bluesky (Opens in new window) Bluesky Share on ...",
+      "snippet": "Updated at 5:15 p.m. Blue Cross and Blue Shield of Vermont is seeking to become part of the Blue Cross Blue Shield of Michigan “family of companies.” The Vermont organization’s decision to affiliate with its Detroit-based counterpart, announced Monday, would give the state’s large ...",
       "articleError": ""
     },
     {
@@ -540,9 +676,10 @@
       "matchedTerms": [
         "BCBSVT",
         "Blue Cross and Blue Shield of Vermont",
+        "Vermont Blue Advantage",
         "Blue Cross"
       ],
-      "snippet": "...  March 2020. Her leadership is essential to the success of this new venture. Getsie is overseeing the development and implementation of Vermont Blue Advantage, which was formed by Blue Cross and Blue Shield of Vermont to offer seniors Vermont-grown Medicare Advantage plans. She notes that “Medicare Advantage plans are growing in popularity in Vermont and nationally,” as an alternative to Original Medicare. Over 100,000 seniors in Vermon ...",
+      "snippet": "... t businessperson who appreciates and understands the actuarial science that shapes health care today. Drawing on 25 years of health care management, she was appointed President of Vermont Blue Advantage® in March 2020. Her leadership is essential to the success of this new venture. Getsie is overseeing the development and implementation of Vermont Blue Advantage, which was formed by Blue Cross and Blue Shield of Vermont to offer seniors ...",
       "articleError": ""
     },
     {
@@ -555,7 +692,7 @@
         "Blue Cross",
         "Blue Cross Blue Shield of Vermont"
       ],
-      "snippet": "Posted inHealth Blue Cross and Blue Shield of Vermont delays payments to doctors, straining small practices by Xander Landen March 7, 2019, 6:32 pmMarch 8, 2019, 6:54 pm Share this: Share on Facebook (Opens in new window) Facebook Share on Bluesky (Opens in new window) Bluesk ...",
+      "snippet": "[O]ver the past two months, Blue Cross and Blue Shield of Vermont has delayed tens of thousands of dollars in payments to a number of medical providers, putting a financial strain on small private practices in Vermont that rely on income from the insurer. The insurance company says the d ...",
       "articleError": ""
     },
     {
