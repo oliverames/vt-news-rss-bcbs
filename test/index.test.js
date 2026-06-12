@@ -121,6 +121,10 @@ test("topic terms catch the healthcare stories the comms team pulls", () => {
     ["BCBS, MVP Health Care request lower premium increases", "MVP Health Care"],
     ["Deadline approaches for Vermont to receive $195M for rural health care", "Rural health"],
     ["New community mental health center planned for Montpelier", "Mental health"],
+    ["More than half of states have taken up menopause legislation", "Women's health"],
+    ["The shortage of many medicines in the U.S. remains a systemic problem", "Prescription drugs & pharmacy"],
+    ["Poll: Trust in federal health agencies dropped sharply", "Federal health agencies"],
+    ["Inside the push to bring AI doctors into American medicine", "Health care AI"],
   ];
 
   for (const [headline, expectedTerm] of cases) {
@@ -207,13 +211,13 @@ test("mergeWithArchive keeps stories that left their source feeds", () => {
   const current = [
     {
       link: "https://example.com/new",
-      title: "New story",
+      title: "Blue Cross new story",
       pubDate: new Date("2026-06-11T12:00:00Z"),
       summary: "",
     },
     {
       link: "https://example.com/shared",
-      title: "Updated story",
+      title: "Updated Blue Cross story",
       pubDate: new Date("2026-06-10T12:00:00Z"),
       summary: "fresh",
     },
@@ -221,19 +225,19 @@ test("mergeWithArchive keeps stories that left their source feeds", () => {
   const archived = [
     {
       link: "https://example.com/shared",
-      title: "Old version",
+      title: "Old Blue Cross version",
       pubDate: new Date("2026-06-10T12:00:00Z"),
       summary: "stale",
     },
     {
       link: "https://example.com/old-but-kept",
-      title: "Fell out of feed",
+      title: "UVM Health story fell out of feed",
       pubDate: new Date("2026-05-01T12:00:00Z"),
       summary: "kept",
     },
     {
       link: "https://example.com/ancient",
-      title: "Too old",
+      title: "Ancient UVM Health story",
       pubDate: new Date("2024-01-01T12:00:00Z"),
       summary: "pruned",
     },
@@ -255,6 +259,19 @@ test("mergeWithArchive keeps stories that left their source feeds", () => {
       pubDate: new Date("2026-06-10T12:00:00Z"),
       matchedTerms: ["BCBSVT"],
     },
+    {
+      link: "https://example.com/stale-federal-agency-match",
+      title: "FDA issues emergency use authorization to treat dogs and cats",
+      pubDate: new Date("2026-06-10T12:00:00Z"),
+      matchedTerms: ["Federal health agencies"],
+    },
+    {
+      link: "https://example.com/search-fallback",
+      title: "Implicit brand search result",
+      pubDate: new Date("2026-06-10T12:00:00Z"),
+      matchedTerms: ["Blue Cross"],
+      matchSource: "searchFallback",
+    },
   ];
 
   const merged = mergeWithArchive(current, archived, now);
@@ -263,6 +280,7 @@ test("mergeWithArchive keeps stories that left their source feeds", () => {
     "https://example.com/new",
     "https://example.com/old-but-kept",
     "https://example.com/online_features/press_releases/brand-wire.html",
+    "https://example.com/search-fallback",
     "https://example.com/shared",
   ]);
   const shared = merged.find((item) => item.link === "https://example.com/shared");
@@ -275,19 +293,19 @@ test("mergeWithArchive drops future-dated stories beyond clock skew", () => {
     [
       {
         link: "https://example.com/future",
-        title: "Future story",
+        title: "Future Blue Cross story",
         pubDate: new Date("2026-06-14T12:00:00Z"),
       },
       {
         link: "https://example.com/current",
-        title: "Current story",
+        title: "Current Blue Cross story",
         pubDate: new Date("2026-06-12T12:00:00Z"),
       },
     ],
     [
       {
         link: "https://example.com/archived-future",
-        title: "Archived future story",
+        title: "Archived future Blue Cross story",
         pubDate: new Date("2026-06-15T12:00:00Z"),
       },
     ],
@@ -465,33 +483,44 @@ test("parseFeedItems supports isSearchFeed property", () => {
     name: "Google News Search",
     feedUrl: "https://news.google.com/rss/...",
     isSearchFeed: true,
+    searchFallbackTerms: ["Blue Cross"],
+    scanArticle: false,
   });
 
   assert.equal(items.length, 1);
   assert.equal(items[0].isSearchFeed, true);
+  assert.deepEqual(items[0].searchFallbackTerms, ["Blue Cross"]);
+  assert.equal(items[0].scanArticle, false);
 });
 
-test("enrichAndFilterItems retains search feed item with fallback matching term when no explicit mentions are found in text", async () => {
-  const originalScan = process.env.RSS_ARTICLE_SCAN;
-  process.env.RSS_ARTICLE_SCAN = "false";
-  try {
-    const { enrichAndFilterItems } = await import("../src/index.js");
-    const items = [
-      {
-        sourceName: "Google News Search",
-        isSearchFeed: true,
-        title: "Implicit news item",
-        link: "https://example.com/implicit-story",
-        feedContent: "This text does not mention any target keywords directly but was indexed by Google News.",
-      }
-    ];
+test("enrichAndFilterItems only uses fallback terms when the source declares them", async () => {
+  const items = [
+    {
+      sourceName: "Google News Brand Search",
+      isSearchFeed: true,
+      searchFallbackTerms: ["Blue Cross"],
+      scanArticle: false,
+      title: "Implicit news item",
+      link: "https://example.com/implicit-story",
+      feedContent:
+        "This text does not mention any target keywords directly but was indexed by a narrow brand search.",
+    },
+    {
+      sourceName: "Google News Broad Health Search",
+      isSearchFeed: true,
+      scanArticle: false,
+      title: "Unrelated broad search item",
+      link: "https://example.com/unrelated-story",
+      feedContent:
+        "This text does not mention target keywords and should not inherit a broad search label.",
+    },
+  ];
 
-    const filtered = await enrichAndFilterItems(items);
-    assert.equal(filtered.length, 1);
-    assert.deepEqual(filtered[0].matchedTerms, ["Blue Cross"]);
-  } finally {
-    process.env.RSS_ARTICLE_SCAN = originalScan;
-  }
+  const filtered = await enrichAndFilterItems(items);
+  assert.equal(filtered.length, 1);
+  assert.equal(filtered[0].link, "https://example.com/implicit-story");
+  assert.deepEqual(filtered[0].matchedTerms, ["Blue Cross"]);
+  assert.equal(filtered[0].matchSource, "searchFallback");
 });
 
 test("htmlToArticleText extracts clean editorial text ignoring boilerplates", () => {

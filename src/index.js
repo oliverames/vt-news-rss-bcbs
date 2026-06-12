@@ -6,6 +6,17 @@ import { GoogleDecoder } from "google-news-url-decoder";
 
 const googleDecoder = new GoogleDecoder();
 
+function googleNewsSearchUrl(query) {
+  const params = new URLSearchParams({
+    q: query,
+    hl: "en-US",
+    gl: "US",
+    ceid: "US:en",
+  });
+
+  return `https://news.google.com/rss/search?${params.toString()}`;
+}
+
 export const DEFAULT_SOURCES = [
   {
     name: "WCAX",
@@ -17,6 +28,11 @@ export const DEFAULT_SOURCES = [
     name: "VTDigger",
     homepage: "https://vtdigger.org/",
     feedUrl: "https://vtdigger.org/feed/",
+  },
+  {
+    name: "Vermont Public",
+    homepage: "https://www.vermontpublic.org/",
+    feedUrl: "https://www.vermontpublic.org/local-news.rss",
   },
   {
     name: "Seven Days",
@@ -92,9 +108,67 @@ export const DEFAULT_SOURCES = [
   {
     name: "Google News Search",
     homepage: "https://news.google.com/",
-    feedUrl:
-      "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22BCBS+VT%22+OR+%22BlueCrossVT%22+OR+%22Blue+CrossVT%22+OR+%22BlueCross+VT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22BlueCross+and+BlueShield+of+Vermont%22+OR+%22BlueCross+%26+BlueShield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
+    feedUrl: googleNewsSearchUrl(
+      [
+        "bluecrossvt.org",
+        '"BCBSVT"',
+        '"BCBS VT"',
+        '"BlueCrossVT"',
+        '"Blue CrossVT"',
+        '"BlueCross VT"',
+        '"Blue Cross VT"',
+        '"Blue Cross Vermont"',
+        '"Blue Cross and Blue Shield of Vermont"',
+        '"BlueCross and BlueShield of Vermont"',
+        '"BlueCross & BlueShield of Vermont"',
+        '"Blue Cross of Vermont"',
+        '"Vermont Blue Advantage"',
+      ].join(" OR "),
+    ),
     isSearchFeed: true,
+    searchFallbackTerms: ["Blue Cross"],
+    maxItems: 50,
+  },
+  {
+    name: "Google News Vermont Health Search",
+    homepage: "https://news.google.com/",
+    feedUrl: googleNewsSearchUrl(
+      [
+        '"UVM Health"',
+        '"Green Mountain Care Board"',
+        '"Vermont health care"',
+        '"Vermont hospital"',
+        '"Vermont Medicaid"',
+        '"Vermont Health Connect"',
+        '"DVHA"',
+        '"Vermont Department of Health"',
+        '"health insurance premiums" Vermont',
+        '"Medicare Advantage" Vermont',
+      ].join(" OR ") + " when:7d",
+    ),
+    isSearchFeed: true,
+    scanArticle: false,
+    maxItems: 30,
+  },
+  {
+    name: "Google News Health Insurance Search",
+    homepage: "https://news.google.com/",
+    feedUrl: googleNewsSearchUrl(
+      [
+        '"Medicare Advantage"',
+        '"prior authorization"',
+        '"medical debt"',
+        '"health insurance premiums"',
+        '"PBM"',
+        '"No Surprises Act"',
+        '"ACA coverage losses"',
+        '"GLP-1 coverage"',
+        '"payer issues"',
+      ].join(" OR ") + " when:7d",
+    ),
+    isSearchFeed: true,
+    scanArticle: false,
+    maxItems: 30,
   },
   {
     name: "VTDigger Facebook",
@@ -212,7 +286,7 @@ export const TOPIC_TERMS = [
   {
     label: "Prescription drugs & pharmacy",
     pattern:
-      /\bprescription\s+drug\w*|\bpharmac(?:y|ies|ist)\b|\bPBM\b|\bpharmacy\s+benefit\w*|\bArrayRx\b|\bdrug\s+(?:prices?|costs?|discounts?)\b/i,
+      /\bprescription\s+drug\w*|\bpharmac(?:y|ies|ist)\b|\bPBM\b|\bpharmacy\s+benefit\w*|\bArrayRx\b|\bdrug\s+(?:prices?|costs?|discounts?|shortages?)\b|\bmedicine\s+shortages?\b|\bshortages?\s+of\s+(?:many\s+)?medicines?\b/i,
   },
   {
     label: "Prior authorization & claims",
@@ -242,7 +316,7 @@ export const TOPIC_TERMS = [
   {
     label: "Medical costs & billing",
     pattern:
-      /\bmedical\s+(?:debt|bills?|billing)\b|\bsurprise\s+bill\w*|\bno\s+surprises\s+act\b|\bhealth\s+(?:care\s+)?costs?\b|\bhospital\s+pric\w*|\breference[-\s]based\s+pricing\b|\bhealth\s+care\s+spending\b/i,
+      /\bmedical\s+(?:debt|bills?|billing)\b|\bbilling\s+(?:abuse|disputes?)\b|\bsurprise\s+bill\w*|\bno\s+surprises\s+act\b|\bhealth\s+(?:care\s+)?costs?\b|\bhealth\s+care\s+affordability\b|\bhospital\s+pric\w*|\breference[-\s]based\s+pricing\b|\bhealth\s+care\s+spending\b/i,
   },
   { label: "Telehealth", pattern: /\btelehealth\b|\btelemedicine\b/i },
   { label: "Public health", pattern: /\bpublic\s+health\b/i },
@@ -264,6 +338,19 @@ export const TOPIC_TERMS = [
     label: "Reproductive health",
     pattern:
       /\babortion\w*|\breproductive\s+(?:health|care)\b|\bgender-affirming\b/i,
+  },
+  {
+    label: "Women's health",
+    pattern: /\bmenopause\b|\bwomen'?s\s+health\b/i,
+  },
+  {
+    label: "Federal health agencies",
+    pattern: /\bfederal\s+health\s+agenc(?:y|ies)\b/i,
+  },
+  {
+    label: "Health care AI",
+    pattern:
+      /\b(?:clinical|medical|health\s+care|healthcare|medical-billing)\s+AI\b|\bAI\s+(?:doctors?|in\s+(?:health\s+care|healthcare|medicine))\b|\bWISeR\b/i,
   },
   {
     label: "Physician workforce",
@@ -483,6 +570,8 @@ export function parseFeedItems(feedXml, source) {
         sourceName: source.name,
         sourceFeedUrl: source.feedUrl,
         isSearchFeed: !!source.isSearchFeed,
+        searchFallbackTerms: source.searchFallbackTerms || [],
+        scanArticle: source.scanArticle !== false,
         title,
         link,
         guid,
@@ -525,6 +614,8 @@ export function parseFeedItems(feedXml, source) {
         sourceName: source.name,
         sourceFeedUrl: source.feedUrl,
         isSearchFeed: !!source.isSearchFeed,
+        searchFallbackTerms: source.searchFallbackTerms || [],
+        scanArticle: source.scanArticle !== false,
         title,
         link,
         guid,
@@ -641,6 +732,7 @@ export function parseFacebookPostHtml(html, source) {
     pubDate,
     description,
     comments,
+    scanArticle: false,
     feedContent: cleanText([title, description, commentText].filter(Boolean).join(" ")),
   };
 }
@@ -902,7 +994,10 @@ async function collectFeedItems(sources) {
         source.feedUrl,
         "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
       );
-      const sourceItems = parseFeedItems(xml, source);
+      let sourceItems = parseFeedItems(xml, source);
+      if (source.maxItems) {
+        sourceItems = sourceItems.slice(0, source.maxItems);
+      }
       sourceResults.push({
         name: source.name,
         feedUrl: source.feedUrl,
@@ -946,6 +1041,7 @@ async function loadPreviousState(jsonOutputPath) {
           reason: item.reason || "",
           comments: Array.isArray(item.comments) ? item.comments : [],
           articleError: item.articleError || "",
+          matchSource: item.matchSource || "",
         });
         archivedItems.push({
           sourceName: item.sourceName,
@@ -961,6 +1057,7 @@ async function loadPreviousState(jsonOutputPath) {
           reason: item.reason || "",
           comments: Array.isArray(item.comments) ? item.comments : [],
           articleError: item.articleError || "",
+          matchSource: item.matchSource || "",
         });
       }
     }
@@ -995,6 +1092,19 @@ function isRejectedBySourceShape(item) {
   );
 }
 
+function hasCurrentMatchingEvidence(item) {
+  if (item.matchSource === "searchFallback") {
+    return true;
+  }
+
+  const evidence = cleanText(
+    [item.title, item.snippet, item.summary, item.reason]
+      .filter(Boolean)
+      .join(" "),
+  );
+  return findMentionTerms(evidence, [...MENTION_TERMS, ...TOPIC_TERMS]).length > 0;
+}
+
 export function mergeWithArchive(currentItems, archivedItems, now = new Date()) {
   const byLink = new Map();
   for (const item of archivedItems) {
@@ -1009,6 +1119,9 @@ export function mergeWithArchive(currentItems, archivedItems, now = new Date()) 
   const maxFutureTime = now.valueOf() + MAX_FUTURE_SKEW_HOURS * 60 * 60 * 1000;
   return [...byLink.values()].filter((item) => {
     if (isRejectedBySummary(item) || isRejectedBySourceShape(item)) {
+      return false;
+    }
+    if (!hasCurrentMatchingEvidence(item)) {
       return false;
     }
 
@@ -1238,10 +1351,11 @@ export async function enrichAndFilterItems(items, cache = new Map()) {
             ? item.comments
             : cached.comments || [],
         articleError: cached.articleError,
+        matchSource: cached.matchSource || "",
       };
     }
 
-    if (SCAN_ARTICLE_PAGES) {
+    if (SCAN_ARTICLE_PAGES && item.scanArticle !== false) {
       await throttleRequest(resolvedLink);
       try {
         const { text: html, url: finalUrl } = await fetchText(
@@ -1269,12 +1383,14 @@ export async function enrichAndFilterItems(items, cache = new Map()) {
     ];
 
     let finalMatchedTerms = canonicalizeMatchedTerms(matchedTerms);
+    let matchSource = "text";
     if (finalMatchedTerms.length === 0) {
-      if (item.isSearchFeed) {
-        finalMatchedTerms = ["Blue Cross"];
-      } else {
+      const fallbackTerms = canonicalizeMatchedTerms(item.searchFallbackTerms || []);
+      if (fallbackTerms.length === 0) {
         return null;
       }
+      finalMatchedTerms = fallbackTerms;
+      matchSource = "searchFallback";
     }
 
     const snippetSource =
@@ -1288,6 +1404,7 @@ export async function enrichAndFilterItems(items, cache = new Map()) {
       snippet: buildSnippet(snippetSource, [...MENTION_TERMS, ...TOPIC_TERMS]),
       comments: item.comments || [],
       articleError,
+      matchSource,
     };
   });
 
@@ -1451,6 +1568,7 @@ export function buildJsonSummary(items, sourceResults, now = new Date()) {
         reason: item.reason || "",
         comments,
         articleError: item.articleError || "",
+        matchSource: item.matchSource || "",
       };
     }),
   };

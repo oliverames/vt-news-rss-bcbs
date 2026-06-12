@@ -28,6 +28,7 @@ The default source list includes:
 | --- | --- |
 | WCAX | `https://www.wcax.com/arc/outboundfeeds/whiz-rss/category/news/?outputType=xml&size=50&sort=display_date%3Adesc` |
 | VTDigger | `https://vtdigger.org/feed/` |
+| Vermont Public | `https://www.vermontpublic.org/local-news.rss` |
 | Seven Days | `https://www.sevendaysvt.com/vermont/Rss.xml` |
 | MyNBC5 | `https://www.mynbc5.com/topstories-rss` |
 | MyChamplainValley | `https://www.mychamplainvalley.com/feed/` |
@@ -41,6 +42,10 @@ The default source list includes:
 | Valley News | `https://vnews.com/feed/` |
 | The Mountain Times | `https://mountaintimes.info/feed/` |
 | Newport Daily Express | `https://www.newportvermontdailyexpress.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc` |
+| Google News brand search | capped BCBSVT/Blue Cross VT search RSS |
+| Google News Vermont health search | capped 7-day Vermont health care search RSS |
+| Google News health insurance search | capped 7-day national payer/coverage search RSS |
+| VTDigger Facebook post | configured public post URL, comments included when parseable |
 
 ## Quick Start
 
