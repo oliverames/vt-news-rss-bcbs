@@ -42,6 +42,7 @@
       .topbar {
         display: flex;
         align-items: center;
+        flex-wrap: wrap;
         gap: 12px;
         font-size: 0.9rem;
         margin-bottom: 24px;
@@ -53,6 +54,45 @@
         border: 1px solid var(--fg);
         color: var(--fg);
         text-decoration: none;
+      }
+
+      .topbar .search {
+        margin-left: auto;
+      }
+
+      .topbar input[type="search"] {
+        box-sizing: border-box;
+        width: 210px;
+        max-width: 100%;
+        padding: 4px 8px;
+        border: 1px solid var(--fg);
+        background: #fff;
+        color: var(--fg);
+        font: inherit;
+        font-size: 0.9rem;
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      @media (max-width: 520px) {
+        .topbar .search {
+          flex-basis: 100%;
+          margin-left: 0;
+        }
+
+        .topbar input[type="search"] {
+          width: 100%;
+        }
       }
 
       h1 {
@@ -241,6 +281,10 @@
       <div class="topbar">
         <a class="button" href="feed.rss">RSS Feed</a>
         <a class="button" href="feed.json">JSON Feed</a>
+        <label class="search" for="search-input">
+          <span class="visually-hidden">Search stories</span>
+          <input id="search-input" type="search" autocomplete="off" placeholder="Search">
+        </label>
       </div>
 
       <h1>Blue Cross VT : News Mentions</h1>
@@ -255,8 +299,6 @@
         <span id="section-links"></span>
       </nav>
 
-      <nav class="pager" id="pager-top" aria-label="Article pages" hidden></nav>
-
       <ul class="stories" id="stories">
         <li class="status">Loading stories&hellip;</li>
       </ul>
@@ -264,11 +306,13 @@
       <nav class="pager" id="pager-bottom" aria-label="Article pages" hidden></nav>
 
       <footer>
-        Blue Cross VT mentions and Vermont health care coverage collected
-        from Vermont news outlets and Google News, refreshed hourly. Stories
-        are kept for three months, even after they leave their source feeds.
+        Blue Cross VT mentions and Vermont health care coverage are collected
+        from Vermont news outlets and Google News, refreshed hourly. Direct
+        Blue Cross VT mentions are kept indefinitely; other stories are kept
+        for three months after they leave their source feeds.
         BlueCrossVT.org posts and social posts are available as sections but
-        hidden from All by default. Summaries are AI-generated.
+        hidden from All by default. Refresh the page to load the latest
+        published update. Summaries are AI-generated.
         Subscribe via <a href="feed.rss">RSS</a> or
         <a href="feed.json">JSON</a>.
       </footer>
@@ -279,8 +323,8 @@
       const sectionsEl = document.getElementById("sections");
       const sectionLinksEl = document.getElementById("section-links");
       const datelineEl = document.getElementById("dateline");
-      const pagerTopEl = document.getElementById("pager-top");
       const pagerBottomEl = document.getElementById("pager-bottom");
+      const searchInputEl = document.getElementById("search-input");
 
       let allItems = [];
       const pageSize = 25;
@@ -344,6 +388,50 @@
           (total, comment) => total + 1 + countComments(comment.replies || []),
           0,
         );
+      }
+
+      function commentSearchText(comments) {
+        return (comments || [])
+          .flatMap((comment) => [
+            comment.author || "",
+            comment.text || "",
+            ...commentSearchText(comment.replies || []),
+          ])
+          .join(" ");
+      }
+
+      function activeSearchTerms() {
+        return (searchInputEl.value || "")
+          .trim()
+          .toLowerCase()
+          .split(/\s+/)
+          .filter(Boolean);
+      }
+
+      function itemSearchText(item) {
+        return [
+          item.title,
+          item.summary,
+          item.snippet,
+          item.reason,
+          item.sourceName,
+          ...(item.matchedTerms || []),
+          commentSearchText(item.comments || []),
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+      }
+
+      function searchItems(items) {
+        const terms = activeSearchTerms();
+        if (terms.length === 0) {
+          return items;
+        }
+        return items.filter((item) => {
+          const text = itemSearchText(item);
+          return terms.every((term) => text.includes(term));
+        });
       }
 
       function sectionItems() {
@@ -463,19 +551,20 @@
       }
 
       function renderStories() {
-        const items = orderedItems(sectionItems());
+        const items = orderedItems(searchItems(sectionItems()));
         const pageCount = Math.max(1, Math.ceil(items.length / pageSize));
         const page = Math.min(activePage(), pageCount);
         const pageItems = items.slice((page - 1) * pageSize, page * pageSize);
 
         storiesEl.replaceChildren();
-        renderPager(pagerTopEl, items.length, page, pageCount);
         renderPager(pagerBottomEl, items.length, page, pageCount);
 
         if (pageItems.length === 0) {
           const li = document.createElement("li");
           li.className = "status";
-          li.textContent = "No stories match this section.";
+          li.textContent = activeSearchTerms().length > 0
+            ? "No stories match this search."
+            : "No stories match this section.";
           storiesEl.appendChild(li);
           return;
         }
@@ -617,8 +706,8 @@
                 minute: "2-digit",
               });
           datelineEl.textContent = generated
-            ? `Last updated ${generated} · ${allItems.length} stories collected over three months`
-            : `${allItems.length} stories collected over three months`;
+            ? `Last updated ${generated} · refreshed hourly`
+            : "Refreshed hourly";
           renderAll();
         } catch (error) {
           datelineEl.textContent = "";
@@ -629,6 +718,13 @@
           storiesEl.appendChild(li);
         }
       }
+
+      searchInputEl.addEventListener("input", () => {
+        if (activePage() > 1) {
+          history.replaceState(null, "", buildHash(activeSection(), 1));
+        }
+        renderStories();
+      });
 
       window.addEventListener("hashchange", renderAll);
       load();

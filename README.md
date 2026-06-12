@@ -18,7 +18,7 @@ The generator scans title, RSS summary, feed content, and article-page text. Tha
 
 Coverage is limited to the items each outlet exposes through its public RSS feed at run time, plus the major outlets' public Facebook pages. Facebook's no-login HTML exposes each page's most recent post, so the hourly schedule accumulates posts over time; posts are kept only when they mention Blue Cross. Facebook comments are included only when a public HTML response exposes parseable comment text; availability can vary by Facebook response and may be incomplete.
 
-The JSON output records source fetch failures, summaries, keyword matches, and comments when present, so a run can be checked before relying on it as complete. Stories are retained for a bounded archive window after they leave a source feed.
+The JSON output records source fetch failures, summaries, keyword matches, and comments when present, so a run can be checked before relying on it as complete. Direct Blue Cross VT mentions are retained indefinitely after they leave a source feed; other stories are retained for a bounded archive window.
 
 ## Included Sources
 
@@ -101,7 +101,7 @@ The matcher includes exact and similar variants, including:
 | `RSS_FETCH_ATTEMPTS` | `3` | Fetch attempts before a source or article is marked failed |
 | `RSS_ARTICLE_SCAN` | `true` | Set to `false` to filter only RSS feed text |
 | `RSS_MAX_FUTURE_HOURS` | `6` | Future-dated item tolerance before an item is excluded |
-| `ARCHIVE_MAX_AGE_DAYS` | `92` | Maximum age for retained archived stories |
+| `ARCHIVE_MAX_AGE_DAYS` | `92` | Maximum age for topic-only archived stories; direct Blue Cross VT mentions are retained indefinitely |
 | `FEED_URL` | empty | Public URL for Atom self-link |
 | `JSON_FEED_URL` | empty | Public URL for the JSON Feed |
 | `SITE_URL` | empty | Public base URL for the channel link |
