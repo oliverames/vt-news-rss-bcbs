@@ -27,10 +27,18 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Runs are serialized (cancel-in-progress: false), so without a timeout a
+    # hung build would hold the queue for GitHub's 360-minute default and back
+    # up hours of scheduled runs. A healthy run finishes well under 30 minutes.
+    timeout-minutes: 30
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          # This workflow never pushes back to the repo; don't leave the
+          # workflow token in .git/config for later steps to read.
+          persist-credentials: false
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v6
@@ -57,9 +65,9 @@ jobs:
           SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
         run: |
           mkdir -p site
-          if curl -fsSL "$SITE_URL/feed-audit.json" -o site/feed-audit.json; then
+          if curl -fsSL --max-time 60 "$SITE_URL/feed-audit.json" -o site/feed-audit.json; then
             echo "Seeded archive from live audit feed"
-          elif curl -fsSL "$SITE_URL/feed.json" -o site/feed-audit.json; then
+          elif curl -fsSL --max-time 60 "$SITE_URL/feed.json" -o site/feed-audit.json; then
             echo "Seeded archive from legacy live feed"
           else
             echo "Live archive unavailable; using committed feed-audit.json when present"
@@ -79,6 +87,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

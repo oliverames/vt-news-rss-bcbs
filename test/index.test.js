@@ -28,6 +28,7 @@ import {
   enrichAndFilterItems,
   filterSourceItemsByDateWindow,
   htmlToArticleText,
+  readResponseTextWithLimit,
   TOPIC_TERMS,
 } from "../src/index.js";
 
@@ -1351,6 +1352,31 @@ test("htmlToArticleText extracts clean editorial text ignoring boilerplates", ()
   assert.ok(!text.includes("Trending Articles"));
   assert.ok(!text.includes("About Us"));
   assert.ok(!text.includes("Publisher"));
+});
+
+test("readResponseTextWithLimit decodes normal bodies and rejects oversized ones", async () => {
+  const small = new Response("Blue Cross VT update");
+  assert.equal(
+    await readResponseTextWithLimit(small, 1024),
+    "Blue Cross VT update",
+  );
+
+  // Body larger than the cap is rejected mid-stream and marked non-retryable.
+  const big = new Response("x".repeat(2048));
+  await assert.rejects(
+    () => readResponseTextWithLimit(big, 1024),
+    (error) => /exceeds 1024 bytes/.test(error.message) && error.nonRetryable === true,
+  );
+
+  // A content-length header over the cap short-circuits before reading.
+  const declared = new Response("tiny body", {
+    headers: { "content-length": "999999" },
+  });
+  await assert.rejects(
+    () => readResponseTextWithLimit(declared, 1024),
+    (error) =>
+      /content-length 999999/.test(error.message) && error.nonRetryable === true,
+  );
 });
 
 test("enrichAndFilterItems skips network fetches on cache hits", async () => {

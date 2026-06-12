@@ -808,6 +808,13 @@ const MAX_FETCH_ATTEMPTS = parsePositiveInteger(
   process.env.RSS_FETCH_ATTEMPTS,
   3,
 );
+// Cap on decompressed response bytes. Feeds and article pages from these
+// outlets run well under 10 MB; the cap keeps one misbehaving or compromised
+// source from exhausting the Actions runner's memory mid-run.
+const MAX_RESPONSE_BYTES = parsePositiveInteger(
+  process.env.RSS_MAX_RESPONSE_BYTES,
+  10 * 1024 * 1024,
+);
 
 function parsePositiveInteger(value, fallback) {
   const parsed = Number.parseInt(value ?? "", 10);
@@ -1768,6 +1775,51 @@ async function throttleRequest(url) {
   }
 }
 
+// Equivalent to response.text() (UTF-8 decode, BOM handled by TextDecoder)
+// but aborts once the body exceeds maxBytes. Size errors are marked
+// nonRetryable: a too-large body will be too large on the next attempt too.
+export async function readResponseTextWithLimit(
+  response,
+  maxBytes = MAX_RESPONSE_BYTES,
+) {
+  function oversizedError(detail) {
+    const error = new Error(`Response body exceeds ${maxBytes} bytes${detail}`);
+    error.nonRetryable = true;
+    return error;
+  }
+
+  const declaredLength = Number.parseInt(
+    response.headers?.get?.("content-length") ?? "",
+    10,
+  );
+  if (Number.isFinite(declaredLength) && declaredLength > maxBytes) {
+    await response.body?.cancel();
+    throw oversizedError(` (content-length ${declaredLength})`);
+  }
+
+  if (!response.body) {
+    return response.text();
+  }
+
+  const reader = response.body.getReader();
+  const chunks = [];
+  let receivedBytes = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) {
+      break;
+    }
+    receivedBytes += value.byteLength;
+    if (receivedBytes > maxBytes) {
+      await reader.cancel();
+      throw oversizedError("");
+    }
+    chunks.push(value);
+  }
+
+  return new TextDecoder().decode(Buffer.concat(chunks, receivedBytes));
+}
+
 async function fetchText(url, accept) {
   let lastError = null;
 
@@ -1804,7 +1856,7 @@ async function fetchText(url, accept) {
       }
 
       return {
-        text: await response.text(),
+        text: await readResponseTextWithLimit(response),
         url: response.url,
       };
     } catch (error) {
@@ -1813,7 +1865,7 @@ async function fetchText(url, accept) {
       const isRateLimited = error.status === 429;
       const isClientError =
         error.status >= 400 && error.status < 500 && !isRateLimited;
-      if (isClientError || attempt === MAX_FETCH_ATTEMPTS) {
+      if (isClientError || error.nonRetryable || attempt === MAX_FETCH_ATTEMPTS) {
         break;
       }
 

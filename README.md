@@ -36,6 +36,7 @@ The default source list includes:
 | UVM Health Newsroom | `https://www.uvmhealth.org/newsroom` listing page |
 | BlueCrossVT Newsroom | `https://www.bluecrossvt.org/health-community/news` listing page |
 | BlueCrossVT Be Well VT Blog | `https://www.bluecrossvt.org/health-community/blog/listing` listing page |
+| BCBSA Association News | `https://www.bcbs.com/about-us/association-news` listing page |
 | Addison Independent | `https://www.addisonindependent.com/feed/` |
 | Rutland Herald | `https://www.rutlandherald.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc` |
 | Times Argus | `https://www.timesargus.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc` |
@@ -46,9 +47,16 @@ The default source list includes:
 | Valley News | `https://vnews.com/feed/` |
 | The Mountain Times | `https://mountaintimes.info/feed/` |
 | Newport Daily Express | `https://www.newportvermontdailyexpress.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc` |
+| Vermont Daily Chronicle | `https://vermontdailychronicle.com/feed/` |
+| St. Albans Messenger | `https://www.samessenger.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc` |
 | Google News brand search | capped BCBSVT/Blue Cross VT search RSS |
+| Google News Blue Cross VT backfill | capped 180-day brand search RSS, bounded to Jan 1 - Jun 13, 2026 |
 | Google News Vermont health search | capped 7-day Vermont health care search RSS |
+| Google News Kristina source search | capped 14-day search RSS over recurring News Export outlets (Burlington Free Press, WSJ, ABC, CBS, CNN, Becker's, St. Albans Messenger, Vermont Daily Chronicle) |
 | Google News health insurance search | capped 7-day national payer/coverage search RSS |
+| ABC News Health | `https://abcnews.go.com/abcnews/healthheadlines` |
+| CBS News Health | `https://www.cbsnews.com/latest/rss/health` |
+| CNN Health | `http://rss.cnn.com/rss/cnn_health.rss` |
 | STAT Health News | `https://www.statnews.com/feed/` |
 | Fierce Healthcare | `https://www.fiercehealthcare.com/rss/xml` |
 | Healthcare Dive | `https://www.healthcaredive.com/feeds/news/` |
@@ -59,7 +67,7 @@ The default source list includes:
 | Google News national health policy search | capped 14-day AP/NBC/NYT/Washington Post/Axios health policy search RSS |
 | Facebook pages (VTDigger, WCAX, Seven Days, Vermont Public, MyNBC5, VermontBiz) | each page's latest public post, kept only on a Blue Cross brand match; comments included when parseable |
 
-BlueCrossVT.org and UVM Health do not expose RSS/Atom at the usual feed URLs for these pages, so the generator parses the public dated listing rows on their newsroom/blog pages.
+BlueCrossVT.org, UVM Health, and BCBSA do not expose RSS/Atom at the usual feed URLs for these pages, so the generator parses the public dated listing rows on their newsroom/blog pages.
 
 ## Quick Start
 
@@ -99,6 +107,7 @@ The matcher includes exact and similar variants, including:
 | `RSS_CONCURRENCY` | `6` | Number of article pages to fetch at once |
 | `RSS_TIMEOUT_MS` | `12000` | Request timeout in milliseconds |
 | `RSS_FETCH_ATTEMPTS` | `3` | Fetch attempts before a source or article is marked failed |
+| `RSS_MAX_RESPONSE_BYTES` | `10485760` (10 MB) | Maximum decompressed response size before a fetch is abandoned |
 | `RSS_ARTICLE_SCAN` | `true` | Set to `false` to filter only RSS feed text |
 | `RSS_MAX_FUTURE_HOURS` | `6` | Future-dated item tolerance before an item is excluded |
 | `ARCHIVE_MAX_AGE_DAYS` | `92` | Maximum age for topic-only archived stories; direct Blue Cross VT mentions are retained indefinitely |
@@ -109,6 +118,9 @@ The matcher includes exact and similar variants, including:
 | `SUMMARY_BATCH_SIZE` | `10` | Stories summarized per Gemini request |
 | `SUMMARY_BATCH_DELAY_MS` | `5000` | Delay between Gemini summary requests |
 | `SUMMARY_MAX_REQUESTS_PER_RUN` | `10` | Maximum Gemini summary requests per run |
+| `SUMMARY_REJUDGE_ALL` | empty | Set to `true` for one run after changing the relevance rubric to re-judge every item |
+| `SLACK_WEBHOOK_URL` | empty | Optional Slack webhook pinged when sources fail to fetch |
+| `DISCORD_WEBHOOK_URL` | empty | Optional Discord webhook pinged when sources fail to fetch |
 | `FACEBOOK_POST_URLS` | empty | Optional comma- or newline-separated `Name\|URL` public Facebook posts to include |
 | `FACEBOOK_PAGE_URLS` | empty | Optional comma- or newline-separated `Name\|URL` public Facebook pages to scan when Facebook exposes no-login post HTML |
 | `FACEBOOK_PAGE_MAX_POSTS` | `10` | Maximum post links to read from each configured Facebook page |
