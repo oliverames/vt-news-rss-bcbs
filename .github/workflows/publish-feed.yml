@@ -6,7 +6,7 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    - cron: "17 */6 * * *"
+    - cron: "17 * * * *"
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -45,9 +45,21 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # The live feed.json is the durable archive and summary cache. Seed it
+      # before generating so stories persist across runs and items are only
+      # summarized once (keeps Gemini usage far under free-tier quotas).
+      - name: Seed archive from live feed
+        env:
+          SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: |
+          curl -fsSL "$SITE_URL/feed.json" -o site/feed.json \
+            && echo "Seeded archive from live feed" \
+            || echo "Live feed unavailable; using committed feed.json"
+
       - name: Generate feed
         env:
           SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: npm run generate
 
       - name: Upload Pages artifact

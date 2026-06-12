@@ -9,6 +9,7 @@
       content="Text-only browser for mentions of Blue Cross and Blue Shield of Vermont across Vermont news outlets."
     >
     <link rel="alternate" type="application/rss+xml" title="Blue Cross VT News Mentions" href="feed.rss">
+    <link rel="alternate" type="application/feed+json" title="Blue Cross VT News Mentions JSON Feed" href="feed.json">
     <style>
       :root {
         --fg: #111;
@@ -83,6 +84,30 @@
         color: var(--visited);
       }
 
+      .sections {
+        margin: 0 0 4px;
+        padding: 10px 0;
+        border-top: 1px solid var(--rule);
+        font-size: 0.92rem;
+      }
+
+      .sections .label,
+      .filters .label {
+        font-weight: 700;
+        margin-right: 6px;
+      }
+
+      .sections a {
+        margin-right: 14px;
+        white-space: nowrap;
+      }
+
+      .sections a.active {
+        color: var(--fg);
+        font-weight: 700;
+        text-decoration: none;
+      }
+
       .filters {
         margin: 0 0 22px;
         padding: 10px 0 14px;
@@ -126,6 +151,15 @@
         font-size: 1rem;
       }
 
+      ul.stories .summary {
+        font-size: 0.9rem;
+        margin-top: 3px;
+      }
+
+      ul.stories .why {
+        font-style: italic;
+      }
+
       ul.stories .meta {
         font-size: 0.8rem;
         color: var(--muted);
@@ -134,6 +168,18 @@
 
       ul.stories .meta a {
         color: var(--muted);
+      }
+
+      ul.stories .comments {
+        margin: 5px 0 0 18px;
+        padding: 0;
+        font-size: 0.84rem;
+      }
+
+      ul.stories .comments-title {
+        color: var(--muted);
+        font-size: 0.8rem;
+        margin-top: 4px;
       }
 
       .status {
@@ -155,9 +201,8 @@
   <body>
     <div class="page">
       <div class="topbar">
-        <span>Text-Only Version</span>
         <a class="button" href="feed.rss">RSS Feed</a>
-        <a class="button" href="feed.json">Audit JSON</a>
+        <a class="button" href="feed.json">JSON Feed</a>
       </div>
 
       <h1>Blue Cross VT : News Mentions</h1>
@@ -166,6 +211,11 @@
       </div>
 
       <p class="dateline" id="dateline">Loading&hellip;</p>
+
+      <nav class="sections" id="sections" aria-label="Filter by section" hidden>
+        <span class="label">Sections:</span>
+        <span id="section-links"></span>
+      </nav>
 
       <nav class="filters" id="filters" aria-label="Filter by matched keyword" hidden>
         <span class="label">Keywords:</span>
@@ -177,24 +227,50 @@
       </ul>
 
       <footer>
-        Mentions of Blue Cross and Blue Shield of Vermont collected from
-        Vermont news outlets and Google News, refreshed every 6 hours.
-        Keywords shown under each story are the terms that caused it to be
-        included. <a href="feed.rss">Subscribe via RSS</a>.
+        Blue Cross VT mentions and Vermont health care coverage collected
+        from Vermont news outlets and Google News, refreshed hourly. Stories
+        are kept for a year, even after they leave their source feeds.
+        Keywords under each story are the terms that caused it to be
+        included; summaries are AI-generated.
+        Subscribe via <a href="feed.rss">RSS</a> or
+        <a href="feed.json">JSON</a>.
       </footer>
     </div>
 
     <script>
       const storiesEl = document.getElementById("stories");
+      const sectionsEl = document.getElementById("sections");
+      const sectionLinksEl = document.getElementById("section-links");
       const filtersEl = document.getElementById("filters");
       const filterLinksEl = document.getElementById("filter-links");
       const datelineEl = document.getElementById("dateline");
 
       let allItems = [];
 
-      function activeTerm() {
-        const match = /(?:^|[#&])term=([^&]*)/.exec(location.hash);
+      function hashParam(name) {
+        const match = new RegExp(`(?:^|[#&])${name}=([^&]*)`).exec(
+          location.hash,
+        );
         return match ? decodeURIComponent(match[1]) : "";
+      }
+
+      function activeTerm() {
+        return hashParam("term");
+      }
+
+      function activeSection() {
+        return hashParam("section");
+      }
+
+      function buildHash(section, term) {
+        const parts = [];
+        if (section) {
+          parts.push(`section=${encodeURIComponent(section)}`);
+        }
+        if (term) {
+          parts.push(`term=${encodeURIComponent(term)}`);
+        }
+        return parts.length ? `#${parts.join("&")}` : "#";
       }
 
       function formatDate(iso, options) {
@@ -218,9 +294,16 @@
         return [...counts.entries()].sort((a, b) => b[1] - a[1]);
       }
 
+      function sectionItems() {
+        const section = activeSection();
+        return section
+          ? allItems.filter((item) => item.category === section)
+          : allItems;
+      }
+
       function termLink(term, label, count) {
         const a = document.createElement("a");
-        a.href = term ? `#term=${encodeURIComponent(term)}` : "#";
+        a.href = buildHash(activeSection(), term);
         a.textContent = label;
         if (count !== undefined) {
           const span = document.createElement("span");
@@ -234,10 +317,44 @@
         return a;
       }
 
+      function sectionLink(section, label, count) {
+        const a = document.createElement("a");
+        // Switching sections clears the keyword filter.
+        a.href = buildHash(section, "");
+        a.textContent = label;
+        if (count !== undefined) {
+          const span = document.createElement("span");
+          span.className = "count";
+          span.textContent = ` (${count})`;
+          a.appendChild(span);
+        }
+        if (activeSection() === section) {
+          a.className = "active";
+        }
+        return a;
+      }
+
+      function renderSections() {
+        const counts = new Map();
+        for (const item of allItems) {
+          const category = item.category || "Other";
+          counts.set(category, (counts.get(category) || 0) + 1);
+        }
+
+        sectionLinksEl.replaceChildren();
+        sectionLinksEl.appendChild(sectionLink("", "All", allItems.length));
+        for (const [section, count] of [...counts.entries()].sort()) {
+          sectionLinksEl.appendChild(document.createTextNode(" "));
+          sectionLinksEl.appendChild(sectionLink(section, section, count));
+        }
+        sectionsEl.hidden = false;
+      }
+
       function renderFilters() {
+        const scoped = sectionItems();
         filterLinksEl.replaceChildren();
-        filterLinksEl.appendChild(termLink("", "All", allItems.length));
-        for (const [term, count] of termCounts(allItems)) {
+        filterLinksEl.appendChild(termLink("", "All", scoped.length));
+        for (const [term, count] of termCounts(scoped)) {
           filterLinksEl.appendChild(document.createTextNode(" "));
           filterLinksEl.appendChild(termLink(term, term, count));
         }
@@ -246,9 +363,10 @@
 
       function renderStories() {
         const term = activeTerm();
+        const scoped = sectionItems();
         const items = term
-          ? allItems.filter((item) => (item.matchedTerms || []).includes(term))
-          : allItems;
+          ? scoped.filter((item) => (item.matchedTerms || []).includes(term))
+          : scoped;
 
         storiesEl.replaceChildren();
 
@@ -271,6 +389,19 @@
           headline.appendChild(link);
           li.appendChild(headline);
 
+          if (item.summary || item.snippet) {
+            const summary = document.createElement("div");
+            summary.className = "summary";
+            summary.appendChild(document.createTextNode(item.summary || item.snippet));
+            if (item.summary && item.reason) {
+              const why = document.createElement("span");
+              why.className = "why";
+              why.textContent = ` Why it's here: ${item.reason}`;
+              summary.appendChild(why);
+            }
+            li.appendChild(summary);
+          }
+
           const meta = document.createElement("div");
           meta.className = "meta";
           const date = formatDate(item.pubDate, {
@@ -291,11 +422,29 @@
           });
           li.appendChild(meta);
 
+          if (Array.isArray(item.comments) && item.comments.length > 0) {
+            const commentsTitle = document.createElement("div");
+            commentsTitle.className = "comments-title";
+            commentsTitle.textContent = "Comments";
+            li.appendChild(commentsTitle);
+
+            const comments = document.createElement("ul");
+            comments.className = "comments";
+            for (const comment of item.comments) {
+              const commentLi = document.createElement("li");
+              const author = comment.author ? `${comment.author}: ` : "";
+              commentLi.textContent = `${author}${comment.text || ""}`;
+              comments.appendChild(commentLi);
+            }
+            li.appendChild(comments);
+          }
+
           storiesEl.appendChild(li);
         }
       }
 
       function renderAll() {
+        renderSections();
         renderFilters();
         renderStories();
       }
@@ -308,15 +457,20 @@
           }
           const data = await response.json();
           allItems = data.items || [];
-          const generated = formatDate(data.generatedAt, {
-            weekday: "long",
-            month: "long",
-            day: "numeric",
-            year: "numeric",
-          });
+          const generatedDate = new Date(data.generatedAt);
+          const generated = Number.isNaN(generatedDate.valueOf())
+            ? ""
+            : generatedDate.toLocaleString("en-US", {
+                weekday: "long",
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+              });
           datelineEl.textContent = generated
-            ? `${generated} · ${allItems.length} stories`
-            : `${allItems.length} stories`;
+            ? `Last updated ${generated} · ${allItems.length} stories collected`
+            : `${allItems.length} stories collected`;
           renderAll();
         } catch (error) {
           datelineEl.textContent = "";

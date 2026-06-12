@@ -12,11 +12,13 @@
 
 ## What It Does
 
-This project fetches public RSS feeds from Vermont news outlets, fetches article pages from those feed items, searches for Blue Cross VT mention patterns, and writes a filtered RSS feed named **Blue Cross VT News Mentions**.
+This project fetches public RSS feeds from Vermont news outlets, fetches article pages from those feed items, searches for Blue Cross VT and Vermont health care topic patterns, and writes **RSS** and **JSON Feed** outputs named **Blue Cross VT News Mentions**.
 
 The generator scans title, RSS summary, feed content, and article-page text. That matters because a story can mention Blue Cross in the article body without putting it in the headline.
 
-Coverage is limited to the items each outlet exposes through its public RSS feed at run time. The audit JSON records source fetch failures, for example temporary rate limits, so a run can be checked before relying on it as complete.
+Coverage is limited to the items each outlet exposes through its public RSS feed at run time, plus configured public Facebook post URLs where the no-login HTML exposes Open Graph metadata. Facebook comments are included only when a public HTML response exposes parseable comment text; availability can vary by Facebook response and may be incomplete.
+
+The JSON output records source fetch failures, summaries, keyword matches, and comments when present, so a run can be checked before relying on it as complete. Stories are retained for a bounded archive window after they leave a source feed.
 
 ## Included Sources
 
@@ -57,6 +59,9 @@ The matcher includes exact and similar variants, including:
 - `BCBS VT`
 - `BCBS of Vermont`
 - `Blue Cross VT`
+- `BlueCrossVT`
+- `Blue CrossVT`
+- `BlueCross VT`
 - `Blue Cross Vermont`
 - `Blue Cross and Blue Shield of Vermont`
 - `Blue Cross Blue Shield of Vermont`
@@ -75,9 +80,13 @@ The matcher includes exact and similar variants, including:
 | `RSS_TIMEOUT_MS` | `12000` | Request timeout in milliseconds |
 | `RSS_FETCH_ATTEMPTS` | `3` | Fetch attempts before a source or article is marked failed |
 | `RSS_ARTICLE_SCAN` | `true` | Set to `false` to filter only RSS feed text |
+| `RSS_MAX_FUTURE_HOURS` | `6` | Future-dated item tolerance before an item is excluded |
+| `ARCHIVE_MAX_AGE_DAYS` | `365` | Maximum age for retained archived stories |
 | `FEED_URL` | empty | Public URL for Atom self-link |
+| `JSON_FEED_URL` | empty | Public URL for the JSON Feed |
 | `SITE_URL` | empty | Public base URL for the channel link |
+| `GEMINI_API_KEY` | empty | Optional Gemini key for one-time batched summaries and reasons |
 
 ## Automation
 
-The GitHub Actions workflow publishes `site/` to GitHub Pages on pushes to `main`, manual runs, and a 6-hour schedule. It runs tests first, then regenerates the feed before deploying.
+The GitHub Actions workflow publishes `site/` to GitHub Pages on pushes to `main`, manual runs, and an hourly schedule. It runs tests first, seeds the local archive from the live `feed.json` when available, regenerates the feeds, then deploys.

@@ -1,7 +1,10 @@
 {
+  "version": "https://jsonfeed.org/version/1.1",
   "title": "Blue Cross VT News Mentions",
-  "generatedAt": "2026-06-12T12:59:52.270Z",
-  "itemCount": 48,
+  "home_page_url": "",
+  "feed_url": "",
+  "generatedAt": "2026-06-12T14:23:58.618Z",
+  "itemCount": 33,
   "sources": [
     {
       "name": "WCAX",
@@ -95,39 +98,308 @@
     },
     {
       "name": "Google News Search",
-      "feedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
+      "feedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22BCBS+VT%22+OR+%22BlueCrossVT%22+OR+%22Blue+CrossVT%22+OR+%22BlueCross+VT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22BlueCross+and+BlueShield+of+Vermont%22+OR+%22BlueCross+%26+BlueShield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "ok": true,
-      "itemCount": 45
+      "itemCount": 9
+    },
+    {
+      "name": "VTDigger Facebook",
+      "feedUrl": "https://m.facebook.com/vtdigger/posts/pfbid0nLoHEpYRfcE4UGgCixYUaZge22ZW4FP2TdzBsLaGynXVcfbgdL82gWNaSE6ED6Mgl",
+      "ok": true,
+      "itemCount": 1
     }
   ],
   "items": [
     {
-      "title": "Vermont’s largest health insurer wants to offer a cheaper plan. Can it actually help Vermonters?",
-      "sourceName": "VTDigger",
-      "link": "https://vtdigger.org/2026/06/11/vermonts-largest-health-insurer-wants-to-offer-a-cheaper-plan-can-it-actually-help-vermonters/",
-      "pubDate": "2026-06-11T19:25:19.000Z",
-      "matchedTerms": [
-        "BlueCross BlueShield of Vermont",
-        "Vermont's largest health insurer"
+      "id": "https://vermontbiz.com/news/2026/june/11/vermont-womens-fund-awards-over-400000-grants-local-nonprofits",
+      "url": "https://vermontbiz.com/news/2026/june/11/vermont-womens-fund-awards-over-400000-grants-local-nonprofits",
+      "title": "Vermont Women’s Fund awards over $400,000 in grants to local nonprofits",
+      "content_text": "The Vermont Women’s Fund has awarded over $400,000 in grants to various local nonprofits, including mental health service providers. Why included: Supports community health initiatives relevant to BCBSVT's mission.",
+      "date_published": "2026-06-11T20:24:34.000Z",
+      "tags": [
+        "Mental health"
       ],
-      "snippet": "...  of Vermonters receiving that assistance dropped by more than 9,000. The number of people buying any insurance at all on Vermont’s marketplace fell by more than 2,000, too. Since, BlueCross BlueShield of Vermont has looked for ways to offer less expensive plans. “We went hunting,” Andrew Garland, BCBS’s vice president of client relations and external affairs, told the Green Mountain Care Board in a May 6 hearing outlining a new suite of ...",
+      "sourceName": "Vermont Business Magazine",
+      "sourceFeedUrl": "https://vermontbiz.com/rss.xml",
+      "link": "https://vermontbiz.com/news/2026/june/11/vermont-womens-fund-awards-over-400000-grants-local-nonprofits",
+      "guid": "https://vermontbiz.com/news/2026/june/11/vermont-womens-fund-awards-over-400000-grants-local-nonprofits",
+      "pubDate": "2026-06-11T20:24:34.000Z",
+      "matchedTerms": [
+        "Mental health"
+      ],
+      "category": "VT Health Care",
+      "snippet": "...  Mountain United Way, Working Bridges Program Delivery, Barre - $11,250 · Habitat for Aviation, General Operating Support, Swanton - $7,500 · Hannah's House, Expanding Capacity of Mental Health Services in Central Vermont, Waitsfield - $7,500 · HatchSpace, Teaching Trades Skills to Southern Vermont Women Through HatchSpace Rosie’s Girls Camps and Woodworking for Women Courses, Brattleboro - $11,250 · Jenna's Promise, Jenna's Promise Wor ...",
+      "summary": "The Vermont Women’s Fund has awarded over $400,000 in grants to various local nonprofits, including mental health service providers.",
+      "reason": "Supports community health initiatives relevant to BCBSVT's mission.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://vermontbiz.com/news/2026/june/11/burlington-encourages-residents-prepare-hot-weather",
+      "url": "https://vermontbiz.com/news/2026/june/11/burlington-encourages-residents-prepare-hot-weather",
+      "title": "Burlington encourages residents to prepare for hot weather",
+      "content_text": "Burlington officials are advising residents to prepare for hot weather, noting that vulnerable populations face higher risks of heat-related illness. Why included: Public health advisory regarding vulnerable populations.",
+      "date_published": "2026-06-11T19:39:19.000Z",
+      "tags": [
+        "Vermont health agencies",
+        "Mental health"
+      ],
+      "sourceName": "Vermont Business Magazine",
+      "sourceFeedUrl": "https://vermontbiz.com/rss.xml",
+      "link": "https://vermontbiz.com/news/2026/june/11/burlington-encourages-residents-prepare-hot-weather",
+      "guid": "https://vermontbiz.com/news/2026/june/11/burlington-encourages-residents-prepare-hot-weather",
+      "pubDate": "2026-06-11T19:39:19.000Z",
+      "matchedTerms": [
+        "Vermont health agencies",
+        "Mental health"
+      ],
+      "category": "VT Health Care",
+      "snippet": "... fully adjusted to warmer weather, heat illnesses are more common. Older adults, young children, people who are pregnant, outdoor workers, and those with chronic health conditions, mental health conditions, disabilities, or limited access to cooling are at increased risk of heat-related illness. People experiencing homelessness or living without air conditioning face particularly elevated risks from prolonged heat exposure and dehydratio ...",
+      "summary": "Burlington officials are advising residents to prepare for hot weather, noting that vulnerable populations face higher risks of heat-related illness.",
+      "reason": "Public health advisory regarding vulnerable populations.",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://vtdigger.org/2026/06/11/vermonts-largest-health-insurer-wants-to-offer-a-cheaper-plan-can-it-actually-help-vermonters/",
+      "url": "https://vtdigger.org/2026/06/11/vermonts-largest-health-insurer-wants-to-offer-a-cheaper-plan-can-it-actually-help-vermonters/",
+      "title": "Vermont’s largest health insurer wants to offer a cheaper plan. Can it actually help Vermonters?",
+      "content_text": "BCBSVT is seeking to offer more affordable health insurance plans to address declining enrollment in the state's marketplace. Why included: Directly concerns BCBSVT strategy and public affordability.",
+      "date_published": "2026-06-11T19:25:19.000Z",
+      "tags": [
+        "Blue Cross and Blue Shield of Vermont",
+        "Vermont's largest health insurer"
+      ],
+      "sourceName": "VTDigger",
+      "sourceFeedUrl": "https://vtdigger.org/feed/",
+      "link": "https://vtdigger.org/2026/06/11/vermonts-largest-health-insurer-wants-to-offer-a-cheaper-plan-can-it-actually-help-vermonters/",
+      "guid": "https://vtdigger.org/2026/06/11/vermonts-largest-health-insurer-wants-to-offer-a-cheaper-plan-can-it-actually-help-vermonters/",
+      "pubDate": "2026-06-11T19:25:19.000Z",
+      "matchedTerms": [
+        "Blue Cross and Blue Shield of Vermont",
+        "Vermont's largest health insurer"
+      ],
+      "category": "Blue Cross VT",
+      "snippet": "...  of Vermonters receiving that assistance dropped by more than 9,000. The number of people buying any insurance at all on Vermont’s marketplace fell by more than 2,000, too. Since, BlueCross BlueShield of Vermont has looked for ways to offer less expensive plans. “We went hunting,” Andrew Garland, BCBS’s vice president of client relations and external affairs, told the Green Mountain Care Board in a May 6 hearing outlining a new suite of ...",
+      "summary": "BCBSVT is seeking to offer more affordable health insurance plans to address declining enrollment in the state's marketplace.",
+      "reason": "Directly concerns BCBSVT strategy and public affordability.",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://vnews.com/2026/06/11/gifford-medical-center-opioid-treatment/",
+      "url": "https://vnews.com/2026/06/11/gifford-medical-center-opioid-treatment/",
+      "title": "Randolph hospital offers extended-release opioid treatment in emergency department",
+      "content_text": "Randolph hospital has introduced extended-release opioid treatment within its emergency department. Why included: Tracks regional hospital service expansions for addiction treatment.",
+      "date_published": "2026-06-11T18:42:11.000Z",
+      "tags": [
+        "Hospitals",
+        "Opioids & addiction"
+      ],
+      "sourceName": "Valley News",
+      "sourceFeedUrl": "https://vnews.com/feed/",
+      "link": "https://vnews.com/2026/06/11/gifford-medical-center-opioid-treatment/",
+      "guid": "https://vnews.com/2026/06/11/gifford-medical-center-opioid-treatment/",
+      "pubDate": "2026-06-11T18:42:11.000Z",
+      "matchedTerms": [
+        "Hospitals",
+        "Opioids & addiction"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Randolph hospital offers extended-release opioid treatment in emergency department",
+      "summary": "Randolph hospital has introduced extended-release opioid treatment within its emergency department.",
+      "reason": "Tracks regional hospital service expansions for addiction treatment.",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://www.wcax.com/2026/06/10/more-cuts-could-be-coming-uvm-health-amid-statewide-cost-cutting-push/",
+      "url": "https://www.wcax.com/2026/06/10/more-cuts-could-be-coming-uvm-health-amid-statewide-cost-cutting-push/",
       "title": "More cuts could be coming at UVM Health amid statewide cost-cutting push",
+      "content_text": "UVM Health is considering further service cuts as part of a statewide effort to lower hospital costs and insurance premiums. The report highlights that BCBSVT premiums have risen significantly over the last five years. Why included: Names BCBSVT and discusses premium drivers.",
+      "date_published": "2026-06-10T21:43:55.000Z",
+      "tags": [
+        "Blue Cross"
+      ],
       "sourceName": "WCAX",
+      "sourceFeedUrl": "https://www.wcax.com/arc/outboundfeeds/whiz-rss/category/news/?outputType=xml&size=50&sort=display_date%3Adesc",
       "link": "https://www.wcax.com/2026/06/10/more-cuts-could-be-coming-uvm-health-amid-statewide-cost-cutting-push/",
+      "guid": "https://www.wcax.com/2026/06/10/more-cuts-could-be-coming-uvm-health-amid-statewide-cost-cutting-push/",
       "pubDate": "2026-06-10T21:43:55.000Z",
       "matchedTerms": [
         "Blue Cross"
       ],
+      "category": "Blue Cross VT",
       "snippet": "... down the cost of care by cutting how much money hospitals can make and what they can charge private insurance in an effort to lower Vermonters’ premiums. Over the last five years, Blue Cross Blue Shield premiums for individuals have spiked by over 50%. “First and foremost, I’m a doctor. I want to preserve all services if we possibly can. But we have to get to a place where our expenses are less than our revenue, we have to,” Leffler sai ...",
+      "summary": "UVM Health is considering further service cuts as part of a statewide effort to lower hospital costs and insurance premiums. The report highlights that BCBSVT premiums have risen significantly over the last five years.",
+      "reason": "Names BCBSVT and discusses premium drivers.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://vtdigger.org/2026/06/10/vermont-conversation-are-smartphones-birth-control-economist-caitlin-myers-on-sex-abortion-access-and-talking-across-divides/",
+      "url": "https://vtdigger.org/2026/06/10/vermont-conversation-are-smartphones-birth-control-economist-caitlin-myers-on-sex-abortion-access-and-talking-across-divides/",
+      "title": "Vermont Conversation: Are smartphones birth control? Economist Caitlin Myers on sex, abortion access and talking across divides",
+      "content_text": "An economist discusses how smartphone usage may be impacting sexual behavior and reproductive health trends. Why included: Contextualizes broader public health and reproductive health trends.",
+      "date_published": "2026-06-10T20:45:45.000Z",
+      "tags": [
+        "Reproductive health"
+      ],
+      "sourceName": "VTDigger",
+      "sourceFeedUrl": "https://vtdigger.org/feed/",
+      "link": "https://vtdigger.org/2026/06/10/vermont-conversation-are-smartphones-birth-control-economist-caitlin-myers-on-sex-abortion-access-and-talking-across-divides/",
+      "guid": "https://vtdigger.org/2026/06/10/vermont-conversation-are-smartphones-birth-control-economist-caitlin-myers-on-sex-abortion-access-and-talking-across-divides/",
+      "pubDate": "2026-06-10T20:45:45.000Z",
+      "matchedTerms": [
+        "Reproductive health"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Vermont Conversation: Are smartphones birth control? Economist Caitlin Myers on sex, abortion access and talking across divides Smartphones have led to “reducing in-person interactions, increasing pornography use, and reducing sexual frequency,” say Myers and co-author Ezekiel Hooper in a recent study. Read the story on VTDigger here: Vermont  ...",
+      "summary": "An economist discusses how smartphone usage may be impacting sexual behavior and reproductive health trends.",
+      "reason": "Contextualizes broader public health and reproductive health trends.",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://www.wcax.com/2026/06/10/new-york-end-essential-plan-healthcare-coverage-450000-residents/",
+      "url": "https://www.wcax.com/2026/06/10/new-york-end-essential-plan-healthcare-coverage-450000-residents/",
+      "title": "New York to end Essential Plan healthcare coverage for 450,000 residents",
+      "content_text": "New York state is ending its Essential Plan healthcare coverage for 450,000 residents this June. Why included: Regional health coverage policy changes.",
+      "date_published": "2026-06-10T20:05:00.000Z",
+      "tags": [
+        "Health insurance",
+        "Health care"
+      ],
+      "sourceName": "WCAX",
+      "sourceFeedUrl": "https://www.wcax.com/arc/outboundfeeds/whiz-rss/category/news/?outputType=xml&size=50&sort=display_date%3Adesc",
+      "link": "https://www.wcax.com/2026/06/10/new-york-end-essential-plan-healthcare-coverage-450000-residents/",
+      "guid": "https://www.wcax.com/2026/06/10/new-york-end-essential-plan-healthcare-coverage-450000-residents/",
+      "pubDate": "2026-06-10T20:05:00.000Z",
+      "matchedTerms": [
+        "Health insurance",
+        "Health care"
+      ],
+      "category": "VT Health Care",
+      "snippet": "New York to end Essential Plan healthcare coverage for 450,000 residents The healthcare program offers health insurance to those who struggle to afford it. The coverage will end June 30. The healthcare program offers health insurance to those who struggle to afford it. The coverage will end ...",
+      "summary": "New York state is ending its Essential Plan healthcare coverage for 450,000 residents this June.",
+      "reason": "Regional health coverage policy changes.",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://www.wcax.com/2026/06/09/2-arrested-connection-with-fatal-overdose-stowe/",
+      "url": "https://www.wcax.com/2026/06/09/2-arrested-connection-with-fatal-overdose-stowe/",
+      "title": "2 charged in connection with fatal overdose in Stowe",
+      "content_text": "Two individuals have been charged following a fatal drug overdose in Stowe. Why included: Monitors local public health and addiction issues.",
+      "date_published": "2026-06-10T13:56:48.000Z",
+      "tags": [
+        "Opioids & addiction"
+      ],
+      "sourceName": "WCAX",
+      "sourceFeedUrl": "https://www.wcax.com/arc/outboundfeeds/whiz-rss/category/news/?outputType=xml&size=50&sort=display_date%3Adesc",
+      "link": "https://www.wcax.com/2026/06/09/2-arrested-connection-with-fatal-overdose-stowe/",
+      "guid": "https://www.wcax.com/2026/06/09/2-arrested-connection-with-fatal-overdose-stowe/",
+      "pubDate": "2026-06-10T13:56:48.000Z",
+      "matchedTerms": [
+        "Opioids & addiction"
+      ],
+      "category": "VT Health Care",
+      "snippet": "2 charged in connection with fatal overdose in Stowe Two people have been charged in connection with a fatal overdose in Stowe. Two people have been charged in connection with a fatal overdose in Stowe.",
+      "summary": "Two individuals have been charged following a fatal drug overdose in Stowe.",
+      "reason": "Monitors local public health and addiction issues.",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://vtdigger.org/2026/06/09/uvm-health-cuts-142-jobs-an-estimated-9-million-in-staff-positions/",
+      "url": "https://vtdigger.org/2026/06/09/uvm-health-cuts-142-jobs-an-estimated-9-million-in-staff-positions/",
+      "title": "UVM Health cuts 142 jobs — an estimated $9.5 million in staff positions",
+      "content_text": "UVM Health is cutting 142 staff positions to address a projected $300 million budget deficit. Why included: Hospital financial instability impacts health care delivery.",
+      "date_published": "2026-06-09T18:07:58.000Z",
+      "tags": [
+        "UVM Health",
+        "Hospitals"
+      ],
+      "sourceName": "VTDigger",
+      "sourceFeedUrl": "https://vtdigger.org/feed/",
+      "link": "https://vtdigger.org/2026/06/09/uvm-health-cuts-142-jobs-an-estimated-9-million-in-staff-positions/",
+      "guid": "https://vtdigger.org/2026/06/09/uvm-health-cuts-142-jobs-an-estimated-9-million-in-staff-positions/",
+      "pubDate": "2026-06-09T18:07:58.000Z",
+      "matchedTerms": [
+        "UVM Health",
+        "Hospitals"
+      ],
+      "category": "VT Health Care",
+      "snippet": "UVM Health cuts 142 jobs — an estimated $9.5 million in staff positions The cuts, which include nurses, lab techs and administrative staff, come as the hospital network faces an expected $300 million budget deficit and increasing pressure to cut costs. Read th ...",
+      "summary": "UVM Health is cutting 142 staff positions to address a projected $300 million budget deficit.",
+      "reason": "Hospital financial instability impacts health care delivery.",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://vtdigger.org/2026/06/08/opinion-the-state-cant-fix-vermonts-hospitals-by-telling-them-what-to-do/",
+      "url": "https://vtdigger.org/2026/06/08/opinion-the-state-cant-fix-vermonts-hospitals-by-telling-them-what-to-do/",
+      "title": "The state can’t fix Vermont’s hospitals by telling them what to do",
+      "content_text": "An opinion piece argues that Vermont hospitals require price reform rather than state-mandated operational directives to achieve transformation. Why included: Discusses hospital cost regulation and policy.",
+      "date_published": "2026-06-08T21:47:16.000Z",
+      "tags": [
+        "Hospitals"
+      ],
+      "sourceName": "VTDigger",
+      "sourceFeedUrl": "https://vtdigger.org/feed/",
+      "link": "https://vtdigger.org/2026/06/08/opinion-the-state-cant-fix-vermonts-hospitals-by-telling-them-what-to-do/",
+      "guid": "https://vtdigger.org/2026/06/08/opinion-the-state-cant-fix-vermonts-hospitals-by-telling-them-what-to-do/",
+      "pubDate": "2026-06-08T21:47:16.000Z",
+      "matchedTerms": [
+        "Hospitals"
+      ],
+      "category": "VT Health Care",
+      "snippet": "The state can’t fix Vermont’s hospitals by telling them what to do Real transformation requires getting prices right, then letting hospitals respond. Read the story on VTDigger here: The state can’t fix Vermont’s hospitals by telling them what to do. Real transformation requires getting pr ...",
+      "summary": "An opinion piece argues that Vermont hospitals require price reform rather than state-mandated operational directives to achieve transformation.",
+      "reason": "Discusses hospital cost regulation and policy.",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://vtdigger.org/2026/06/07/opinion-waiting-for-prior-authorization-almost-killed-me/",
+      "url": "https://vtdigger.org/2026/06/07/opinion-waiting-for-prior-authorization-almost-killed-me/",
+      "title": "Waiting for prior authorization almost killed me",
+      "content_text": "A patient shares a personal account of how delays in the prior authorization process negatively impacted their health. Why included: Public sentiment regarding prior authorization processes.",
+      "date_published": "2026-06-07T11:28:00.000Z",
+      "tags": [
+        "Prior authorization & claims"
+      ],
+      "sourceName": "VTDigger",
+      "sourceFeedUrl": "https://vtdigger.org/feed/",
+      "link": "https://vtdigger.org/2026/06/07/opinion-waiting-for-prior-authorization-almost-killed-me/",
+      "guid": "https://vtdigger.org/2026/06/07/opinion-waiting-for-prior-authorization-almost-killed-me/",
+      "pubDate": "2026-06-07T11:28:00.000Z",
+      "matchedTerms": [
+        "Prior authorization & claims"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Waiting for prior authorization almost killed me When insurance companies delay life-saving treatment, patients pay the price. Read the story on VTDigger here: Waiting for prior authorization almost killed me. When insurance companies delay life-saving treatment, patients ...",
+      "summary": "A patient shares a personal account of how delays in the prior authorization process negatively impacted their health.",
+      "reason": "Public sentiment regarding prior authorization processes.",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOcm1zdGdndmQ5a3ZsdEtTeklic240ODNSVXVNZHVEZ2hnaTFvb0d0RC1KLWw5alJfLTVsNkpSSTQybDU4ejhqbGdOb3pLRTdRT1lWU1hsLThBS1g1aUoxTEwtci0yc2hfbm9GQW1tVENsSE9oNndJTXllbW43REhZTHRtOHZWQjVzckZkMHpzT1c2OTBkV0Y4?oc=5",
+      "url": "https://vermontbiz.com/news/2026/may/19/blue-cross-vt-recognized-customer-service-excellence",
       "title": "Blue Cross VT recognized for customer service excellence - Vermont Business Magazine",
+      "content_text": "BCBSVT’s customer service call center was recognized as a top performer for small- to mid-sized organizations by the Service Quality Measurement Group. Why included: Positive recognition for BCBSVT operations.",
+      "date_published": "2026-05-19T07:00:00.000Z",
+      "tags": [
+        "Blue Cross VT",
+        "Blue Cross",
+        "Blue Cross and Blue Shield of Vermont",
+        "bluecrossvt.org"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://vermontbiz.com/news/2026/may/19/blue-cross-vt-recognized-customer-service-excellence",
+      "guid": "https://news.google.com/rss/articles/CBMilwFBVV95cUxOcm1zdGdndmQ5a3ZsdEtTeklic240ODNSVXVNZHVEZ2hnaTFvb0d0RC1KLWw5alJfLTVsNkpSSTQybDU4ejhqbGdOb3pLRTdRT1lWU1hsLThBS1g1aUoxTEwtci0yc2hfbm9GQW1tVENsSE9oNndJTXllbW43REhZTHRtOHZWQjVzckZkMHpzT1c2OTBkV0Y4?oc=5",
       "pubDate": "2026-05-19T07:00:00.000Z",
       "matchedTerms": [
         "Blue Cross VT",
@@ -135,52 +407,139 @@
         "Blue Cross and Blue Shield of Vermont",
         "bluecrossvt.org"
       ],
+      "category": "Blue Cross VT",
       "snippet": "Customer Service team honored for quickly and accurately addressing members’ needs (left to right: Lindsay Segale, Janalee Willett and Michelle Leduc). Vermont Business Magazine Blue Cross and Blue Shield of Vermont (Blue Cross VT) today announced it has been recognized as a Best Performing Call Center for small- to mid-sized organizations, by the Service Quality Measurement Group (SQM). Blue Cross VT’s Customer Service Call Center wa ...",
+      "summary": "BCBSVT’s customer service call center was recognized as a top performer for small- to mid-sized organizations by the Service Quality Measurement Group.",
+      "reason": "Positive recognition for BCBSVT operations.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNN0ZkZS1IOGtlTzhkTFdGUndWalF2TE9nWGg1c3JQRHAtQVpKRGg0ekZZMmp2OUZYU0NUM0FkV0ZiTzROelNtSkVZaGlNb0IzSm8wbjBtSTFpWEFBaFI3dGxTV2RlZmZSYWZoSGJuVVZnelJhMHRvYVR6eklwMnZfa2s3djAzZlhoWmhtbFlmZk1vNDRiTVpvMC1NMWF2dUF2X2pz?oc=5",
+      "url": "https://www.mynbc5.com/article/blue-cross-and-blue-shield-of-vermont-seeks-premium-increases/71287520",
       "title": "Blue Cross and Blue Shield of Vermont seeks smaller premium increase this year - WPTZ",
+      "content_text": "BCBSVT is requesting single-digit premium increases, which would mark the smallest hike in several years. Why included: Directly relates to BCBSVT premium filings.",
+      "date_published": "2026-05-13T07:00:00.000Z",
+      "tags": [
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross",
+        "Blue Cross VT"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://www.mynbc5.com/article/blue-cross-and-blue-shield-of-vermont-seeks-premium-increases/71287520",
+      "guid": "https://news.google.com/rss/articles/CBMiowFBVV95cUxNN0ZkZS1IOGtlTzhkTFdGUndWalF2TE9nWGg1c3JQRHAtQVpKRGg0ekZZMmp2OUZYU0NUM0FkV0ZiTzROelNtSkVZaGlNb0IzSm8wbjBtSTFpWEFBaFI3dGxTV2RlZmZSYWZoSGJuVVZnelJhMHRvYVR6eklwMnZfa2s3djAzZlhoWmhtbFlmZk1vNDRiTVpvMC1NMWF2dUF2X2pz?oc=5",
       "pubDate": "2026-05-13T07:00:00.000Z",
       "matchedTerms": [
         "Blue Cross and Blue Shield of Vermont",
         "Blue Cross",
         "Blue Cross VT"
       ],
+      "category": "Blue Cross VT",
       "snippet": "The single digit percentage increases would be the smallest the last several years, Blue Cross VT said. The single digit percentage increases would be the smallest the last several years, Blue Cross VT said. The single digit percentage increases would be the smallest the last several years, Blue Cross VT said. Blue Cross and Blue Shield of Ve ...",
+      "summary": "BCBSVT is requesting single-digit premium increases, which would mark the smallest hike in several years.",
+      "reason": "Directly relates to BCBSVT premium filings.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMifkFVX3lxTE8xNHlKQ1hZcmpLTlZwei0yVi1NOTFGTlUzVER5VDdOcVMzclFNNm5pYVJCWFkyeHJHZnNubjl3YlYzbXE2R1Z1d09ucGdNWGNWaDl4UmRzdWo0WVZPZE9HbFVReUNiU1BWU1RyeV94WkpvaUo0ZjQyaHpRV0U5UQ?oc=5",
+      "url": "https://vermontbiz.com/news/2026/may/06/blue-cross-vt-mountain-days-may-9",
       "title": "Blue Cross VT Mountain Days May 9 - Vermont Business Magazine",
+      "content_text": "Blue Cross VT is hosting its annual Mountain Days event at Mt. Wantastiquet on May 9. The event encourages Vermonters to engage in physical activity and community connection. Why included: Highlights BCBSVT community engagement and brand presence.",
+      "date_published": "2026-05-06T07:00:00.000Z",
+      "tags": [
+        "Blue Cross VT",
+        "Blue Cross",
+        "bluecrossvt.org"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://vermontbiz.com/news/2026/may/06/blue-cross-vt-mountain-days-may-9",
+      "guid": "https://news.google.com/rss/articles/CBMifkFVX3lxTE8xNHlKQ1hZcmpLTlZwei0yVi1NOTFGTlUzVER5VDdOcVMzclFNNm5pYVJCWFkyeHJHZnNubjl3YlYzbXE2R1Z1d09ucGdNWGNWaDl4UmRzdWo0WVZPZE9HbFVReUNiU1BWU1RyeV94WkpvaUo0ZjQyaHpRV0U5UQ?oc=5",
       "pubDate": "2026-05-06T07:00:00.000Z",
       "matchedTerms": [
         "Blue Cross VT",
         "Blue Cross",
         "bluecrossvt.org"
       ],
+      "category": "Blue Cross VT",
       "snippet": "Mt. Wantastiquet is across the Connecticut River from Brattleboro in Hinsdale, NH. Vermont Business Magazine Blue Cross VT is again hosting its annual Mountain Days event this Saturday, May 9 from 10am-2pm at Mt. Wantastiquet. All Vermonters are invited to hike and connect with neighbors and friends. The event promotes physical activity and social connection and is p ...",
+      "summary": "Blue Cross VT is hosting its annual Mountain Days event at Mt. Wantastiquet on May 9. The event encourages Vermonters to engage in physical activity and community connection.",
+      "reason": "Highlights BCBSVT community engagement and brand presence.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNenRLZUs2WjZaNzNfQ3RvdEtPclBqN0hLV3N6TWllT1B4Y2ZSOFhhTU93NXJfSnJ4NzVTbnQwSHpwMmh5OFF1cDRLT2JkNk1rQjJXQkh2ZmtTc09rTmRNaXR1SnBBU213UGxqdGhybFFsM2NOT0lxbHhxaGIxNmY0ZUR4M0FmX25Sa0VZekM4VHpGX011S0dYbg?oc=5",
+      "url": "https://www.sevendaysvt.com/uncategorized/blue-cross-of-vermont-rebounds-after-near-collapse/",
       "title": "Blue Cross of Vermont Rebounds After Near Collapse - Seven Days Vermont",
+      "content_text": "Blue Cross Blue Shield of Vermont reported over $50 million in operating gains for 2025. This marks a significant financial recovery following previous years of losses. Why included: Reports on BCBSVT financial health and stability.",
+      "date_published": "2026-03-02T08:00:00.000Z",
+      "tags": [
+        "Blue Cross of Vermont",
+        "Blue Cross",
+        "Blue Cross and Blue Shield of Vermont"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://www.sevendaysvt.com/uncategorized/blue-cross-of-vermont-rebounds-after-near-collapse/",
+      "guid": "https://news.google.com/rss/articles/CBMimAFBVV95cUxNenRLZUs2WjZaNzNfQ3RvdEtPclBqN0hLV3N6TWllT1B4Y2ZSOFhhTU93NXJfSnJ4NzVTbnQwSHpwMmh5OFF1cDRLT2JkNk1rQjJXQkh2ZmtTc09rTmRNaXR1SnBBU213UGxqdGhybFFsM2NOT0lxbHhxaGIxNmY0ZUR4M0FmX25Sa0VZekM4VHpGX011S0dYbg?oc=5",
       "pubDate": "2026-03-02T08:00:00.000Z",
       "matchedTerms": [
         "Blue Cross of Vermont",
         "Blue Cross",
-        "Blue Cross Blue Shield of Vermont"
+        "Blue Cross and Blue Shield of Vermont"
       ],
+      "category": "Blue Cross VT",
       "snippet": "Updated at 8:14 p.m. Blue Cross Blue Shield of Vermont, the state’s largest health insurer, reported operating gains of more than $50 million in 2025, marking a dramatic turnaround for the nonprofit insurer after years of mounting losses that brought it to the brink of insolvency. ...",
+      "summary": "Blue Cross Blue Shield of Vermont reported over $50 million in operating gains for 2025. This marks a significant financial recovery following previous years of losses.",
+      "reason": "Reports on BCBSVT financial health and stability.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://www.reformer.com/news/balint-co-sponsors-the-mental-health-career-promotion-act/article_312666cb-2cda-488e-aa21-293277142ae7.html",
+      "url": "https://www.reformer.com/news/balint-co-sponsors-the-mental-health-career-promotion-act/article_312666cb-2cda-488e-aa21-293277142ae7.html",
+      "title": "Balint co-sponsors the Mental Health Career Promotion Act",
+      "content_text": "U.S. Representative Becca Balint has co-sponsored the Mental Health Career Promotion Act. The legislation aims to strengthen the behavioral and mental health care workforce. Why included: Legislative action on health care workforce development.",
+      "date_published": "2026-02-05T16:16:00.000Z",
+      "tags": [
+        "Health care",
+        "Mental health"
+      ],
+      "sourceName": "Brattleboro Reformer",
+      "sourceFeedUrl": "https://www.reformer.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+      "link": "https://www.reformer.com/news/balint-co-sponsors-the-mental-health-career-promotion-act/article_312666cb-2cda-488e-aa21-293277142ae7.html",
+      "guid": "https://www.reformer.com/news/balint-co-sponsors-the-mental-health-career-promotion-act/article_312666cb-2cda-488e-aa21-293277142ae7.html",
+      "pubDate": "2026-02-05T16:16:00.000Z",
+      "matchedTerms": [
+        "Health care",
+        "Mental health"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Balint co-sponsors the Mental Health Career Promotion Act WASHINGTON — U.S. Reps. Becca Balint of Vermont and Bonnie Watson Coleman of New Jersey joined California Sen. Alex Padilla to introduce the Mental Health Career Promotion Act to bolster the behavioral and mental health care  ...",
+      "summary": "U.S. Representative Becca Balint has co-sponsored the Mental Health Career Promotion Act. The legislation aims to strengthen the behavioral and mental health care workforce.",
+      "reason": "Legislative action on health care workforce development.",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMirAFBVV95cUxOR2RfbklwaUJOQWthRjJnM2dHX19UQ2lQQ0JVR2Q2VmtoczY2VEYyYWRONDY5UmNJSEprUGc4SGI0OUhOeUZ3UzBmOE1zMmo4TlQ5b1J1V0JZdWdlQkZ6d0dHMURySjBqX3BzMm1BRXNEZUoyY1NjdzhCV0JBMi1UcXVIbkFtVGRFUDFaeGtIeGNDOXZRaWM0dU8zbWtublBwMC1MNkJYVTZURHBN?oc=5",
+      "url": "https://vermontbiz.com/news/2026/january/12/beth-roberts-assumes-role-ceo-blue-cross-and-blue-shield-vermont",
       "title": "Beth Roberts assumes role as CEO of Blue Cross and Blue Shield of Vermont - Vermont Business Magazine",
+      "content_text": "Beth Roberts has officially assumed the role of president and CEO of Blue Cross and Blue Shield of Vermont. She succeeds outgoing CEO Don George following a transition period. Why included: Names new BCBSVT executive leadership.",
+      "date_published": "2026-01-12T08:00:00.000Z",
+      "tags": [
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross",
+        "Blue Cross VT",
+        "bluecrossvt.org"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://vermontbiz.com/news/2026/january/12/beth-roberts-assumes-role-ceo-blue-cross-and-blue-shield-vermont",
+      "guid": "https://news.google.com/rss/articles/CBMirAFBVV95cUxOR2RfbklwaUJOQWthRjJnM2dHX19UQ2lQQ0JVR2Q2VmtoczY2VEYyYWRONDY5UmNJSEprUGc4SGI0OUhOeUZ3UzBmOE1zMmo4TlQ5b1J1V0JZdWdlQkZ6d0dHMURySjBqX3BzMm1BRXNEZUoyY1NjdzhCV0JBMi1UcXVIbkFtVGRFUDFaeGtIeGNDOXZRaWM0dU8zbWtublBwMC1MNkJYVTZURHBN?oc=5",
       "pubDate": "2026-01-12T08:00:00.000Z",
       "matchedTerms": [
         "Blue Cross and Blue Shield of Vermont",
@@ -188,550 +547,479 @@
         "Blue Cross VT",
         "bluecrossvt.org"
       ],
+      "category": "Blue Cross VT",
       "snippet": "Following Two-Month Transition Period, Roberts Officially Takes Leadership of the Organization Vermont Business Magazine Blue Cross and Blue Shield of Vermont (Blue Cross VT) today announced that Beth Roberts is president and CEO following a two-month transition period with outgoing President and CEO Don George. Roberts joins Blue Cross VT from Beth Israel Lahey Health Performan ...",
+      "summary": "Beth Roberts has officially assumed the role of president and CEO of Blue Cross and Blue Shield of Vermont. She succeeds outgoing CEO Don George following a transition period.",
+      "reason": "Names new BCBSVT executive leadership.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBkUVRReHVrY1M1bFZnNWx1SUFJakluVFVFZjVpVHdDQkwxTndkd2U2S1IyNmtLMGQxb0tlZGlnNkliRTF3cnFOTnMwa0Z1c3VXbGFaQ3pYX0piTDNyM0VrbmxXamNUZkswRFg2Z3dacFN0Z3MzZ1E?oc=5",
+      "url": "https://www.compassvermont.com/p/battle-of-the-giants-understanding",
       "title": "Battle of the Giants: Understanding the Public Split Between Blue Cross and UVM Health Network - Compass Vermont",
+      "content_text": "The relationship between BCBSVT and the UVM Health Network has shifted from private negotiation to public confrontation. This conflict impacts the broader Vermont health care landscape. Why included: Direct impact on BCBSVT provider relations.",
+      "date_published": "2025-12-24T08:00:00.000Z",
+      "tags": [
+        "Blue Cross",
+        "BCBSVT",
+        "Blue Cross and Blue Shield of Vermont"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22BCBS+VT%22+OR+%22BlueCrossVT%22+OR+%22Blue+CrossVT%22+OR+%22BlueCross+VT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22BlueCross+and+BlueShield+of+Vermont%22+OR+%22BlueCross+%26+BlueShield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://www.compassvermont.com/p/battle-of-the-giants-understanding",
+      "guid": "https://news.google.com/rss/articles/CBMidkFVX3lxTFBkUVRReHVrY1M1bFZnNWx1SUFJakluVFVFZjVpVHdDQkwxTndkd2U2S1IyNmtLMGQxb0tlZGlnNkliRTF3cnFOTnMwa0Z1c3VXbGFaQ3pYX0piTDNyM0VrbmxXamNUZkswRFg2Z3dacFN0Z3MzZ1E?oc=5",
       "pubDate": "2025-12-24T08:00:00.000Z",
       "matchedTerms": [
         "Blue Cross",
         "BCBSVT",
-        "BlueCross BlueShield of Vermont"
+        "Blue Cross and Blue Shield of Vermont"
       ],
+      "category": "Blue Cross VT",
       "snippet": "The landscape of Vermont healthcare is shifting beneath our feet. For decades, the relationship between the state’s largest insurer, BlueCross BlueShield of Vermont (BCBSVT), and its largest hospital system, the University of Vermont Health Network (UVMHN), was defined by private negotiation. As of late 2025, that dynamic has dissolved into a public confrontation that places Vermont patient ...",
+      "summary": "The relationship between BCBSVT and the UVM Health Network has shifted from private negotiation to public confrontation. This conflict impacts the broader Vermont health care landscape.",
+      "reason": "Direct impact on BCBSVT provider relations.",
+      "comments": [],
       "articleError": ""
     },
     {
-      "title": "These Vermonters are about to lose their Medicare Advantage plans and they're scrambling - Burlington Free Press",
+      "id": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNY1lwYUlxSUJkUloxeEtvZXN5OWFuLVpqSUZTOS14bFQzQVZUSThIdVRtRFRIR1kyeDRkZmtHd2l4eFRZYklsUXRISnhWMkhHYTg4WTRvSmFHemRRUWRfYnp0R0J1UFpxb2ROQ1czeV9ETV9GQXNnRy16R0lLMS1BTkxxSGVVV0lzOFFtSlFPN1hsNnQwVFZMdFNmbjJnVzJ1YzhtZVNDdENLOWhVVXF1XzRGYnFSWGlBRllIaDFWOEVjSWlteVBZdUk4VGYwUm56VF8w?oc=5",
+      "url": "https://vtdigger.org/2025/12/22/vermonts-largest-health-insurer-tells-you-to-avoid-the-states-largest-hospital-in-new-marketing-campaign/",
+      "title": "Vermont’s largest health insurer tells you to avoid the state’s largest hospital in new marketing campaign - VTDigger",
+      "content_text": "In a new public awareness campaign, BlueCross BlueShield of Vermont has joined four independent Chittenden County healthcare facilities in urging clients to seek less expensive care outside of Vermont’s large academic medical centers. The newly launched website, VT Affordable Care, offers a simp ...",
+      "date_published": "2025-12-22T08:00:00.000Z",
+      "tags": [
+        "Vermont's largest health insurer",
+        "BCBSVT",
+        "Blue Cross and Blue Shield of Vermont",
+        "Health insurance",
+        "Hospitals"
+      ],
       "sourceName": "Google News Search",
-      "link": "https://www.burlingtonfreepress.com/story/news/local/vermont/2025/11/03/bcbs-medicare-blue-advantage-cut-in-vermont-health-insurance/86963398007/",
-      "pubDate": "2025-11-03T08:00:00.000Z",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22BCBS+VT%22+OR+%22BlueCrossVT%22+OR+%22Blue+CrossVT%22+OR+%22BlueCross+VT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22BlueCross+and+BlueShield+of+Vermont%22+OR+%22BlueCross+%26+BlueShield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
+      "link": "https://vtdigger.org/2025/12/22/vermonts-largest-health-insurer-tells-you-to-avoid-the-states-largest-hospital-in-new-marketing-campaign/",
+      "guid": "https://news.google.com/rss/articles/CBMi0wFBVV95cUxNY1lwYUlxSUJkUloxeEtvZXN5OWFuLVpqSUZTOS14bFQzQVZUSThIdVRtRFRIR1kyeDRkZmtHd2l4eFRZYklsUXRISnhWMkhHYTg4WTRvSmFHemRRUWRfYnp0R0J1UFpxb2ROQ1czeV9ETV9GQXNnRy16R0lLMS1BTkxxSGVVV0lzOFFtSlFPN1hsNnQwVFZMdFNmbjJnVzJ1YzhtZVNDdENLOWhVVXF1XzRGYnFSWGlBRllIaDFWOEVjSWlteVBZdUk4VGYwUm56VF8w?oc=5",
+      "pubDate": "2025-12-22T08:00:00.000Z",
       "matchedTerms": [
-        "Blue Cross Blue Shield of Vermont",
+        "Vermont's largest health insurer",
+        "BCBSVT",
+        "Blue Cross and Blue Shield of Vermont",
+        "Health insurance",
+        "Hospitals"
+      ],
+      "category": "Blue Cross VT",
+      "snippet": "In a new public awareness campaign, BlueCross BlueShield of Vermont has joined four independent Chittenden County healthcare facilities in urging clients to seek less expensive care outside of Vermont’s large academic medical centers. The newly launched website, VT Affordable Care, offers a simp ...",
+      "summary": "",
+      "reason": "",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxOc29TWng5OTJrdnhTR2pQN2l5aW41TF9SOHV2NEhkcmxweEVDQmwzeHdZMExYT3RCNDZDZzU3YVFadk4tNXRjNGRUY2ltaFFSYzc5Nnk5UTd6S1M3cy00UHZfZm5LZkNERFVQbE81UjQ4WTZ0d2l5NU9NamV2S0pBLVdOU1dMOU5KVWM1dDJ5bndGa3FEaXlYNWl2MFRiX2FNOUVNZnEwSnJQd3E4TDBIOC1qNl9PYVUwcWxNWnVYZGxCMEdjX2Q3MF9UNW9fX0dvdl9sTXBWRk5lSmdVaHc?oc=5",
+      "url": "https://www.burlingtonfreepress.com/story/news/local/vermont/2025/11/03/bcbs-medicare-blue-advantage-cut-in-vermont-health-insurance/86963398007/",
+      "title": "These Vermonters are about to lose their Medicare Advantage plans and they're scrambling - Burlington Free Press",
+      "content_text": "Vermonters enrolled in Vermont Blue Advantage Medicare plans are facing uncertainty as they prepare to lose their coverage. Many are struggling to find alternatives for their medical needs. Why included: Impacts BCBSVT members and public perception.",
+      "date_published": "2025-11-03T08:00:00.000Z",
+      "tags": [
+        "Blue Cross and Blue Shield of Vermont",
         "Vermont Blue Advantage",
         "Blue Cross"
       ],
+      "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
+      "link": "https://www.burlingtonfreepress.com/story/news/local/vermont/2025/11/03/bcbs-medicare-blue-advantage-cut-in-vermont-health-insurance/86963398007/",
+      "guid": "https://news.google.com/rss/articles/CBMi3gFBVV95cUxOc29TWng5OTJrdnhTR2pQN2l5aW41TF9SOHV2NEhkcmxweEVDQmwzeHdZMExYT3RCNDZDZzU3YVFadk4tNXRjNGRUY2ltaFFSYzc5Nnk5UTd6S1M3cy00UHZfZm5LZkNERFVQbE81UjQ4WTZ0d2l5NU9NamV2S0pBLVdOU1dMOU5KVWM1dDJ5bndGa3FEaXlYNWl2MFRiX2FNOUVNZnEwSnJQd3E4TDBIOC1qNl9PYVUwcWxNWnVYZGxCMEdjX2Q3MF9UNW9fX0dvdl9sTXBWRk5lSmdVaHc?oc=5",
+      "pubDate": "2025-11-03T08:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross and Blue Shield of Vermont",
+        "Vermont Blue Advantage",
+        "Blue Cross"
+      ],
+      "category": "Blue Cross VT",
       "snippet": "... yers doesn’t know what she’s going to do. The 54-year-old from Chittenden County lives with a disability. When she needed better health insurance, she said her doctors recommended Vermont Blue Advantage, a type of Medicare provided by Blue Cross Blue Shield that could offer her extra benefits and reduced costs. She's been on the plan for five years, she said, and it covers all her frequent doctor visits and monthly prescriptions. But sh ...",
+      "summary": "Vermonters enrolled in Vermont Blue Advantage Medicare plans are facing uncertainty as they prepare to lose their coverage. Many are struggling to find alternatives for their medical needs.",
+      "reason": "Impacts BCBSVT members and public perception.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQM2VjSVJQRHkxYVBJM3BOSmc0YkxmdnluWXJUX0F4YU45VEVTMmV6ZFpYMHBXX0EtVlZmcjZUSENSN2tMSkNFZU5CbmVyNk1qX3pGM1V6M2lHUzhGTGxkLU1lMGdSQzZhRXZlUWctQzJCOFF4NFV6NTMzVHluZ2ptNW5LTWVINFpNRE1PSWlhQlItOURn?oc=5",
+      "url": "https://vtdigger.org/2025/10/13/vermont-blue-advantage-will-not-sell-plans-at-all-in-2026/",
       "title": "Vermont Blue Advantage will not sell plans at all in 2026 - VTDigger",
+      "content_text": "Blue Cross Blue Shield of Vermont announced that Vermont Blue Advantage will not offer any Medicare Advantage plans in 2026. This decision affects 26,000 individual plan members. Why included: Major change to BCBSVT product offerings.",
+      "date_published": "2025-10-13T07:00:00.000Z",
+      "tags": [
+        "Vermont Blue Advantage",
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://vtdigger.org/2025/10/13/vermont-blue-advantage-will-not-sell-plans-at-all-in-2026/",
+      "guid": "https://news.google.com/rss/articles/CBMilAFBVV95cUxQM2VjSVJQRHkxYVBJM3BOSmc0YkxmdnluWXJUX0F4YU45VEVTMmV6ZFpYMHBXX0EtVlZmcjZUSENSN2tMSkNFZU5CbmVyNk1qX3pGM1V6M2lHUzhGTGxkLU1lMGdSQzZhRXZlUWctQzJCOFF4NFV6NTMzVHluZ2ptNW5LTWVINFpNRE1PSWlhQlItOURn?oc=5",
       "pubDate": "2025-10-13T07:00:00.000Z",
       "matchedTerms": [
         "Vermont Blue Advantage",
         "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross Blue Shield of Vermont",
         "Blue Cross"
       ],
+      "category": "Blue Cross VT",
       "snippet": "Vermont Blue Advantage will no longer offer any Medicare Advantage plans in the state for 2026. On October 1, Blue Cross Blue Shield of Vermont announced Vermont Blue Advantage would not continue coverage for the 26,000 people in the state on its individual Me ...",
+      "summary": "Blue Cross Blue Shield of Vermont announced that Vermont Blue Advantage will not offer any Medicare Advantage plans in 2026. This decision affects 26,000 individual plan members.",
+      "reason": "Major change to BCBSVT product offerings.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMiigFBVV95cUxPRTBOMUZ6Zjl1cEl0OWJLOVpveEZmRi03Ql9FSk1nYUlZVWtaY1FwR2ZKWjNQQktreW5oUURhNHVxX25YTGl0Z01iVmVJamlOdXlDcVpuZXl3ZFZ5czROOTNfTHNDUnUyVGwwYzZHM2lYbG5Cd0FTTXU4Yl9DdVJPSnpDWG5BdXBITnc?oc=5",
+      "url": "https://www.modernhealthcare.com/insurance/mh-medicare-advantage-market-exits-2026/",
       "title": "These are the health insurers that quit Medicare Advantage - Modern Healthcare",
+      "content_text": "Modern Healthcare reports on various health insurers that are exiting the Medicare Advantage market. The article tracks national trends in the insurance industry. Why included: Provides national context for BCBSVT business decisions.",
+      "date_published": "2025-10-06T07:00:00.000Z",
+      "tags": [
+        "Medicare Advantage",
+        "Medicare",
+        "Health insurance",
+        "Health care"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://www.modernhealthcare.com/insurance/mh-medicare-advantage-market-exits-2026/",
+      "guid": "https://news.google.com/rss/articles/CBMiigFBVV95cUxPRTBOMUZ6Zjl1cEl0OWJLOVpveEZmRi03Ql9FSk1nYUlZVWtaY1FwR2ZKWjNQQktreW5oUURhNHVxX25YTGl0Z01iVmVJamlOdXlDcVpuZXl3ZFZ5czROOTNfTHNDUnUyVGwwYzZHM2lYbG5Cd0FTTXU4Yl9DdVJPSnpDWG5BdXBITnc?oc=5",
       "pubDate": "2025-10-06T07:00:00.000Z",
       "matchedTerms": [
-        "Blue Cross"
+        "Medicare Advantage",
+        "Medicare",
+        "Health insurance",
+        "Health care"
       ],
+      "category": "VT Health Care",
       "snippet": "These are the health insurers that quit Medicare Advantage - Modern Healthcare These are the health insurers that quit Medicare Advantage Modern Healthcare These are the health insurers that quit Medicare Advantage Modern Healthcare",
+      "summary": "Modern Healthcare reports on various health insurers that are exiting the Medicare Advantage market. The article tracks national trends in the insurance industry.",
+      "reason": "Provides national context for BCBSVT business decisions.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMingFBVV95cUxPRngyUDJfMnJXeU1yT3JIQVNPR1hHbFNRU1NCMzhVUkktQUtiY0d6TDUtdUIzaW5IdktlYmc3RXQwS1BBY2RvazAxQVNWYTNUUHo1V0txeWRDTWg2WFZETWxwQTRjVC1YVE9xaTRWZVI2MDg5MVZwYmN4c2pRMVB2emtyZUx0ZGl1NmZ3RUMxUW16NHUwWXhOSU9NVlpsZ9IBsgFBVV95cUxNLUpnOGRxRklIS1Z1NVhkaXRfbUVwQWFFUG8tSnlFczVnUW5KNnNFV0pTcHlidHBuX1V0d3lpSkhqRHQtME1PaC1hTlJDbUxWckdKZzQ3TzVaeUxwSzk2VlEzRlVockN5b09NQW52UVh2WTY1QW5lU1ljc1NSSEJfUTd6YlVfb3hQNEt1WjU5ZVBleU9ob3ZhT3Q0NVRHa3lVa0hDWkJXMnpfZkZETkxvWFFR?oc=5",
+      "url": "https://www.wcax.com/2025/10/01/blue-cross-blue-shield-drop-medicare-advantage-plans-by-end-year/",
       "title": "Blue Cross Blue Shield to drop Medicare Advantage plans by year’s end - WCAX",
+      "content_text": "Vermont Blue Advantage is discontinuing its Medicare Advantage plans due to significant financial losses. The insurer reported losing over $62 million last year. Why included: Explains financial drivers behind BCBSVT product changes.",
+      "date_published": "2025-10-01T07:00:00.000Z",
+      "tags": [
+        "Blue Cross",
+        "Vermont Blue Advantage"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://www.wcax.com/2025/10/01/blue-cross-blue-shield-drop-medicare-advantage-plans-by-end-year/",
+      "guid": "https://news.google.com/rss/articles/CBMingFBVV95cUxPRngyUDJfMnJXeU1yT3JIQVNPR1hHbFNRU1NCMzhVUkktQUtiY0d6TDUtdUIzaW5IdktlYmc3RXQwS1BBY2RvazAxQVNWYTNUUHo1V0txeWRDTWg2WFZETWxwQTRjVC1YVE9xaTRWZVI2MDg5MVZwYmN4c2pRMVB2emtyZUx0ZGl1NmZ3RUMxUW16NHUwWXhOSU9NVlpsZ9IBsgFBVV95cUxNLUpnOGRxRklIS1Z1NVhkaXRfbUVwQWFFUG8tSnlFczVnUW5KNnNFV0pTcHlidHBuX1V0d3lpSkhqRHQtME1PaC1hTlJDbUxWckdKZzQ3TzVaeUxwSzk2VlEzRlVockN5b09NQW52UVh2WTY1QW5lU1ljc1NSSEJfUTd6YlVfb3hQNEt1WjU5ZVBleU9ob3ZhT3Q0NVRHa3lVa0hDWkJXMnpfZkZETkxvWFFR?oc=5",
       "pubDate": "2025-10-01T07:00:00.000Z",
       "matchedTerms": [
         "Blue Cross",
         "Vermont Blue Advantage"
       ],
+      "category": "Blue Cross VT",
       "snippet": "BERLIN, Vt. (WCAX) - Vermont Medicare Advantage recipients won’t be able to access plans through Vermont Blue Advantage starting next year. It comes after Blue Cross Blue Shield says it lost millions of dollars in the last few years, in part due to an uptick in claims. The insurance company lost more than $62 million last year alone. Medicare Advantage pl ...",
+      "summary": "Vermont Blue Advantage is discontinuing its Medicare Advantage plans due to significant financial losses. The insurer reported losing over $62 million last year.",
+      "reason": "Explains financial drivers behind BCBSVT product changes.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPTnlSTXIzanNtUGJ4cWZHYkljVml4d0ZILW5FM1ppb1NNMnNhU0VjSTE5UjBFMEZwa2k2cnA4a0w0cWpFWTVBVzlkeVpEbHJQVE5vX2JxZUxCMkNjeTA5Q2N2WG84T0JOa2ZvRFBPVzVZaDRFU0xjcVRPdnJVbncwQzF2alVER1pSSTNWSNIBkgFBVV95cUxOdlI3R1g1RlBHTWNDd0NzZnFNZDhsRE5uZDFpc3ZjQ1ZhODktZnBnWmQxSUFONU8wSDlVRDBqNnNxNExsX1ltaDBVMEQ1U1hOVlJSUGVld21mVVZlSUVkczRVNmtva1BYYklWZzlrcVZXN2toRlpIbEo4bzJ2Yzk3UEZYdVpPVzdKVjJBaFhpRk9lUQ?oc=5",
+      "url": "https://www.mychamplainvalley.com/news/vermont-blue-advantage-to-end-medicare-plans/",
       "title": "Vermont Blue Advantage to end Medicare plans - MyChamplainValley.com",
+      "content_text": "Vermont Blue Advantage has confirmed it will end its Medicare plans. The announcement marks the conclusion of these specific offerings in the state. Why included: Significant news regarding BCBSVT product portfolio.",
+      "date_published": "2025-10-01T07:00:00.000Z",
+      "tags": [
+        "Vermont Blue Advantage"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://www.mychamplainvalley.com/news/vermont-blue-advantage-to-end-medicare-plans/",
+      "guid": "https://news.google.com/rss/articles/CBMijAFBVV95cUxPTnlSTXIzanNtUGJ4cWZHYkljVml4d0ZILW5FM1ppb1NNMnNhU0VjSTE5UjBFMEZwa2k2cnA4a0w0cWpFWTVBVzlkeVpEbHJQVE5vX2JxZUxCMkNjeTA5Q2N2WG84T0JOa2ZvRFBPVzVZaDRFU0xjcVRPdnJVbncwQzF2alVER1pSSTNWSNIBkgFBVV95cUxOdlI3R1g1RlBHTWNDd0NzZnFNZDhsRE5uZDFpc3ZjQ1ZhODktZnBnWmQxSUFONU8wSDlVRDBqNnNxNExsX1ltaDBVMEQ1U1hOVlJSUGVld21mVVZlSUVkczRVNmtva1BYYklWZzlrcVZXN2toRlpIbEo4bzJ2Yzk3UEZYdVpPVzdKVjJBaFhpRk9lUQ?oc=5",
       "pubDate": "2025-10-01T07:00:00.000Z",
       "matchedTerms": [
         "Vermont Blue Advantage"
       ],
+      "category": "Blue Cross VT",
       "snippet": "Vermont Blue Advantage to end Medicare plans - MyChamplainValley.com Vermont Blue Advantage to end Medicare plans MyChamplainValley.com Vermont Blue Advantage to end Medicare plans MyChamplainValley.com",
+      "summary": "Vermont Blue Advantage has confirmed it will end its Medicare plans. The announcement marks the conclusion of these specific offerings in the state.",
+      "reason": "Significant news regarding BCBSVT product portfolio.",
+      "comments": [],
       "articleError": "HTTP 403 while fetching https://www.mychamplainvalley.com/news/vermont-blue-advantage-to-end-medicare-plans/"
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNczFTcWhYRXZ2X2pMMWZjdHJ1OEFWSnZFZ3NXTmZ4UTIzWjdzYXhNcWtla0h0VnRmTjRoNGgwS19fRzFOd2IxaWpOdXVONF9PTE05cEJ0c2pCLWNpcTBXUkh4QjFsTlVWVDdnMTRPWGc3OVh3d0JkYm5kOW0xME80NnoyU3VSMXdwUlhIZ1JvWDdBbTBLeWR6QkE3VTJXTjZydVhnTDI5QkY5Z1RURS1QQw?oc=5",
+      "url": "https://vtdigger.org/2025/10/01/tens-of-thousands-vermonters-are-set-to-lose-medicare-advantage-option-in-2026/",
       "title": "Tens of thousands Vermonters are set to lose Medicare Advantage option in 2026 - VTDigger",
-      "sourceName": "Google News Search",
-      "link": "https://vtdigger.org/2025/10/01/tens-of-thousands-vermonters-are-set-to-lose-medicare-advantage-option-in-2026/",
-      "pubDate": "2025-10-01T07:00:00.000Z",
-      "matchedTerms": [
+      "content_text": "CMS data indicates that Vermont Blue Advantage will discontinue its individual Medicare Advantage plans for the 2026 coverage year. This change affects a significant portion of the 51,600 Vermonters currently enrolled in such plans. Why included: Names Vermont Blue Advantage and impacts a large member base.",
+      "date_published": "2025-10-01T07:00:00.000Z",
+      "tags": [
         "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross Blue Shield of Vermont",
         "Vermont Blue Advantage",
         "Blue Cross"
       ],
+      "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
+      "link": "https://vtdigger.org/2025/10/01/tens-of-thousands-vermonters-are-set-to-lose-medicare-advantage-option-in-2026/",
+      "guid": "https://news.google.com/rss/articles/CBMisAFBVV95cUxNczFTcWhYRXZ2X2pMMWZjdHJ1OEFWSnZFZ3NXTmZ4UTIzWjdzYXhNcWtla0h0VnRmTjRoNGgwS19fRzFOd2IxaWpOdXVONF9PTE05cEJ0c2pCLWNpcTBXUkh4QjFsTlVWVDdnMTRPWGc3OVh3d0JkYm5kOW0xME80NnoyU3VSMXdwUlhIZ1JvWDdBbTBLeWR6QkE3VTJXTjZydVhnTDI5QkY5Z1RURS1QQw?oc=5",
+      "pubDate": "2025-10-01T07:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross and Blue Shield of Vermont",
+        "Vermont Blue Advantage",
+        "Blue Cross"
+      ],
+      "category": "Blue Cross VT",
       "snippet": "... ance for 2026. New data from the Centers for Medicare & Medicaid Services reveal all but one provider in the state will discontinue coverage for 2026. Neither UnitedHealthcare nor Vermont Blue Advantage has renewed its individual Medicare Advantage plans for the 2026 year, CMS data show. These plans cover the large majority of the more than 51,600 people insured by Medicare Advantage plans in Vermont. Vermont Blue Advantage’s individual ...",
+      "summary": "CMS data indicates that Vermont Blue Advantage will discontinue its individual Medicare Advantage plans for the 2026 coverage year. This change affects a significant portion of the 51,600 Vermonters currently enrolled in such plans.",
+      "reason": "Names Vermont Blue Advantage and impacts a large member base.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOWnJsZmY5bkJHRkpWellzZHRaZTF5WlJ1dU5rOWk3WnRKVEhuUGh6OTJjbEtRUVdKWXZwTGpqZ21GdmJDOTh5ZTh0aU5kMi10Z1FBRFozdWdnSS1mbElFU1RaUUlITThqWFZSSkcwZDdHa2RVUXE0cms4UDQ2a3JSNFFROGtsZU5C?oc=5",
+      "url": "https://www.mynbc5.com/article/vermont-blue-advantage-medicare-advantage/68154633",
       "title": "Vermont Blue Advantage to end Medicare Advantage plans this year - WPTZ",
+      "content_text": "Vermont Blue Advantage has announced it will terminate all of its Medicare Advantage plans at the end of the current calendar year. Why included: Directly impacts BCBSVT product offerings and member coverage.",
+      "date_published": "2025-10-01T07:00:00.000Z",
+      "tags": [
+        "Vermont Blue Advantage"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://www.mynbc5.com/article/vermont-blue-advantage-medicare-advantage/68154633",
+      "guid": "https://news.google.com/rss/articles/CBMiiAFBVV95cUxOWnJsZmY5bkJHRkpWellzZHRaZTF5WlJ1dU5rOWk3WnRKVEhuUGh6OTJjbEtRUVdKWXZwTGpqZ21GdmJDOTh5ZTh0aU5kMi10Z1FBRFozdWdnSS1mbElFU1RaUUlITThqWFZSSkcwZDdHa2RVUXE0cms4UDQ2a3JSNFFROGtsZU5C?oc=5",
       "pubDate": "2025-10-01T07:00:00.000Z",
       "matchedTerms": [
         "Vermont Blue Advantage"
       ],
+      "category": "Blue Cross VT",
       "snippet": "Vermont Blue Advantage has announced that it will end all Medicare Advantage plans at the end of the calendar year. Medicare Advantage PPO and HMO plans include all Medicare Part A and Medicare Part B medical coverage, as well as additional benefits including  ...",
+      "summary": "Vermont Blue Advantage has announced it will terminate all of its Medicare Advantage plans at the end of the current calendar year.",
+      "reason": "Directly impacts BCBSVT product offerings and member coverage.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNa1FOMExkN0ZuejVCc0xoZ0NjcHQ4SnluQWVNMnA0bWNfUjZGNTBRejZxS2E5cEw1NWlBOU0zdHRmVXZ1UE1NaHh1dloxcHZDOGV1Y2JBbHBaT2JhRlJYN2dybHJpdWdlT0lLcVpzRHdzSzZJZTFDeFBGdVA4OWxMV3k5V190Y2RzeUdxYWloSm0zeXNjd2JpUEY2bjlvcnUy?oc=5",
+      "url": "https://vermontbiz.com/people/september/blue-cross-vt-names-beth-ann-roberts-next-president-and-ceo",
       "title": "Blue Cross VT names Beth-Ann Roberts as next president and CEO - Vermont Business Magazine",
+      "content_text": "Beth-Ann Roberts has been appointed as the next president and CEO of Blue Cross and Blue Shield of Vermont, effective January 10, 2026. She will succeed retiring CEO Don George following a two-month transition period. Why included: Major corporate leadership announcement for BCBSVT.",
+      "date_published": "2025-10-01T06:03:42.000Z",
+      "tags": [
+        "Blue Cross VT",
+        "Blue Cross",
+        "Blue Cross and Blue Shield of Vermont"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://vermontbiz.com/people/september/blue-cross-vt-names-beth-ann-roberts-next-president-and-ceo",
+      "guid": "https://news.google.com/rss/articles/CBMioAFBVV95cUxNa1FOMExkN0ZuejVCc0xoZ0NjcHQ4SnluQWVNMnA0bWNfUjZGNTBRejZxS2E5cEw1NWlBOU0zdHRmVXZ1UE1NaHh1dloxcHZDOGV1Y2JBbHBaT2JhRlJYN2dybHJpdWdlT0lLcVpzRHdzSzZJZTFDeFBGdVA4OWxMV3k5V190Y2RzeUdxYWloSm0zeXNjd2JpUEY2bjlvcnUy?oc=5",
       "pubDate": "2025-10-01T06:03:42.000Z",
       "matchedTerms": [
         "Blue Cross VT",
         "Blue Cross",
         "Blue Cross and Blue Shield of Vermont"
       ],
+      "category": "Blue Cross VT",
       "snippet": "Beth-Ann Roberts, president at Beth Israel Lahey Health Performance Network, has been selected as the next president and CEO at Blue Cross and Blue Shield of Vermont, effective Jan. 10, 2026. Roberts will join Blue Cross VT as CEO-elect on Nov. 10, ensuring a smooth two-month transition with current President and CEO Don George, who will retire on Jan. 9, 2026. A respected and passiona ...",
+      "summary": "Beth-Ann Roberts has been appointed as the next president and CEO of Blue Cross and Blue Shield of Vermont, effective January 10, 2026. She will succeed retiring CEO Don George following a two-month transition period.",
+      "reason": "Major corporate leadership announcement for BCBSVT.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNNUFxd05vN1ZrWkxvV0VuS0ljOVFMVHdLcmFkUjhHSXJXX2NpVlZVVjRhRmVmN3E4SEtwY0JhdmJDVWNkRmhRS1NtOExvMHdoQ01peXE5Q2JnR3R2TndycXdwaktMWHVmb3c0LVN4VlJQTmlKNjRBV1M3QjlORms2NFo5eEhUUjFlemQwNjZSNkpjRGdzOUVBN2E2NjB4YmdPc3JXeXozZ2o?oc=5",
+      "url": "https://vermontbiz.com/news/2025/september/30/blue-cross-vermont-names-beth-ann-roberts-president-and-ceo",
       "title": "Blue Cross Vermont names Beth-Ann Roberts as president and CEO - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/news/2025/september/30/blue-cross-vermont-names-beth-ann-roberts-president-and-ceo",
-      "pubDate": "2025-09-30T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross Vermont",
-        "Blue Cross",
+      "content_text": "The Board of Directors for Blue Cross and Blue Shield of Vermont has selected Beth-Ann Roberts to serve as the company's next president and CEO. Why included: Major corporate leadership announcement for BCBSVT.",
+      "date_published": "2025-09-30T07:00:00.000Z",
+      "tags": [
         "Blue Cross VT",
+        "Blue Cross",
         "Blue Cross and Blue Shield of Vermont",
         "bluecrossvt.org"
       ],
+      "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
+      "link": "https://vermontbiz.com/news/2025/september/30/blue-cross-vermont-names-beth-ann-roberts-president-and-ceo",
+      "guid": "https://news.google.com/rss/articles/CBMiqAFBVV95cUxNNUFxd05vN1ZrWkxvV0VuS0ljOVFMVHdLcmFkUjhHSXJXX2NpVlZVVjRhRmVmN3E4SEtwY0JhdmJDVWNkRmhRS1NtOExvMHdoQ01peXE5Q2JnR3R2TndycXdwaktMWHVmb3c0LVN4VlJQTmlKNjRBV1M3QjlORms2NFo5eEhUUjFlemQwNjZSNkpjRGdzOUVBN2E2NjB4YmdPc3JXeXozZ2o?oc=5",
+      "pubDate": "2025-09-30T07:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross VT",
+        "Blue Cross",
+        "Blue Cross and Blue Shield of Vermont",
+        "bluecrossvt.org"
+      ],
+      "category": "Blue Cross VT",
       "snippet": "Vermont Business Magazine The Board of Directors for Blue Cross and Blue Shield of Vermont (Blue Cross VT) is pleased to announce that Beth-Ann Roberts, MBA, has been selected as the organization’s next President and CEO, effective January 10, 2026. Roberts will join Blue Cross VT as CEO-elect on November 10, 20 ...",
+      "summary": "The Board of Directors for Blue Cross and Blue Shield of Vermont has selected Beth-Ann Roberts to serve as the company's next president and CEO.",
+      "reason": "Major corporate leadership announcement for BCBSVT.",
+      "comments": [],
       "articleError": ""
     },
     {
+      "id": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPcFBCY3BmWGl6UG5ESjRZeTJTdWdDazRGcTdYSWsxclh3emNtTE1EbTNJSDZhdTJJTjIyb0RFWmVaNWtjMTNDOXoyOERjNVpHZnQ4MjRZamw0WnlOek5seTJ4WTYzelg0cTVrQlJYSHRuMmNZcjRkVEE0TUZwV25mYjRhUXltSVJsaGI1UXFidDZPQWNEZENhcG52VUNUaUphSWlXcGJISXk3UWxtMGNDRUFrRWxBOVJYUnNsM9IBwgFBVV95cUxQdHZGQTNHRzdQT0tqUExMTW9hNG9Icmx1UzVKNnQtUFZVa2dMcUtlcWJiY29mejhyM1hWbDl6d1lSTktLeFFNRmxUNkhRMUl1bDJBb01aTHhNMy13cGF0T0g3bHhBcWJjS0pFTlpNQ0VScFlTMWozTlVsS2tFSW5yRnc3WDluUk54ZUxmWWZUSmdSeUdFdzVLcDc5OTVKaXZuWFBSOUpaNkY0a0JMZDhoeThlTEVza3VrVlI0T19QS1plQQ?oc=5",
+      "url": "https://www.mychamplainvalley.com/news/local-news/vermont/blue-cross-blue-shield-and-mvp-health-rate-increases-approved/",
       "title": "Blue Cross Blue Shield and MVP Health rate increases approved - MyChamplainValley.com",
+      "content_text": "Regulators have officially approved rate increases for health insurance plans offered by Blue Cross Blue Shield and MVP Health. Why included: Regulatory approval of BCBSVT premium rate increases.",
+      "date_published": "2025-08-22T07:00:00.000Z",
+      "tags": [
+        "Blue Cross"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://www.mychamplainvalley.com/news/local-news/vermont/blue-cross-blue-shield-and-mvp-health-rate-increases-approved/",
+      "guid": "https://news.google.com/rss/articles/CBMivAFBVV95cUxPcFBCY3BmWGl6UG5ESjRZeTJTdWdDazRGcTdYSWsxclh3emNtTE1EbTNJSDZhdTJJTjIyb0RFWmVaNWtjMTNDOXoyOERjNVpHZnQ4MjRZamw0WnlOek5seTJ4WTYzelg0cTVrQlJYSHRuMmNZcjRkVEE0TUZwV25mYjRhUXltSVJsaGI1UXFidDZPQWNEZENhcG52VUNUaUphSWlXcGJISXk3UWxtMGNDRUFrRWxBOVJYUnNsM9IBwgFBVV95cUxQdHZGQTNHRzdQT0tqUExMTW9hNG9Icmx1UzVKNnQtUFZVa2dMcUtlcWJiY29mejhyM1hWbDl6d1lSTktLeFFNRmxUNkhRMUl1bDJBb01aTHhNMy13cGF0T0g3bHhBcWJjS0pFTlpNQ0VScFlTMWozTlVsS2tFSW5yRnc3WDluUk54ZUxmWWZUSmdSeUdFdzVLcDc5OTVKaXZuWFBSOUpaNkY0a0JMZDhoeThlTEVza3VrVlI0T19QS1plQQ?oc=5",
       "pubDate": "2025-08-22T07:00:00.000Z",
       "matchedTerms": [
         "Blue Cross"
       ],
+      "category": "Blue Cross VT",
       "snippet": "Blue Cross Blue Shield and MVP Health rate increases approved - MyChamplainValley.com Blue Cross Blue Shield and MVP Health rate increases approved MyChamplainValley.com Blue Cross Blue Shield and MVP Health rate increases approved MyChamplainValley.com",
+      "summary": "Regulators have officially approved rate increases for health insurance plans offered by Blue Cross Blue Shield and MVP Health.",
+      "reason": "Regulatory approval of BCBSVT premium rate increases.",
+      "comments": [],
       "articleError": "HTTP 403 while fetching https://www.mychamplainvalley.com/news/local-news/vermont/blue-cross-blue-shield-and-mvp-health-rate-increases-approved/"
     },
     {
+      "id": "https://www.benningtonbanner.com/news/green-mountain-camp-launches-the-sarah-bradley-and-edith-bradley-memorial-endowment/article_9c82ef83-851c-43a2-98a9-134cf94c2500.html",
+      "url": "https://www.benningtonbanner.com/news/green-mountain-camp-launches-the-sarah-bradley-and-edith-bradley-memorial-endowment/article_9c82ef83-851c-43a2-98a9-134cf94c2500.html",
+      "title": "Green Mountain Camp launches the Sarah Bradley and Edith Bradley Memorial Endowment",
+      "content_text": "The Green Mountain Camp has established a memorial endowment inspired by the founders' historical focus on addressing the needs of underserved rural children. Why included: Mentions public health history, but not directly relevant to BCBSVT.",
+      "date_published": "2025-07-22T14:47:00.000Z",
+      "tags": [
+        "Public health"
+      ],
+      "sourceName": "Bennington Banner",
+      "sourceFeedUrl": "https://www.benningtonbanner.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+      "link": "https://www.benningtonbanner.com/news/green-mountain-camp-launches-the-sarah-bradley-and-edith-bradley-memorial-endowment/article_9c82ef83-851c-43a2-98a9-134cf94c2500.html",
+      "guid": "https://www.benningtonbanner.com/news/green-mountain-camp-launches-the-sarah-bradley-and-edith-bradley-memorial-endowment/article_9c82ef83-851c-43a2-98a9-134cf94c2500.html",
+      "pubDate": "2025-07-22T14:47:00.000Z",
+      "matchedTerms": [
+        "Public health"
+      ],
+      "category": "VT Health Care",
+      "snippet": "... ith Bradley Memorial Endowment DUMMERSTON — In 1917, two young women, Sarah Bradley and her friend Grace Holbrook, founded a summer camp in the green hills of Vermont. Inspired by public health data showing rural children were underserved and under-resourced, Sarah and Grace launched… DUMMERSTON — In 1917, two young women, Sarah Bradley and her friend Grace Holbrook, founded a summer camp in the green hills of Vermont. Inspired by publi ...",
+      "summary": "The Green Mountain Camp has established a memorial endowment inspired by the founders' historical focus on addressing the needs of underserved rural children.",
+      "reason": "Mentions public health history, but not directly relevant to BCBSVT.",
+      "comments": [],
+      "articleError": ""
+    },
+    {
+      "id": "https://news.google.com/rss/articles/CBMizAFBVV95cUxORzUwOHZSR1RIekVoTmNIM1VHdlAtNzBYVEN0eXJMMDJFTEhKb2YzQmVYRldZblJmSlVmaVlDX2xMV3F1MklEWXZtSHBUVVpFMlhpQlkyVUNmSzl6eGN2blJoRkVDamMzOFQ4TG1jT2RRcE4tV1Q3MzJyNHRqSlFiaExHbkxHbUF1eHZqdUF2OFZOcUJXb1hOQXhEQkNieUwtRy15VmtHR3czZ3FBMXI2TmZMTnhaM2Z3RFA4RXZRNDJ6MlJEMWdrUE9zUzQ?oc=5",
+      "url": "https://vtdigger.org/2025/06/19/vermont-regulators-approve-a-trimmed-increase-to-2026-health-insurance-premiums-for-large-employers/",
       "title": "Vermont regulators approve a trimmed increase to 2026 health insurance premiums for large employers - VTDigger",
+      "content_text": "The Green Mountain Care Board has approved a 13.7% average premium increase for large employer health insurance plans offered by Blue Cross Blue Shield of Vermont for 2026. Why included: Regulatory action on BCBSVT premium rates.",
+      "date_published": "2025-06-19T07:00:00.000Z",
+      "tags": [
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross"
+      ],
       "sourceName": "Google News Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22+OR+%22Blue+Cross+of+Vermont%22+OR+%22Vermont+Blue+Advantage%22&hl=en-US&gl=US&ceid=US:en",
       "link": "https://vtdigger.org/2025/06/19/vermont-regulators-approve-a-trimmed-increase-to-2026-health-insurance-premiums-for-large-employers/",
+      "guid": "https://news.google.com/rss/articles/CBMizAFBVV95cUxORzUwOHZSR1RIekVoTmNIM1VHdlAtNzBYVEN0eXJMMDJFTEhKb2YzQmVYRldZblJmSlVmaVlDX2xMV3F1MklEWXZtSHBUVVpFMlhpQlkyVUNmSzl6eGN2blJoRkVDamMzOFQ4TG1jT2RRcE4tV1Q3MzJyNHRqSlFiaExHbkxHbUF1eHZqdUF2OFZOcUJXb1hOQXhEQkNieUwtRy15VmtHR3czZ3FBMXI2TmZMTnhaM2Z3RFA4RXZRNDJ6MlJEMWdrUE9zUzQ?oc=5",
       "pubDate": "2025-06-19T07:00:00.000Z",
       "matchedTerms": [
-        "Blue Cross Blue Shield of Vermont",
+        "Blue Cross and Blue Shield of Vermont",
         "Blue Cross"
       ],
+      "category": "Blue Cross VT",
       "snippet": "...  double-digit increases to the premium rates that Vermont’s biggest health insurance provider can charge large employers next year. Vermont’s main health care regulator will allow Blue Cross Blue Shield of Vermont to increase the cost of health insurance premiums for Vermont employers with more than 100 employees by an average of 13.7% in 2026, according to a press release from the Green Mountain Care Board. The rate increase is expecte ...",
+      "summary": "The Green Mountain Care Board has approved a 13.7% average premium increase for large employer health insurance plans offered by Blue Cross Blue Shield of Vermont for 2026.",
+      "reason": "Regulatory action on BCBSVT premium rates.",
+      "comments": [],
       "articleError": ""
     },
     {
-      "title": "Health care costs remain unsustainable despite progress - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/news/2025/june/07/health-care-costs-remain-unsustainable-despite-progress",
-      "pubDate": "2025-06-07T07:00:00.000Z",
-      "matchedTerms": [
-        "BCBSVT",
-        "Blue Cross VT",
-        "Blue Cross Vermont",
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross Blue Shield of Vermont",
-        "Blue Cross"
+      "id": "https://www.benningtonbanner.com/news/sanders-calls-for-investigation-into-vaccine-committee-firings/article_9f4239a9-7ff8-409f-9dd0-80fb4cd6978d.html",
+      "url": "https://www.benningtonbanner.com/news/sanders-calls-for-investigation-into-vaccine-committee-firings/article_9f4239a9-7ff8-409f-9dd0-80fb4cd6978d.html",
+      "title": "Sanders calls for investigation into vaccine committee firings",
+      "content_text": "Senator Bernie Sanders is calling for an investigation into the dismissal of all members of the CDC's Advisory Committee on Immunization Practices by the Secretary of Health and Human Services. Why included: Public health policy news involving federal vaccine oversight.",
+      "date_published": "2025-06-17T14:15:00.000Z",
+      "tags": [
+        "Vaccines"
       ],
-      "snippet": "Insurance rate requests increase by double digits Photo: Graphic courtesy UVMHN by Timothy McQuiston, Vermont Business Magazine Blue Cross Vermont President and CEO Don George has once again expressed concern about the financial stability of his company and the health insurance industry. He also emphasized the financial vulnerability of the broader health care system, a view shared acr ...",
+      "sourceName": "Bennington Banner",
+      "sourceFeedUrl": "https://www.benningtonbanner.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+      "link": "https://www.benningtonbanner.com/news/sanders-calls-for-investigation-into-vaccine-committee-firings/article_9f4239a9-7ff8-409f-9dd0-80fb4cd6978d.html",
+      "guid": "https://www.benningtonbanner.com/news/sanders-calls-for-investigation-into-vaccine-committee-firings/article_9f4239a9-7ff8-409f-9dd0-80fb4cd6978d.html",
+      "pubDate": "2025-06-17T14:15:00.000Z",
+      "matchedTerms": [
+        "Vaccines"
+      ],
+      "category": "VT Health Care",
+      "snippet": "Sanders calls for investigation into vaccine committee firings WASHINGTON – After Health and Human Services Secretary Robert F. Kennedy Jr. fired every member of the Advisory Committee on Immunization Practices (ACIP) at the Centers for Disease Control and Prevention (CDC), Sen. Bernie Sanders (I ...",
+      "summary": "Senator Bernie Sanders is calling for an investigation into the dismissal of all members of the CDC's Advisory Committee on Immunization Practices by the Secretary of Health and Human Services.",
+      "reason": "Public health policy news involving federal vaccine oversight.",
+      "comments": [],
       "articleError": ""
     },
     {
-      "title": "Blue Cross VT CEO: Progress has been made, but health care costs 'simply unsustainable' - USA Today",
-      "sourceName": "Google News Search",
-      "link": "https://www.usatoday.com/story/money/business/2025/05/08/blue-cross-ceo-health-care-affordability/83448228007/",
-      "pubDate": "2025-05-08T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross VT",
+      "id": "https://www.facebook.com/vtdigger/posts/bluecross-blueshield-wants-to-offer-a-new-suite-of-cheaper-plans-but-the-states-/1602365388559130/",
+      "url": "https://www.facebook.com/vtdigger/posts/bluecross-blueshield-wants-to-offer-a-new-suite-of-cheaper-plans-but-the-states-/1602365388559130/",
+      "title": "VTDigger Facebook post: BlueCross BlueShield wants to offer a new suite of cheaper plans, but the state’",
+      "content_text": "VTDigger's Post VTDigger 2h · BlueCross BlueShield wants to offer a new suite of cheaper plans, but the state’s primary healthcare regulator is casting doubt on whether that would actually yield any real savings.vtdigger.orgVermont’s largest health insurer wants to offer a cheaper plan. Can it actually help Vermonters? - VTDiggerAll reactions:814 comments2 sharesLikeCommentMost ... Comments: Janet Fitzpatrick: Allow people over 30 to buy Blue Cross Blue Shield catastrophic plans! Those plans are much more affordable. | Mark Byland: sp/healthcare/healthprofit | Kristin Bryn Reid: The health insurance system in Vermont is voing exactly as designed for the last 20 or so years We tried to warn you | Dylan Greer: Or hear me out… we pay a boat load of money to insurance companies… they can pay for our healthcare | Janice Wright: Cheaper plan = lower monthly payments, but higher deductibles, higher co-pays, less coverage, and fewer in-network doctors | Jay Files: My work just switched to MVP gold great insurance we had blue cross it covers almost nothing worthless insurance you have to fight with them for everything | Amy Beth: \"higher\" deductible plan my deductible is already $9500 so unless they are significantly dropping the monthly premium which is between $809-900 a month for one person this isn't helpful. Health insurance for those of us who have to purchase it from the marketplace is ridiculous. | Ruth Miller: I dunno...I just got a class action suit settlement payment from BCBS. I'm done with them, especially after leaving me with no gap coverage after they pulled Blue Advantage out of VT. They seem to lose money on a continuing basis. | Matthew Funk: It’s almost like y’all already Fcked it up",
+      "tags": [
         "Blue Cross",
-        "Blue Cross Blue Shield of Vermont"
+        "Health insurance",
+        "Health care"
       ],
-      "snippet": "Blue Cross Blue Shield of Vermont CEO Don George has been ringing the alarm on the finances of the largest health insurance provider since last July, when he sent an open letter via email describing Blue Cross VT's \"fragile financial situation.\" George said th ...",
-      "articleError": ""
-    },
-    {
-      "title": "Financial struggles have pushed Vermont’s largest health insurer to the brink - VTDigger",
-      "sourceName": "Google News Search",
-      "link": "https://vtdigger.org/2025/05/07/financial-struggles-have-pushed-vermonts-largest-health-insurer-to-the-brink/",
-      "pubDate": "2025-05-07T07:00:00.000Z",
+      "sourceName": "VTDigger Facebook",
+      "sourceFeedUrl": "https://m.facebook.com/vtdigger/posts/pfbid0nLoHEpYRfcE4UGgCixYUaZge22ZW4FP2TdzBsLaGynXVcfbgdL82gWNaSE6ED6Mgl",
+      "link": "https://www.facebook.com/vtdigger/posts/bluecross-blueshield-wants-to-offer-a-new-suite-of-cheaper-plans-but-the-states-/1602365388559130/",
+      "guid": "https://www.facebook.com/vtdigger/posts/bluecross-blueshield-wants-to-offer-a-new-suite-of-cheaper-plans-but-the-states-/1602365388559130/",
+      "pubDate": null,
       "matchedTerms": [
-        "Vermont's largest health insurer",
-        "Blue Cross Blue Shield of Vermont",
-        "Vermont Blue Advantage",
-        "Blue Cross"
-      ],
-      "snippet": "Over the past several months, Vermont lawmakers and state officials have been preoccupied with the fate of the state’s largest health insurance company. Blue Cross Blue Shield of Vermont, the Vermont-based member of the nationwide health insurance organization, is also the only health insurance company based in Vermont. The nonprofit covers roughly a third of the state’s population across all its plans. Now, w ...",
-      "articleError": ""
-    },
-    {
-      "title": "Don George: We must address Vermont’s healthcare challenges - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/news/2025/march/25/don-george-we-must-address-vermonts-healthcare-challenges",
-      "pubDate": "2025-03-25T07:00:00.000Z",
-      "matchedTerms": [
-        "BCBSVT",
-        "Blue Cross VT",
-        "Blue Cross Vermont",
-        "Blue Cross and Blue Shield of Vermont",
-        "BlueCross BlueShield of Vermont",
         "Blue Cross",
-        "bluecrossvt.org"
+        "Health insurance",
+        "Health care"
       ],
-      "snippet": "... rt from March 12, 2025, shows nine hospitals reported negative operating margin in FY2023, six in FY2024 and nine so far in FY2025. by Timothy McQuiston, Vermont Business Magazine Blue Cross Vermont CEO Don George sent a letter in mid-January to key healthcare stakeholders discussing the dire situation of Blue Cross Vermont in particular and the state's healthcare industry in general. On Wednesday, March 26, the Green Mountain Care Boar ...",
-      "articleError": ""
-    },
-    {
-      "title": "Amy Stoll receives the Distinguished Young Pharmacist of the Year Award for 2024 - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/news/2025/march/11/amy-stoll-receives-distinguished-young-pharmacist-year-award-2024",
-      "pubDate": "2025-03-11T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross VT",
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross",
-        "bluecrossvt.org"
+      "category": "Blue Cross VT",
+      "snippet": "VTDigger's Post VTDigger 2h · BlueCross BlueShield wants to offer a new suite of cheaper plans, but the state’s primary healthcare regulator is casting doubt on whether that would actually yield any real savings.vtdigger.orgVermont’s largest health insurer wants to offer a cheaper plan. Can it actually help Vermonters? - VTDiggerAll reactions:814 comments2 sharesLikeCommentMost ...",
+      "summary": "",
+      "reason": "",
+      "comments": [
+        {
+          "author": "Janet Fitzpatrick",
+          "text": "Allow people over 30 to buy Blue Cross Blue Shield catastrophic plans! Those plans are much more affordable."
+        },
+        {
+          "author": "Mark Byland",
+          "text": "sp/healthcare/healthprofit"
+        },
+        {
+          "author": "Kristin Bryn Reid",
+          "text": "The health insurance system in Vermont is voing exactly as designed for the last 20 or so years We tried to warn you"
+        },
+        {
+          "author": "Dylan Greer",
+          "text": "Or hear me out… we pay a boat load of money to insurance companies… they can pay for our healthcare"
+        },
+        {
+          "author": "Janice Wright",
+          "text": "Cheaper plan = lower monthly payments, but higher deductibles, higher co-pays, less coverage, and fewer in-network doctors"
+        },
+        {
+          "author": "Jay Files",
+          "text": "My work just switched to MVP gold great insurance we had blue cross it covers almost nothing worthless insurance you have to fight with them for everything"
+        },
+        {
+          "author": "Amy Beth",
+          "text": "\"higher\" deductible plan my deductible is already $9500 so unless they are significantly dropping the monthly premium which is between $809-900 a month for one person this isn't helpful. Health insurance for those of us who have to purchase it from the marketplace is ridiculous."
+        },
+        {
+          "author": "Ruth Miller",
+          "text": "I dunno...I just got a class action suit settlement payment from BCBS. I'm done with them, especially after leaving me with no gap coverage after they pulled Blue Advantage out of VT. They seem to lose money on a continuing basis."
+        },
+        {
+          "author": "Matthew Funk",
+          "text": "It’s almost like y’all already Fcked it up"
+        }
       ],
-      "snippet": "Vermont Business Magazine Amy Stoll, Pharm.D., MPH, CDCES, BCACP, who serves as a Clinical Pharmacist at Blue Cross and Blue Shield of Vermont since 2021, is the recipient of the “2025 Distinguished Young Pharmacist of the Year Award” from the Vermont Pharmacists Association in recognition of her active participation in the association, volunteering in her commun ...",
-      "articleError": ""
-    },
-    {
-      "title": "Blue Cross VT's reserve fund falls even lower: What is driving the freefall? - Burlington Free Press",
-      "sourceName": "Google News Search",
-      "link": "https://www.burlingtonfreepress.com/story/news/2025/03/03/blue-cross-vt-reserves-dire-level-58-million-dept-financial-regulation-green-mountain-care-board/81162830007/",
-      "pubDate": "2025-03-04T08:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross VT",
-        "Blue Cross",
-        "Blue Cross and Blue Shield of Vermont"
-      ],
-      "snippet": "This story has been updated with additional information. Things have not gotten any better financially for the state's largest health insurer, Blue Cross and Blue Shield of Vermont, which last year it was revealed was threatened with insolvency because of its declining reserves. On Monday, Blue Cross VT President and Chief Executive Officer Don George said health care expenses for the insurer soared  ...",
-      "articleError": ""
-    },
-    {
-      "title": "Blue Cross Vermont CEO Don George to retire at the end of 2025 after 32 years of service - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/news/2025/february/10/blue-cross-vermont-ceo-don-george-retire-end-2025-after-32-years-service",
-      "pubDate": "2025-02-10T08:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross Vermont",
-        "Blue Cross",
-        "BCBS of Vermont",
-        "Blue Cross VT",
-        "Blue Cross and Blue Shield of Vermont",
-        "bluecrossvt.org"
-      ],
-      "snippet": "Don George, President and CEO of Blue Cross and Blue Shield of Vermont. VermontBiz file photo. Vermont Business Magazine Don George, President and CEO of Blue Cross and Blue Shield of Vermont, has informed the company’s Board of Directors and employees of his plan to retire, effective January ...",
-      "articleError": ""
-    },
-    {
-      "title": "Vermont DFR warns of potential health insurance scams",
-      "sourceName": "Brattleboro Reformer",
-      "link": "https://www.reformer.com/news/vermont-dfr-warns-of-potential-health-insurance-scams/article_cfb12686-a91e-11ef-94e1-e38b04594951.html",
-      "pubDate": "2024-11-22T22:12:00.000Z",
-      "matchedTerms": [
-        "BCBSVT",
-        "Blue Cross Blue Shield of Vermont",
-        "Blue Cross",
-        "bluecrossvt.org"
-      ],
-      "snippet": "... ealth Plans are only available from Vermont Health Connect (VHC), which is administered by the Department of Vermont Health Access, or directly from the health insurance companies Blue Cross Blue Shield of Vermont (BCBSVT) and MVP Health Care. The annual open enrollment period for selecting a Qualified Health Plan is November 1, 2024, to January 15, 2025. While health insurance fraud scams occur throughout the year, scammers increase th ...",
-      "articleError": ""
-    },
-    {
-      "title": "Major Vermont health care players in dispute over alleged overcharges - VTDigger",
-      "sourceName": "Google News Search",
-      "link": "https://vtdigger.org/2024/08/28/major-vermont-health-care-players-in-dispute-over-alleged-overcharges/",
-      "pubDate": "2024-08-28T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross VT",
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross"
-      ],
-      "snippet": "Blue Cross and Blue Shield of Vermont told a state regulator that the University of Vermont Medical Center has been overcharging it for the past two years, and is asking for a refund. The alleged overpayments, from the state’s largest private insurer to the st ...",
-      "articleError": ""
-    },
-    {
-      "title": "BlueCross BlueShield of Vermont in financial crisis - Burlington Free Press",
-      "sourceName": "Google News Search",
-      "link": "https://www.burlingtonfreepress.com/story/news/2024/07/29/bluecross-blueshield-of-vermont-faces-insolvency-health-insurance-healthcare-costs/74532347007/",
-      "pubDate": "2024-07-29T07:00:00.000Z",
-      "matchedTerms": [
-        "BlueCross BlueShield of Vermont",
-        "BCBSVT",
-        "Blue Cross VT",
-        "Blue Cross Blue Shield of Vermont",
-        "Vermont's largest health insurer",
-        "Blue Cross"
-      ],
-      "snippet": "BlueCross BlueShield of Vermont − the largest health insurer in Vermont with a 66% market share − is threatened with insolvency because of its declining reserves, according to a state regulator. Kevin Gaffney, commissioner of the Vermont Department of Financia ...",
-      "articleError": ""
-    },
-    {
-      "title": "Citing ‘extraordinary cost pressures,’ BlueCross BlueShield of Vermont seeks to raise insurance rates further - VTDigger",
-      "sourceName": "Google News Search",
-      "link": "https://vtdigger.org/2024/07/23/citing-extraordinary-cost-pressures-bluecross-blueshield-of-vermont-seeks-to-raise-insurance-rates-further/",
-      "pubDate": "2024-07-23T07:00:00.000Z",
-      "matchedTerms": [
-        "BlueCross BlueShield of Vermont"
-      ],
-      "snippet": "BlueCross BlueShield of Vermont is seeking to raise health insurance premiums by an additional 4.3% next year, further increasing a request for already near-record-high rate hikes. The proposed increase would increase premiums for individual BlueCross BlueShie ...",
-      "articleError": ""
-    },
-    {
-      "title": "Blue Cross Vermont, MVP propose substantial premium increases - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/news/2024/july/08/blue-cross-vermont-mvp-propose-substantial-premium-increases",
-      "pubDate": "2024-07-08T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross Vermont",
-        "Blue Cross",
-        "Blue Cross and Blue Shield of Vermont"
-      ],
-      "snippet": "... hy McQuiston VermontBiz Vermonters are again facing steep premium growth for 2025 due to the cumulative impact of hospital costs, drug prices and state health care policy choices. Blue Cross and Blue Shield of Vermont projects that these trends will continue and require rate increases of 16.3% for individual health plans and 19.1% for small-group plans for Vermonters covered by Vermont Health Connect. MVP Health Care is proposing an ave ...",
-      "articleError": ""
-    },
-    {
-      "title": "BlueCross BlueShield of Vermont says it needs double digit increases in premiums in 2025 - Burlington Free Press",
-      "sourceName": "Google News Search",
-      "link": "https://www.burlingtonfreepress.com/story/news/2024/05/15/vermonts-largest-health-insurance-firm-seeks-big-inc-double-digit-health-insurance-premium-increases/73686379007/",
-      "pubDate": "2024-05-15T07:00:00.000Z",
-      "matchedTerms": [
-        "BlueCross BlueShield of Vermont",
-        "BCBSVT"
-      ],
-      "snippet": "More double-digit increases to health insurance premiums are headed our way in 2025, according to BlueCross BlueShield of Vermont. It's the price we have to pay for cutting wait times for health care and for getting older. Vermont's largest health care insurer said it will require rate increases of 16.3% for individual health plans and 19.1% for small grou ...",
-      "articleError": ""
-    },
-    {
-      "title": "Blue Cross VT just made it easier to get cheaper MRI scans at Vermont Open MRI - Burlington Free Press",
-      "sourceName": "Google News Search",
-      "link": "https://www.burlingtonfreepress.com/story/money/2024/01/25/blue-cross-allows-mris-at-open-mri-without-prior-authorization/72326740007/",
-      "pubDate": "2024-01-25T08:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross VT",
-        "Blue Cross",
-        "Blue Cross and Blue Shield of Vermont"
-      ],
-      "snippet": "... t medical insurance company is making it easier for patients to get cheaper MRIs at the only independent provider of the scans in the state − Vermont Open MRI in South Burlington. Blue Cross and Blue Shield of Vermont announced on Monday that as of Feb. 1, 2024, it will no longer require prior authorization for health care providers to refer their patients to Vermont Open MRI. The cost of MRIs at Vermont Open MRI is four times lower tha ...",
-      "articleError": ""
-    },
-    {
-      "title": "What the deal between Blue Cross of Vermont and Michigan means for local policyholders - Vermont Public",
-      "sourceName": "Google News Search",
-      "link": "https://www.vermontpublic.org/show/vermont-edition/2023-10-17/what-the-blue-cross-of-michigan-vermont-merger-means-for-local-policyholders",
-      "pubDate": "2023-10-17T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross of Vermont",
-        "Blue Cross",
-        "BCBS of Vermont",
-        "Blue Cross Blue Shield of Vermont",
-        "Vermont's largest health insurer"
-      ],
-      "snippet": "Vermont’s largest private health insurer, Blue Cross Blue Shield of Vermont, is now a subsidiary of a much larger counterpart in Michigan. State regulators approved the new relationship last week. Blue Cross Blue Shield of Michigan insures about 5.2 million pe ...",
-      "articleError": ""
-    },
-    {
-      "title": "Michigan, Vermont Blues plans finalize merger after securing key regulatory approval - Fierce Healthcare",
-      "sourceName": "Google News Search",
-      "link": "https://www.fiercehealthcare.com/payers/state-regulators-approve-merger-between-michigan-and-vermont-blues-plans",
-      "pubDate": "2023-10-12T07:00:00.000Z",
-      "matchedTerms": [
-        "Vermont Blues plan"
-      ],
-      "snippet": "Michigan, Vermont Blues plans finalize merger after securing key regulatory approval - Fierce Healthcare Michigan, Vermont Blues plans finalize merger after securing key regulatory approval Fierce Healthcare Michigan, Vermont Blues plans finalize merger after securing k ...",
-      "articleError": "HTTP 403 while fetching https://www.fiercehealthcare.com/payers/state-regulators-approve-merger-between-michigan-and-vermont-blues-plans"
-    },
-    {
-      "title": "16,000 Vermont health insurance customers affected by data theft, more than previously known - VTDigger",
-      "sourceName": "Google News Search",
-      "link": "https://vtdigger.org/2023/06/19/16000-vermont-health-insurance-customers-affected-by-data-theft-more-than-previously-known/",
-      "pubDate": "2023-06-19T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross Vermont",
-        "Blue Cross Blue Shield of Vermont",
-        "Vermont Blue Advantage",
-        "Blue Cross"
-      ],
-      "snippet": "... was stolen in a cyberattack in January — more than twice the number originally reported. The affected people included over 14,000 Vermont residents, of whom 13,700 were members of Vermont Blue Advantage health insurance plans, the state Attorney General’s Office said in response to a VTDigger inquiry. It said the other residents were on different insurance plans: nearly 300 with Aetna ACE and about 50 with UAW Retiree Medical Benefits T ...",
-      "articleError": ""
-    },
-    {
-      "title": "Blue Cross and Blue Shield of Vermont to affiliate with Michigan counterpart - VTDigger",
-      "sourceName": "Google News Search",
-      "link": "https://vtdigger.org/2023/05/01/blue-cross-and-blue-shield-of-vermont-to-affiliate-with-michigan-counterpart/",
-      "pubDate": "2023-05-01T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross",
-        "BCBSVT",
-        "BCBS of Vermont",
-        "Vermont Blue Advantage"
-      ],
-      "snippet": "Updated at 5:15 p.m. Blue Cross and Blue Shield of Vermont is seeking to become part of the Blue Cross Blue Shield of Michigan “family of companies.” The Vermont organization’s decision to affiliate with its Detroit-based counterpart, announced Monday, would give the state’s large ...",
-      "articleError": ""
-    },
-    {
-      "title": "Kim Peake promoted to director of financial integrity at Blue Cross Vermont - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/people/march/kim-peake-promoted-director-financial-integrity-blue-cross-vermont",
-      "pubDate": "2023-03-22T23:24:26.000Z",
-      "matchedTerms": [
-        "Blue Cross Vermont",
-        "Blue Cross",
-        "Blue Cross and Blue Shield of Vermont"
-      ],
-      "snippet": "Kim Peake of Essex has been promoted to director of financial integrity at Blue Cross and Blue Shield of Vermont, the state’s only local, nonprofit health plan. Peake has been at Blue Cross for 17 years; during that time has held several roles in underwriting, including associate underwriter, underwriter, senior underwriter and most  ...",
-      "articleError": ""
-    },
-    {
-      "title": "UVMMC’s Comprehensive Pain Program wins Blue Cross VT Provider Innovation Award - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/news/2023/march/21/uvmmcs-comprehensive-pain-program-wins-blue-cross-vt-provider-innovation-award",
-      "pubDate": "2023-03-21T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross VT",
-        "Blue Cross",
-        "Blue Cross Blue Shield of Vermont"
-      ],
-      "snippet": "... nsformative Healing (PATH) Program Vermont Business Magazine UVM Medical Center’s Comprehensive Pain Program (CPP) has been recognized for its novel approach to pain management by Blue Cross Blue Shield of Vermont, winning the organization’s 2023 Blue Cross Provider Innovation Award for its PATH (Partners Aligned in Transformative Healing) program. Launched in 2019, PATH is an intensive, 16-week program that uses a unique approach to ca ...",
-      "articleError": ""
-    },
-    {
-      "title": "Heidi Masi promoted at Blue Cross and Blue Shield of Vermont - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/people/march/heidi-masi-promoted-blue-cross-and-blue-shield-vermont",
-      "pubDate": "2023-03-09T19:02:30.000Z",
-      "matchedTerms": [
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross"
-      ],
-      "snippet": "Heidi Masi, director of learning and organizational development at Blue Cross and Blue Shield of Vermont, has been promoted to director of human resources, learning and organizational development, and facilities at the company, the state’s only local, nonprofit health plan. In her new role, Masi will oversee the employee life ...",
-      "articleError": ""
-    },
-    {
-      "title": "Foster, Whalen join board at Blue Cross and Blue Shield of Vermont - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/people/april/foster-whalen-join-board-blue-cross-and-blue-shield-vermont",
-      "pubDate": "2022-04-13T20:56:03.000Z",
-      "matchedTerms": [
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross"
-      ],
-      "snippet": "Blue Cross and Blue Shield of Vermont welcomed Caroline Foster of South Burlington, director of product management at Publicis Sapient, and TJ Whalen of Charlotte, general partner and managing director at FreshTracks Capital, to the board of directors of the s ...",
-      "articleError": ""
-    },
-    {
-      "title": "Blue Cross and Blue Shield of Vermont welcomes new board members - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/people/may/blue-cross-and-blue-shield-vermont-welcomes-new-board-members",
-      "pubDate": "2021-05-05T08:56:59.000Z",
-      "matchedTerms": [
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross",
-        "BCBSVT",
-        "Blue Cross Blue Shield of Vermont"
-      ],
-      "snippet": "Blue Cross and Blue Shield of Vermont (Blue Cross) is pleased to welcome Jason Robart and Karin Chamberlain to the non-profit health and wellness organization’s board of directors. They bring a dynamic knowledge of health care and finance. Jason Robart is the  ...",
-      "articleError": ""
-    },
-    {
-      "title": "Food pilot works with Capstone/BCBSVT to support families - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/news/2021/may/04/food-pilot-works-capstonebcbsvt-support-families",
-      "pubDate": "2021-05-04T07:00:00.000Z",
-      "matchedTerms": [
-        "BCBSVT",
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross"
-      ],
-      "snippet": "Blue Cross and Blue Shield of Vermont volunteer, Jacob Houston, loads the van for drop off at the Orange County Parent Child Center. Vermont Business Magazine A new food pilot was born in April as an offshoot of the highly successful Everyone Eats Vermont proj ...",
-      "articleError": ""
-    },
-    {
-      "title": "Growth mindset to create benefits for Vermont seniors - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/people/june/growth-mindset-create-benefits-vermont-seniors",
-      "pubDate": "2020-06-24T12:54:47.000Z",
-      "matchedTerms": [
-        "BCBSVT",
-        "Blue Cross and Blue Shield of Vermont",
-        "Vermont Blue Advantage",
-        "Blue Cross"
-      ],
-      "snippet": "... t businessperson who appreciates and understands the actuarial science that shapes health care today. Drawing on 25 years of health care management, she was appointed President of Vermont Blue Advantage® in March 2020. Her leadership is essential to the success of this new venture. Getsie is overseeing the development and implementation of Vermont Blue Advantage, which was formed by Blue Cross and Blue Shield of Vermont to offer seniors ...",
-      "articleError": ""
-    },
-    {
-      "title": "Blue Cross and Blue Shield of Vermont delays payments to doctors, straining small practices - VTDigger",
-      "sourceName": "Google News Search",
-      "link": "https://vtdigger.org/2019/03/07/blue-cross-blue-shield-vermont-delays-payments-doctors-straining-small-practices/",
-      "pubDate": "2019-03-07T08:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross",
-        "Blue Cross Blue Shield of Vermont"
-      ],
-      "snippet": "[O]ver the past two months, Blue Cross and Blue Shield of Vermont has delayed tens of thousands of dollars in payments to a number of medical providers, putting a financial strain on small private practices in Vermont that rely on income from the insurer. The insurance company says the d ...",
-      "articleError": ""
-    },
-    {
-      "title": "Director of customer service at BCBSVT recognized for her Call Center leadership - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/people/may/director-customer-service-bcbsvt-recognized-her-call-center-leadership",
-      "pubDate": "2018-04-19T17:18:19.000Z",
-      "matchedTerms": [
-        "BCBSVT",
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross"
-      ],
-      "snippet": "Emily Fair, Director of Customer Service at Blue Cross and Blue Shield of Vermont (BCBSVT) has been recognized for her Call Center leadership with the prestigious First Call Resolution (FCR) Champion of the Year Award. This award is judged by a panel at Service Quality Metrics (SQM) who reviews leaders  ...",
-      "articleError": ""
-    },
-    {
-      "title": "Blue Cross and Blue Shield of Vermont employees support Dragonheart Vermont - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/news/2015/august/16/blue-cross-and-blue-shield-vermont-employees-support-dragonheart-vermont",
-      "pubDate": "2015-08-16T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross",
-        "BCBSVT"
-      ],
-      "snippet": "Vermont Business MagazineNearly sixty Blue Cross and Blue Shield of Vermont (BCBSVT) employees participated in the 10thAnnual Lake Champlain Dragon Boat Festival, hosted by Dragonheart Vermont, on Sunday, August 2nd, 2015.BCBSVT has sponsored the festival for many years, as well as bringing two te ...",
-      "articleError": ""
-    },
-    {
-      "title": "Blue Cross and Blue Shield of Vermont Selects Edifecs to Integrate its IT Systems with Vermont’s Health Insurance Exchange (HIX) - Healthcare IT Today",
-      "sourceName": "Google News Search",
-      "link": "https://www.healthcareittoday.com/2013/06/07/blue-cross-and-blue-shield-of-vermont-selects-edifecs-to-integrate-its-it-systems-with-vermonts-health-insurance-exchange-hix/",
-      "pubDate": "2013-06-07T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross",
-        "BCBSVT"
-      ],
-      "snippet": "... EVUE, Wash.—May 22, 2013— Today, Edifecs, Inc., a leading healthcare solutions provider specializing in healthcare information management and compliance technology, announced that Blue Cross and Blue Shield of Vermont (BCBS of VT) has chosen the company as its technology integration partner in anticipation for preparing to integrate with Vermont Health Connect, the state’s health insurance exchange (HIX). Beginning in October of this ye ...",
       "articleError": ""
     }
   ]
