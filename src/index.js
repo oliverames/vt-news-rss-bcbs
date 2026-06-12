@@ -788,6 +788,54 @@ function extractFacebookComments($) {
   return comments;
 }
 
+// Comments live in the same JSON-escaped preload blobs as posts: each node
+// carries depth (0 = top-level, >0 = reply), body.text, then the author
+// name and created_time shortly after. Replies nest under the preceding
+// top-level comment, matching thread order in the HTML.
+export function parseFacebookEmbeddedComments(html) {
+  const comments = [];
+  const seen = new Set();
+  const bodyPattern = /"body":\{"text":"((?:[^"\\]|\\.)*)"/g;
+
+  let match;
+  while ((match = bodyPattern.exec(html)) !== null) {
+    const text = cleanText(decodeFacebookJsonString(match[1]));
+    if (!text) {
+      continue;
+    }
+
+    const before = html.slice(Math.max(0, match.index - 600), match.index);
+    const after = html.slice(match.index, match.index + 6000);
+    const authorMatch = /"name":"((?:[^"\\]|\\.)*)"/.exec(after);
+    const author = authorMatch
+      ? cleanText(decodeFacebookJsonString(authorMatch[1]))
+      : "";
+
+    // The HTML repeats each comment in a second preload blob; keep the
+    // first copy (the one preceded by its depth field).
+    const key = `${author}:${text}`;
+    if (seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+
+    const depthMatch = /"depth":(\d+)/.exec(before);
+    const depth = depthMatch ? Number.parseInt(depthMatch[1], 10) : 0;
+    const timeMatch = /"created_time":(\d{9,12})/.exec(after);
+    const date = timeMatch
+      ? new Date(Number.parseInt(timeMatch[1], 10) * 1000).toISOString()
+      : null;
+
+    if (depth > 0 && comments.length > 0) {
+      comments[comments.length - 1].replies.push({ author, text, date });
+    } else {
+      comments.push({ author, text, date, replies: [] });
+    }
+  }
+
+  return comments;
+}
+
 export function parseFacebookPostHtml(html, source) {
   const $ = cheerio.load(html);
   const description = getMetaContent($, [
@@ -805,7 +853,15 @@ export function parseFacebookPostHtml(html, source) {
     "article:modified_time",
   ]);
   const pubDate = parseDate(source.pubDate || publishedAt);
-  const comments = extractFacebookComments($);
+  const embeddedComments = parseFacebookEmbeddedComments(html);
+  const comments =
+    embeddedComments.length > 0
+      ? embeddedComments
+      : extractFacebookComments($).map((comment) => ({
+          ...comment,
+          date: null,
+          replies: [],
+        }));
 
   if (!description && comments.length === 0) {
     return null;
@@ -815,7 +871,11 @@ export function parseFacebookPostHtml(html, source) {
     source.title ||
       `${pageTitle} Facebook post${description ? `: ${description.slice(0, 80)}` : ""}`,
   );
-  const commentText = comments.map((comment) => comment.text).join(" ");
+  const commentText = comments
+    .map((comment) =>
+      [comment.text, ...(comment.replies || []).map((reply) => reply.text)].join(" "),
+    )
+    .join(" ");
 
   return {
     sourceName: source.name,
@@ -977,7 +1037,11 @@ export function mergeFacebookPagePostItem(pageItem, postItem, source) {
       ? postItem.comments
       : pageItem.comments || [];
   const description = postItem.description || pageItem.description;
-  const commentText = comments.map((comment) => comment.text).join(" ");
+  const commentText = comments
+    .map((comment) =>
+      [comment.text, ...(comment.replies || []).map((reply) => reply.text)].join(" "),
+    )
+    .join(" ");
 
   return {
     ...pageItem,
@@ -1540,11 +1604,11 @@ export function buildSummaryPrompt(batch) {
 
   return [
     "You support the communications team at Blue Cross and Blue Shield of Vermont (BCBSVT).",
-    "They monitor Vermont news for stories about BCBSVT and about Vermont health care generally (hospitals, regulators, legislature, coverage programs, public health).",
+    "They monitor news in priority order: (1) anything mentioning BCBSVT/Blue Cross, (2) Vermont health care broadly — hospitals, regulators, legislature, coverage, public health, even small local items that involve a Vermont or Vermont-serving provider, (3) New England health care, (4) national stories ONLY when about the health insurance/payer industry, health policy, or drug coverage.",
     "For each article below, write:",
     '- "summary": 1-2 plain sentences describing what the story reports. Use only the title and excerpt; do not invent facts.',
     '- "reason": under 14 words, why this story matters to the team (e.g. "Names BCBSVT directly", "Hospital cost pressure affects premiums", "Legislative action on coverage").',
-    '- "relevant": true or false. false ONLY when the story is clearly not about health care, health coverage, health policy, hospitals as institutions, public health, or BCBSVT — for example crime, accident, or weather stories that merely mention someone being taken to a hospital. When in doubt, use true.',
+    '- "relevant": true or false, applying the priority order above. Geography matters: a Vermont story involving a Vermont hospital or provider is relevant even if minor (a crash victim airlifted to a named Vermont hospital is relevant — it touches the local care system). A story OUTSIDE Vermont/New England is relevant ONLY if it concerns the insurance/payer industry, health policy, or coverage — an out-of-state crime story, accident, or local disease outbreak with no payer/policy angle is NOT relevant, even when it mentions hospitals or vaccines. When in doubt about a Vermont story, use true; when in doubt about a national story, use false.',
     "",
     "Respond with a JSON array of objects: [{\"id\": <article number>, \"summary\": \"...\", \"reason\": \"...\", \"relevant\": true}].",
     "",
@@ -1634,9 +1698,12 @@ export async function summarizeItems(items) {
   }
 
   // Items need a Gemini pass when unsummarized OR not yet relevance-judged
-  // (items summarized before the relevance gate existed).
+  // (items summarized before the relevance gate existed). Setting
+  // SUMMARY_REJUDGE_ALL=true re-runs every item once — use after changing
+  // the relevance rubric in the prompt.
+  const rejudgeAll = process.env.SUMMARY_REJUDGE_ALL === "true";
   const pending = items.filter(
-    (item) => !item.summary || item.relevant === undefined,
+    (item) => rejudgeAll || !item.summary || item.relevant === undefined,
   );
   if (pending.length === 0) {
     return;
