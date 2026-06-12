@@ -1,7 +1,7 @@
 {
   "title": "Blue Cross VT News Mentions",
-  "generatedAt": "2026-06-01T15:49:54.363Z",
-  "itemCount": 33,
+  "generatedAt": "2026-06-12T12:53:04.653Z",
+  "itemCount": 37,
   "sources": [
     {
       "name": "WCAX",
@@ -31,7 +31,7 @@
       "name": "MyChamplainValley",
       "feedUrl": "https://www.mychamplainvalley.com/feed/",
       "ok": true,
-      "itemCount": 12
+      "itemCount": 13
     },
     {
       "name": "Vermont Business Magazine",
@@ -97,15 +97,37 @@
       "name": "Google News Search",
       "feedUrl": "https://news.google.com/rss/search?q=bluecrossvt.org+OR+%22BCBSVT%22+OR+%22Blue+Cross+VT%22+OR+%22Blue+Cross+Vermont%22+OR+%22Blue+Cross+and+Blue+Shield+of+Vermont%22&hl=en-US&gl=US&ceid=US:en",
       "ok": true,
-      "itemCount": 32
+      "itemCount": 34
     }
   ],
   "items": [
     {
+      "title": "Vermont’s largest health insurer wants to offer a cheaper plan. Can it actually help Vermonters?",
+      "sourceName": "VTDigger",
+      "link": "https://vtdigger.org/2026/06/11/vermonts-largest-health-insurer-wants-to-offer-a-cheaper-plan-can-it-actually-help-vermonters/",
+      "pubDate": "2026-06-11T19:25:19.000Z",
+      "matchedTerms": [
+        "BlueCross BlueShield of Vermont"
+      ],
+      "snippet": "...  of Vermonters receiving that assistance dropped by more than 9,000. The number of people buying any insurance at all on Vermont’s marketplace fell by more than 2,000, too. Since, BlueCross BlueShield of Vermont has looked for ways to offer less expensive plans. “We went hunting,” Andrew Garland, BCBS’s vice president of client relations and external affairs, told the Green Mountain Care Board in a May 6 hearing outlining a new suite of ...",
+      "articleError": ""
+    },
+    {
+      "title": "More cuts could be coming at UVM Health amid statewide cost-cutting push",
+      "sourceName": "WCAX",
+      "link": "https://www.wcax.com/2026/06/10/more-cuts-could-be-coming-uvm-health-amid-statewide-cost-cutting-push/",
+      "pubDate": "2026-06-10T21:43:55.000Z",
+      "matchedTerms": [
+        "Blue Cross"
+      ],
+      "snippet": "... down the cost of care by cutting how much money hospitals can make and what they can charge private insurance in an effort to lower Vermonters’ premiums. Over the last five years, Blue Cross Blue Shield premiums for individuals have spiked by over 50%. “First and foremost, I’m a doctor. I want to preserve all services if we possibly can. But we have to get to a place where our expenses are less than our revenue, we have to,” Leffler sai ...",
+      "articleError": ""
+    },
+    {
       "title": "Blue Cross VT recognized for customer service excellence - Vermont Business Magazine",
       "sourceName": "Google News Search",
       "link": "https://vermontbiz.com/news/2026/may/19/blue-cross-vt-recognized-customer-service-excellence",
-      "pubDate": "2026-05-19T17:53:36.000Z",
+      "pubDate": "2026-05-19T07:00:00.000Z",
       "matchedTerms": [
         "Blue Cross VT",
         "Blue Cross",
@@ -116,22 +138,23 @@
       "articleError": ""
     },
     {
-      "title": "Blue Cross and Blue Shield of Vermont seeks smaller premium increase this year - MSN",
+      "title": "Blue Cross and Blue Shield of Vermont seeks smaller premium increase this year - WPTZ",
       "sourceName": "Google News Search",
-      "link": "https://www.msn.com/en-us/money/news/blue-cross-and-blue-shield-of-vermont-seeks-smaller-premium-increase-this-year/ar-AA233vUM",
+      "link": "https://www.mynbc5.com/article/blue-cross-and-blue-shield-of-vermont-seeks-premium-increases/71287520",
       "pubDate": "2026-05-13T07:00:00.000Z",
       "matchedTerms": [
         "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross"
+        "Blue Cross",
+        "Blue Cross VT"
       ],
-      "snippet": "Blue Cross and Blue Shield of Vermont seeks smaller premium increase this year - MSN Blue Cross and Blue Shield of Vermont seeks smaller premium increase this year MSN Blue Cross and Blue Shield of Vermont seeks smaller premium increase this year MSN",
+      "snippet": "The single digit percentage increases would be the smallest the last several years, Blue Cross VT said. The single digit percentage increases would be the smallest the last several years, Blue Cross VT said. The single digit percentage increases would be the smallest the last several years, Blue Cross VT said. Blue Cross and Blue Shield of Ve ...",
       "articleError": ""
     },
     {
       "title": "Blue Cross VT Mountain Days May 9 - Vermont Business Magazine",
       "sourceName": "Google News Search",
       "link": "https://vermontbiz.com/news/2026/may/06/blue-cross-vt-mountain-days-may-9",
-      "pubDate": "2026-05-06T06:00:34.000Z",
+      "pubDate": "2026-05-06T07:00:00.000Z",
       "matchedTerms": [
         "Blue Cross VT",
         "Blue Cross",
@@ -139,17 +162,6 @@
         "bluecrossvt.org"
       ],
       "snippet": "Submitted by tim on Wed, 05/06/2026 - 05:17 Related Company Blue Cross and Blue Shield of Vermont Mt. Wantastiquet is across the Connecticut River from Brattleboro in Hinsdale, NH. Vermont Business Magazine Blue Cross VT is again hosting its annual Mountain Days event this Saturday, May 9 from 10am-2pm at Mt. Wantastiq ...",
-      "articleError": ""
-    },
-    {
-      "title": "Blue Cross plans test patient willingness to shop for healthcare - Modern Healthcare",
-      "sourceName": "Google News Search",
-      "link": "https://www.modernhealthcare.com/insurance/mh-blue-cross-university-vermont-medical-center/",
-      "pubDate": "2026-01-21T08:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross"
-      ],
-      "snippet": "Blue Cross plans test patient willingness to shop for healthcare - Modern Healthcare Blue Cross plans test patient willingness to shop for healthcare Modern Healthcare Blue Cross plans test patient willingness to shop for healthcare Modern Healthcare",
       "articleError": ""
     },
     {
@@ -217,17 +229,6 @@
       ],
       "snippet": "Submitted by tim on Tue, 09/30/2025 - 16:13 Related Company Blue Cross and Blue Shield of Vermont Vermont Business Magazine The Board of Directors for Blue Cross and Blue Shield of Vermont (Blue Cross VT) is pleased to announce that Beth-Ann Roberts, MBA, has been selected as the organization’s next President and CEO,  ...",
       "articleError": ""
-    },
-    {
-      "title": "Blue Cross Blue Shield and MVP Health rate increases approved - MyChamplainValley.com",
-      "sourceName": "Google News Search",
-      "link": "https://www.mychamplainvalley.com/news/local-news/vermont/blue-cross-blue-shield-and-mvp-health-rate-increases-approved/",
-      "pubDate": "2025-08-22T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross"
-      ],
-      "snippet": "Blue Cross Blue Shield and MVP Health rate increases approved - MyChamplainValley.com Blue Cross Blue Shield and MVP Health rate increases approved MyChamplainValley.com Blue Cross Blue Shield and MVP Health rate increases approved MyChamplainValley.com",
-      "articleError": "HTTP 403 while fetching https://www.mychamplainvalley.com/news/local-news/vermont/blue-cross-blue-shield-and-mvp-health-rate-increases-approved/"
     },
     {
       "title": "Vermont regulators approve a trimmed increase to 2026 health insurance premiums for large employers - VTDigger",
@@ -301,20 +302,6 @@
         "bluecrossvt.org"
       ],
       "snippet": "Submitted by tim on Tue, 03/25/2025 - 05:54 Related Company Blue Cross and Blue Shield of Vermont Green Mountain Care Board chart from March 12, 2025, shows nine hospitals reported negative operating margin in FY2023, six in FY2024 and nine so far in FY2025. by Timothy McQuiston, Vermont Business Magazine Blue Cross Ve ...",
-      "articleError": ""
-    },
-    {
-      "title": "Amy Stoll receives the Distinguished Young Pharmacist of the Year Award for 2024 - Vermont Business Magazine",
-      "sourceName": "Google News Search",
-      "link": "https://vermontbiz.com/news/2025/march/11/amy-stoll-receives-distinguished-young-pharmacist-year-award-2024",
-      "pubDate": "2025-03-11T07:00:00.000Z",
-      "matchedTerms": [
-        "Blue Cross VT",
-        "Blue Cross and Blue Shield of Vermont",
-        "Blue Cross",
-        "bluecrossvt.org"
-      ],
-      "snippet": "Submitted by tim on Tue, 03/11/2025 - 03:13 Related Company Blue Cross and Blue Shield of Vermont Vermont Business Magazine Amy Stoll, Pharm.D., MPH, CDCES, BCACP, who serves as a Clinical Pharmacist at Blue Cross and Blue Shield of Vermont since 2021, is the recipient of the “2025 Distinguished Young Pharmacist of the ...",
       "articleError": ""
     },
     {
@@ -482,16 +469,16 @@
       "articleError": ""
     },
     {
-      "title": "UVM Medical Center's comprehensive pain program wins blue cross VT provider innovation award - St. Albans Messenger",
+      "title": "UVMMC’s Comprehensive Pain Program wins Blue Cross VT Provider Innovation Award - Vermont Business Magazine",
       "sourceName": "Google News Search",
-      "link": "https://www.samessenger.com/news/uvm-medical-centers-comprehensive-pain-program-wins-blue-cross-vt-provider-innovation-award/article_c222954a-c743-11ed-9b73-7748e39438a4.html",
+      "link": "https://vermontbiz.com/news/2023/march/21/uvmmcs-comprehensive-pain-program-wins-blue-cross-vt-provider-innovation-award",
       "pubDate": "2023-03-21T07:00:00.000Z",
       "matchedTerms": [
         "Blue Cross VT",
         "Blue Cross",
         "Blue Cross Blue Shield of Vermont"
       ],
-      "snippet": "Featured UVM Medical Center's comprehensive pain program wins blue cross VT provider innovation award PRESS RELEASE Mar 21, 2023 Mar 21, 2023 0 Facebook Twitter WhatsApp SMS Email Facebook Twitter WhatsApp SMS Email Print Copy article link Save Facebook Twitter WhatsApp SMS Email Print Copy article link Save Courtesy Pho ...",
+      "snippet": "... nsformative Healing (PATH) Program Vermont Business Magazine UVM Medical Center’s Comprehensive Pain Program (CPP) has been recognized for its novel approach to pain management by Blue Cross Blue Shield of Vermont, winning the organization’s 2023 Blue Cross Provider Innovation Award for its PATH (Partners Aligned in Transformative Healing) program. Launched in 2019, PATH is an intensive, 16-week program that uses a unique approach to ca ...",
       "articleError": ""
     },
     {
@@ -507,6 +494,18 @@
       "articleError": ""
     },
     {
+      "title": "Foster, Whalen join board at Blue Cross and Blue Shield of Vermont - Vermont Business Magazine",
+      "sourceName": "Google News Search",
+      "link": "https://vermontbiz.com/people/april/foster-whalen-join-board-blue-cross-and-blue-shield-vermont",
+      "pubDate": "2022-04-13T20:56:03.000Z",
+      "matchedTerms": [
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross"
+      ],
+      "snippet": "Blue Cross and Blue Shield of Vermont welcomed Caroline Foster of South Burlington, director of product management at Publicis Sapient, and TJ Whalen of Charlotte, general partner and managing director at FreshTracks Capital, to the board of directors of the s ...",
+      "articleError": ""
+    },
+    {
       "title": "Blue Cross and Blue Shield of Vermont welcomes new board members - Vermont Business Magazine",
       "sourceName": "Google News Search",
       "link": "https://vermontbiz.com/people/may/blue-cross-and-blue-shield-vermont-welcomes-new-board-members",
@@ -518,6 +517,32 @@
         "Blue Cross Blue Shield of Vermont"
       ],
       "snippet": "Blue Cross and Blue Shield of Vermont (Blue Cross) is pleased to welcome Jason Robart and Karin Chamberlain to the non-profit health and wellness organization’s board of directors. They bring a dynamic knowledge of health care and finance. Jason Robart is the  ...",
+      "articleError": ""
+    },
+    {
+      "title": "Food pilot works with Capstone/BCBSVT to support families - Vermont Business Magazine",
+      "sourceName": "Google News Search",
+      "link": "https://vermontbiz.com/news/2021/may/04/food-pilot-works-capstonebcbsvt-support-families",
+      "pubDate": "2021-05-04T07:00:00.000Z",
+      "matchedTerms": [
+        "BCBSVT",
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross"
+      ],
+      "snippet": "Blue Cross and Blue Shield of Vermont volunteer, Jacob Houston, loads the van for drop off at the Orange County Parent Child Center. Vermont Business Magazine A new food pilot was born in April as an offshoot of the highly successful Everyone Eats Vermont proj ...",
+      "articleError": ""
+    },
+    {
+      "title": "Growth mindset to create benefits for Vermont seniors - Vermont Business Magazine",
+      "sourceName": "Google News Search",
+      "link": "https://vermontbiz.com/people/june/growth-mindset-create-benefits-vermont-seniors",
+      "pubDate": "2020-06-24T12:54:47.000Z",
+      "matchedTerms": [
+        "BCBSVT",
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross"
+      ],
+      "snippet": "...  March 2020. Her leadership is essential to the success of this new venture. Getsie is overseeing the development and implementation of Vermont Blue Advantage, which was formed by Blue Cross and Blue Shield of Vermont to offer seniors Vermont-grown Medicare Advantage plans. She notes that “Medicare Advantage plans are growing in popularity in Vermont and nationally,” as an alternative to Original Medicare. Over 100,000 seniors in Vermon ...",
       "articleError": ""
     },
     {
@@ -544,6 +569,32 @@
         "Blue Cross"
       ],
       "snippet": "Emily Fair, Director of Customer Service at Blue Cross and Blue Shield of Vermont (BCBSVT) has been recognized for her Call Center leadership with the prestigious First Call Resolution (FCR) Champion of the Year Award. This award is judged by a panel at Service Quality Metrics (SQM) who reviews leaders  ...",
+      "articleError": ""
+    },
+    {
+      "title": "Blue Cross and Blue Shield of Vermont employees support Dragonheart Vermont - Vermont Business Magazine",
+      "sourceName": "Google News Search",
+      "link": "https://vermontbiz.com/news/2015/august/16/blue-cross-and-blue-shield-vermont-employees-support-dragonheart-vermont",
+      "pubDate": "2015-08-16T07:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross",
+        "BCBSVT"
+      ],
+      "snippet": "Vermont Business MagazineNearly sixty Blue Cross and Blue Shield of Vermont (BCBSVT) employees participated in the 10thAnnual Lake Champlain Dragon Boat Festival, hosted by Dragonheart Vermont, on Sunday, August 2nd, 2015.BCBSVT has sponsored the festival for many years, as well as bringing two te ...",
+      "articleError": ""
+    },
+    {
+      "title": "Blue Cross and Blue Shield of Vermont Selects Edifecs to Integrate its IT Systems with Vermont’s Health Insurance Exchange (HIX) - Healthcare IT Today",
+      "sourceName": "Google News Search",
+      "link": "https://www.healthcareittoday.com/2013/06/07/blue-cross-and-blue-shield-of-vermont-selects-edifecs-to-integrate-its-it-systems-with-vermonts-health-insurance-exchange-hix/",
+      "pubDate": "2013-06-07T07:00:00.000Z",
+      "matchedTerms": [
+        "Blue Cross and Blue Shield of Vermont",
+        "Blue Cross",
+        "BCBSVT"
+      ],
+      "snippet": "... EVUE, Wash.—May 22, 2013— Today, Edifecs, Inc., a leading healthcare solutions provider specializing in healthcare information management and compliance technology, announced that Blue Cross and Blue Shield of Vermont (BCBS of VT) has chosen the company as its technology integration partner in anticipation for preparing to integrate with Vermont Health Connect, the state’s health insurance exchange (HIX). Beginning in October of this ye ...",
       "articleError": ""
     }
   ]
