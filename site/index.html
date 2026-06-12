@@ -139,15 +139,19 @@
         margin-right: 6px;
       }
 
-      .sections a {
+      .section-option {
+        display: inline-block;
         margin-right: 14px;
         white-space: nowrap;
       }
 
-      .sections a.active {
-        color: var(--fg);
-        font-weight: 700;
-        text-decoration: none;
+      .section-option input {
+        margin: 0 4px 0 0;
+        vertical-align: baseline;
+      }
+
+      .section-option.off {
+        color: var(--muted);
       }
 
       .sections .count {
@@ -267,10 +271,22 @@
 
       footer {
         margin-top: 36px;
-        padding-top: 14px;
-        border-top: 1px solid var(--rule);
+        padding-top: 0;
         font-size: 0.8rem;
         color: var(--muted);
+      }
+
+      footer::before {
+        content: "";
+        display: block;
+        height: 5px;
+        margin-bottom: 14px;
+        background: linear-gradient(
+          to right,
+          var(--bar-1) 0 33.333%,
+          var(--bar-2) 33.333% 66.666%,
+          var(--bar-3) 66.666% 100%
+        );
       }
 
       footer a { color: var(--muted); }
@@ -327,6 +343,7 @@
       const searchInputEl = document.getElementById("search-input");
 
       let allItems = [];
+      let selectedSectionState = null;
       const pageSize = 25;
 
       function hashParam(name) {
@@ -336,20 +353,13 @@
         return match ? decodeURIComponent(match[1]) : "";
       }
 
-      function activeSection() {
-        return hashParam("section");
-      }
-
       function activePage() {
         const parsed = Number.parseInt(hashParam("page") || "1", 10);
         return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
       }
 
-      function buildHash(section, page = 1) {
+      function buildHash(page = 1) {
         const parts = [];
-        if (section) {
-          parts.push(`section=${encodeURIComponent(section)}`);
-        }
         if (page > 1) {
           parts.push(`page=${page}`);
         }
@@ -435,20 +445,18 @@
       }
 
       function sectionItems() {
-        const section = activeSection();
-        if (section === "source") {
-          return allItems.filter(isOwnedItem);
-        }
-        if (section === "social") {
-          return allItems.filter(isSocialItem);
-        }
+        const selected = selectedSectionState || new Set();
+        return allItems.filter((item) => selected.has(itemSectionId(item)));
+      }
 
-        const defaultItems = allItems.filter(
-          (item) => !isOwnedItem(item) && !isSocialItem(item),
-        );
-        return section
-          ? defaultItems.filter((item) => item.category === section)
-          : defaultItems;
+      function itemSectionId(item) {
+        if (isOwnedItem(item)) {
+          return "source";
+        }
+        if (isSocialItem(item)) {
+          return "social";
+        }
+        return item.category || "Other";
       }
 
       function isOwnedItem(item) {
@@ -469,20 +477,50 @@
         });
       }
 
-      function sectionLink(section, label, count) {
-        const a = document.createElement("a");
-        a.href = buildHash(section, 1);
-        a.textContent = label;
-        if (count !== undefined) {
-          const span = document.createElement("span");
-          span.className = "count";
-          span.textContent = ` (${count})`;
-          a.appendChild(span);
+      function currentSelectedSectionIds() {
+        return new Set(
+          [...sectionLinksEl.querySelectorAll("input[type='checkbox']")]
+            .filter((input) => input.checked)
+            .map((input) => input.value),
+        );
+      }
+
+      function updateSectionOptionStates() {
+        for (const label of sectionLinksEl.querySelectorAll(".section-option")) {
+          const input = label.querySelector("input");
+          label.classList.toggle("off", !input.checked);
         }
-        if (activeSection() === section) {
-          a.className = "active";
+      }
+
+      function sectionOption(option, selected) {
+        const label = document.createElement("label");
+        label.className = "section-option";
+
+        const input = document.createElement("input");
+        input.type = "checkbox";
+        input.value = option.id;
+        input.checked = selected.has(option.id);
+        input.addEventListener("change", () => {
+          selectedSectionState = currentSelectedSectionIds();
+          updateSectionOptionStates();
+          if (activePage() > 1) {
+            history.replaceState(null, "", buildHash(1));
+          }
+          renderStories();
+        });
+
+        label.appendChild(input);
+        label.appendChild(document.createTextNode(option.label));
+
+        const count = document.createElement("span");
+        count.className = "count";
+        count.textContent = ` (${option.count})`;
+        label.appendChild(count);
+
+        if (!input.checked) {
+          label.classList.add("off");
         }
-        return a;
+        return label;
       }
 
       function renderSections() {
@@ -498,19 +536,44 @@
           counts.set(category, (counts.get(category) || 0) + 1);
         }
 
-        sectionLinksEl.replaceChildren();
-        sectionLinksEl.appendChild(sectionLink("", "All", defaultItems.length));
-        for (const [section, count] of [...counts.entries()].sort()) {
-          sectionLinksEl.appendChild(document.createTextNode(" "));
-          sectionLinksEl.appendChild(sectionLink(section, section, count));
-        }
+        const options = [...counts.entries()].sort().map(([section, count]) => ({
+          id: section,
+          label: section,
+          count,
+          defaultChecked: true,
+        }));
         if (ownedCount > 0) {
-          sectionLinksEl.appendChild(document.createTextNode(" "));
-          sectionLinksEl.appendChild(sectionLink("source", "BlueCrossVT.org", ownedCount));
+          options.push({
+            id: "source",
+            label: "BlueCrossVT.org",
+            count: ownedCount,
+            defaultChecked: false,
+          });
         }
         if (socialCount > 0) {
+          options.push({
+            id: "social",
+            label: "Social posts",
+            count: socialCount,
+            defaultChecked: false,
+          });
+        }
+
+        const selected = selectedSectionState
+          ? new Set([...selectedSectionState].filter((id) =>
+              options.some((option) => option.id === id),
+            ))
+          : new Set(
+              options
+                .filter((option) => option.defaultChecked)
+                .map((option) => option.id),
+            );
+        selectedSectionState = selected;
+
+        sectionLinksEl.replaceChildren();
+        for (const option of options) {
           sectionLinksEl.appendChild(document.createTextNode(" "));
-          sectionLinksEl.appendChild(sectionLink("social", "Social posts", socialCount));
+          sectionLinksEl.appendChild(sectionOption(option, selected));
         }
         sectionsEl.hidden = false;
       }
@@ -522,13 +585,12 @@
           return;
         }
 
-        const section = activeSection();
         const start = (page - 1) * pageSize + 1;
         const end = Math.min(page * pageSize, totalItems);
 
         if (page > 1) {
           const newer = document.createElement("a");
-          newer.href = buildHash(section, page - 1);
+          newer.href = buildHash(page - 1);
           newer.textContent = "Newer";
           container.appendChild(newer);
           container.appendChild(document.createTextNode(" "));
@@ -542,7 +604,7 @@
         if (page < pageCount) {
           container.appendChild(document.createTextNode(" "));
           const older = document.createElement("a");
-          older.href = buildHash(section, page + 1);
+          older.href = buildHash(page + 1);
           older.textContent = "Older";
           container.appendChild(older);
         }
@@ -721,7 +783,7 @@
 
       searchInputEl.addEventListener("input", () => {
         if (activePage() > 1) {
-          history.replaceState(null, "", buildHash(activeSection(), 1));
+          history.replaceState(null, "", buildHash(1));
         }
         renderStories();
       });
