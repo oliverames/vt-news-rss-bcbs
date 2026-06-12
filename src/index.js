@@ -178,6 +178,55 @@ export const DEFAULT_SOURCES = [
   },
 ];
 
+function parseConfiguredUrlSources(value, buildSource) {
+  return String(value || "")
+    .split(/[\n,]+/)
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .map((entry, index) => {
+      const [maybeName, maybeUrl] = entry.includes("|")
+        ? entry.split("|", 2).map((part) => part.trim())
+        : ["", entry];
+      if (!maybeUrl) {
+        return null;
+      }
+
+      try {
+        const url = new URL(maybeUrl).toString();
+        const name =
+          maybeName ||
+          `Configured Facebook ${index + 1}`;
+        return buildSource(name, url);
+      } catch {
+        return null;
+      }
+    })
+    .filter(Boolean);
+}
+
+export function buildSourcesFromEnv(baseSources = DEFAULT_SOURCES) {
+  const configuredPosts = parseConfiguredUrlSources(
+    process.env.FACEBOOK_POST_URLS,
+    (name, url) => ({
+      name: `${name} Facebook post`,
+      homepage: url,
+      facebookPostUrl: url,
+    }),
+  );
+
+  const configuredPages = parseConfiguredUrlSources(
+    process.env.FACEBOOK_PAGE_URLS,
+    (name, url) => ({
+      name: `${name} Facebook page`,
+      homepage: url,
+      facebookPageUrl: url,
+      maxItems: parsePositiveInteger(process.env.FACEBOOK_PAGE_MAX_POSTS, 10),
+    }),
+  );
+
+  return [...baseSources, ...configuredPosts, ...configuredPages];
+}
+
 export const MENTION_TERMS = [
   { label: "BCBSVT", pattern: /\bbcbs[\s-]?vt\b/i },
   { label: "BCBS of Vermont", pattern: /\bbcbs\s+(?:of\s+)?vermont\b|\bbcbs\s+of\s+vt\b/i },
@@ -737,6 +786,111 @@ export function parseFacebookPostHtml(html, source) {
   };
 }
 
+function normalizeFacebookUrl(value, baseUrl = "https://www.facebook.com/") {
+  const url = resolveUrl(value?.replaceAll("&amp;", "&") || "", baseUrl);
+  try {
+    const parsed = new URL(url);
+    for (const key of [...parsed.searchParams.keys()]) {
+      if (
+        key.startsWith("__") ||
+        ["refid", "ref", "mibextid", "paipv", "eav"].includes(key)
+      ) {
+        parsed.searchParams.delete(key);
+      }
+    }
+    parsed.hash = "";
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
+function isFacebookPostLink(href = "") {
+  return /\/posts\/|story\.php|permalink\.php/i.test(href);
+}
+
+export function parseFacebookPageHtml(html, source) {
+  const $ = cheerio.load(html);
+  const items = [];
+  const seen = new Set();
+  const pageTitle = cleanText($("title").first().text()) || source.name;
+
+  $("a[href]").each((_, element) => {
+    const href = $(element).attr("href") || "";
+    if (!isFacebookPostLink(href)) {
+      return;
+    }
+
+    const link = normalizeFacebookUrl(href, source.facebookPageUrl);
+    if (!link || seen.has(link)) {
+      return;
+    }
+
+    const container = $(element).closest("article, section, div, li");
+    const rawText = cleanText(container.text() || $(element).text());
+    const description = rawText
+      .replace(/\b(?:Like|Comment|Share|Full Story)\b/gi, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!description) {
+      return;
+    }
+
+    seen.add(link);
+    const titleText = description.slice(0, 90);
+    items.push({
+      sourceName: source.name,
+      sourceFeedUrl: source.facebookPageUrl,
+      title: `${pageTitle} Facebook post: ${titleText}`,
+      link,
+      guid: link,
+      pubDate: null,
+      description,
+      comments: [],
+      scanArticle: false,
+      feedContent: cleanText([pageTitle, description].join(" ")),
+    });
+  });
+
+  return items;
+}
+
+export function mergeFacebookPagePostItem(pageItem, postItem, source) {
+  if (!postItem) {
+    return pageItem;
+  }
+
+  const comments =
+    postItem.comments && postItem.comments.length > 0
+      ? postItem.comments
+      : pageItem.comments || [];
+  const description = postItem.description || pageItem.description;
+  const commentText = comments.map((comment) => comment.text).join(" ");
+
+  return {
+    ...pageItem,
+    ...postItem,
+    sourceName: source.name,
+    sourceFeedUrl: source.facebookPageUrl,
+    title: postItem.title || pageItem.title,
+    link: postItem.link || pageItem.link,
+    guid: postItem.guid || pageItem.guid,
+    pubDate: postItem.pubDate || pageItem.pubDate,
+    description,
+    comments,
+    scanArticle: false,
+    feedContent: cleanText(
+      [
+        postItem.feedContent,
+        pageItem.feedContent,
+        commentText,
+      ]
+        .filter(Boolean)
+        .join(" "),
+    ),
+  };
+}
+
 export function findMentionTerms(text, terms = MENTION_TERMS) {
   const haystack = cleanText(text);
   const matches = [];
@@ -951,6 +1105,29 @@ async function mapWithConcurrency(items, limit, mapper) {
   return results;
 }
 
+async function enrichFacebookPageItemsFromPosts(pageItems, source) {
+  return mapWithConcurrency(pageItems, 2, async (pageItem) => {
+    try {
+      const { text: postHtml } = await fetchText(
+        pageItem.link,
+        "text/html, application/xhtml+xml, */*",
+      );
+      const postItem = parseFacebookPostHtml(postHtml, {
+        ...source,
+        title: pageItem.title,
+        pubDate: pageItem.pubDate,
+        facebookPostUrl: pageItem.link,
+      });
+      return mergeFacebookPagePostItem(pageItem, postItem, source);
+    } catch (error) {
+      console.warn(
+        `Failed to enrich Facebook post ${pageItem.link}: ${error.message}`,
+      );
+      return pageItem;
+    }
+  });
+}
+
 function dedupeItems(items) {
   const byKey = new Map();
 
@@ -990,6 +1167,27 @@ async function collectFeedItems(sources) {
         continue;
       }
 
+      if (source.facebookPageUrl) {
+        const { text: html } = await fetchText(
+          source.facebookPageUrl,
+          "text/html, application/xhtml+xml, */*",
+        );
+        let sourceItems = parseFacebookPageHtml(html, source);
+        if (source.maxItems) {
+          sourceItems = sourceItems.slice(0, source.maxItems);
+        }
+        sourceItems = await enrichFacebookPageItemsFromPosts(sourceItems, source);
+        sourceResults.push({
+          name: source.name,
+          feedUrl: source.facebookPageUrl,
+          ok: true,
+          itemCount: sourceItems.length,
+        });
+        items.push(...sourceItems);
+        console.log(`Fetched ${sourceItems.length} items from ${source.name}`);
+        continue;
+      }
+
       const { text: xml } = await fetchText(
         source.feedUrl,
         "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
@@ -1009,7 +1207,7 @@ async function collectFeedItems(sources) {
     } catch (error) {
       sourceResults.push({
         name: source.name,
-        feedUrl: source.feedUrl || source.facebookPostUrl,
+        feedUrl: source.feedUrl || source.facebookPostUrl || source.facebookPageUrl,
         ok: false,
         itemCount: 0,
         error: error.message,
@@ -1143,16 +1341,22 @@ export function mergeWithArchive(currentItems, archivedItems, now = new Date()) 
 // ---------------------------------------------------------------------------
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY?.trim() || "";
-// Fallback chain: flash-lite has the highest free-tier daily quota; heavier
-// flash models cover transient failures. A model that 404s or 429s simply
-// passes to the next.
+// Fallback chain: start with the current stable Flash-Lite model because it is
+// the lowest-cost/free-tier-friendly option. Active project limits still vary
+// and should be checked in AI Studio; a model that 404s or 429s passes through.
 const GEMINI_MODELS = [
-  "gemini-flash-lite-latest",
   "gemini-2.5-flash-lite",
   "gemini-2.5-flash",
 ];
-const SUMMARY_BATCH_SIZE = 10;
-const SUMMARY_BATCH_DELAY_MS = 5000;
+const SUMMARY_BATCH_SIZE = parsePositiveInteger(process.env.SUMMARY_BATCH_SIZE, 10);
+const SUMMARY_BATCH_DELAY_MS = parsePositiveInteger(
+  process.env.SUMMARY_BATCH_DELAY_MS,
+  5000,
+);
+const SUMMARY_MAX_REQUESTS_PER_RUN = parsePositiveInteger(
+  process.env.SUMMARY_MAX_REQUESTS_PER_RUN,
+  10,
+);
 
 export function buildSummaryPrompt(batch) {
   const articles = batch
@@ -1262,8 +1466,16 @@ export async function summarizeItems(items) {
   }
   console.log(`Summarizing ${pending.length} new items with Gemini...`);
 
-  for (let i = 0; i < pending.length; i += SUMMARY_BATCH_SIZE) {
-    const batch = pending.slice(i, i + SUMMARY_BATCH_SIZE);
+  const maxItemsThisRun = SUMMARY_BATCH_SIZE * SUMMARY_MAX_REQUESTS_PER_RUN;
+  const runItems = pending.slice(0, maxItemsThisRun);
+  if (pending.length > runItems.length) {
+    console.log(
+      `Summary cap: processing ${runItems.length}/${pending.length} new items this run.`,
+    );
+  }
+
+  for (let i = 0; i < runItems.length; i += SUMMARY_BATCH_SIZE) {
+    const batch = runItems.slice(i, i + SUMMARY_BATCH_SIZE);
     try {
       const text = await geminiGenerate(buildSummaryPrompt(batch));
       const applied = parseSummaryResponse(text, batch);
@@ -1274,7 +1486,7 @@ export async function summarizeItems(items) {
       console.warn(`Summary batch failed, will retry next run: ${error.message}`);
       break;
     }
-    if (i + SUMMARY_BATCH_SIZE < pending.length) {
+    if (i + SUMMARY_BATCH_SIZE < runItems.length) {
       await sleep(SUMMARY_BATCH_DELAY_MS);
     }
   }
@@ -1581,7 +1793,7 @@ async function writeOutput(rss, jsonSummary, rssOutputPath, jsonOutputPath) {
 }
 
 export async function generateFeed({
-  sources = DEFAULT_SOURCES,
+  sources = buildSourcesFromEnv(),
   now = new Date(),
   rssOutputPath = resolveRssOutputPath(),
   jsonOutputPath = resolveJsonOutputPath(rssOutputPath),

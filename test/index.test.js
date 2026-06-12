@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   buildJsonSummary,
   buildRss,
+  buildSourcesFromEnv,
   buildSnippet,
   buildSummaryPrompt,
   canonicalizeMatchedTerms,
@@ -11,7 +12,9 @@ import {
   CATEGORY_TOPIC,
   findMentionTerms,
   mergeWithArchive,
+  mergeFacebookPagePostItem,
   parseFeedItems,
+  parseFacebookPageHtml,
   parseFacebookPostHtml,
   parseSummaryResponse,
   enrichAndFilterItems,
@@ -397,6 +400,117 @@ test("parseFacebookPostHtml extracts public post metadata and comments when pres
   ]);
   assert.match(item.feedContent, /BlueCross BlueShield/);
   assert.match(item.feedContent, /BCBS VT members/);
+});
+
+test("parseFacebookPageHtml extracts public post links when page HTML exposes them", () => {
+  const html = `<!doctype html>
+    <html>
+      <head><title>VTDigger</title></head>
+      <body>
+        <article>
+          <p>BlueCross BlueShield wants to offer cheaper health plans.</p>
+          <a href="/vtdigger/posts/123?refid=52">Full Story</a>
+        </article>
+        <article>
+          <p>Unrelated weather update.</p>
+          <a href="https://www.facebook.com/vtdigger/posts/456?mibextid=abc">Full Story</a>
+        </article>
+      </body>
+    </html>`;
+
+  const items = parseFacebookPageHtml(html, {
+    name: "VTDigger Facebook page",
+    facebookPageUrl: "https://www.facebook.com/vtdigger",
+  });
+
+  assert.equal(items.length, 2);
+  assert.equal(items[0].sourceName, "VTDigger Facebook page");
+  assert.equal(items[0].link, "https://www.facebook.com/vtdigger/posts/123");
+  assert.match(items[0].description, /BlueCross BlueShield/);
+  assert.match(items[0].feedContent, /cheaper health plans/);
+});
+
+test("mergeFacebookPagePostItem nests comments from enriched public posts", () => {
+  const pageItem = {
+    sourceName: "VTDigger Facebook page",
+    sourceFeedUrl: "https://www.facebook.com/vtdigger",
+    title: "VTDigger Facebook post: Blue Cross update",
+    link: "https://www.facebook.com/vtdigger/posts/123",
+    guid: "https://www.facebook.com/vtdigger/posts/123",
+    pubDate: null,
+    description: "Blue Cross update",
+    comments: [],
+    scanArticle: false,
+    feedContent: "VTDigger Blue Cross update",
+  };
+  const postItem = {
+    sourceName: "VTDigger Facebook page",
+    sourceFeedUrl: "https://www.facebook.com/vtdigger/posts/123",
+    title: "VTDigger Facebook post: Blue Cross update",
+    link: "https://www.facebook.com/vtdigger/posts/123",
+    guid: "https://www.facebook.com/vtdigger/posts/123",
+    pubDate: new Date("2026-06-11T13:00:00Z"),
+    description: "BlueCross BlueShield wants to offer cheaper plans.",
+    comments: [{ author: "Jane Reader", text: "This affects BCBS VT members." }],
+    scanArticle: false,
+    feedContent: "BlueCross BlueShield wants to offer cheaper plans. This affects BCBS VT members.",
+  };
+
+  const merged = mergeFacebookPagePostItem(pageItem, postItem, {
+    name: "VTDigger Facebook page",
+    facebookPageUrl: "https://www.facebook.com/vtdigger",
+  });
+
+  assert.equal(merged.sourceFeedUrl, "https://www.facebook.com/vtdigger");
+  assert.equal(merged.description, "BlueCross BlueShield wants to offer cheaper plans.");
+  assert.deepEqual(merged.comments, [
+    { author: "Jane Reader", text: "This affects BCBS VT members." },
+  ]);
+  assert.match(merged.feedContent, /BCBS VT members/);
+});
+
+test("buildSourcesFromEnv adds configured Facebook post and page sources", () => {
+  const originalPosts = process.env.FACEBOOK_POST_URLS;
+  const originalPages = process.env.FACEBOOK_PAGE_URLS;
+  const originalMaxPosts = process.env.FACEBOOK_PAGE_MAX_POSTS;
+  process.env.FACEBOOK_POST_URLS =
+    "VTDigger|https://www.facebook.com/vtdigger/posts/123";
+  process.env.FACEBOOK_PAGE_URLS =
+    "WCAX|https://www.facebook.com/WCAXTV";
+  process.env.FACEBOOK_PAGE_MAX_POSTS = "4";
+
+  try {
+    const sources = buildSourcesFromEnv([]);
+    assert.deepEqual(sources, [
+      {
+        name: "VTDigger Facebook post",
+        homepage: "https://www.facebook.com/vtdigger/posts/123",
+        facebookPostUrl: "https://www.facebook.com/vtdigger/posts/123",
+      },
+      {
+        name: "WCAX Facebook page",
+        homepage: "https://www.facebook.com/WCAXTV",
+        facebookPageUrl: "https://www.facebook.com/WCAXTV",
+        maxItems: 4,
+      },
+    ]);
+  } finally {
+    if (originalPosts === undefined) {
+      delete process.env.FACEBOOK_POST_URLS;
+    } else {
+      process.env.FACEBOOK_POST_URLS = originalPosts;
+    }
+    if (originalPages === undefined) {
+      delete process.env.FACEBOOK_PAGE_URLS;
+    } else {
+      process.env.FACEBOOK_PAGE_URLS = originalPages;
+    }
+    if (originalMaxPosts === undefined) {
+      delete process.env.FACEBOOK_PAGE_MAX_POSTS;
+    } else {
+      process.env.FACEBOOK_PAGE_MAX_POSTS = originalMaxPosts;
+    }
+  }
 });
 
 test("buildSnippet centers the first matched mention", () => {

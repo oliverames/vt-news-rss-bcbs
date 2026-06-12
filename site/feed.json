@@ -3,8 +3,8 @@
   "title": "Blue Cross VT News Mentions",
   "home_page_url": "",
   "feed_url": "",
-  "generatedAt": "2026-06-12T14:38:24.396Z",
-  "itemCount": 97,
+  "generatedAt": "2026-06-12T14:56:38.981Z",
+  "itemCount": 98,
   "sources": [
     {
       "name": "WCAX",
@@ -128,6 +128,31 @@
     }
   ],
   "items": [
+    {
+      "id": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOOFlkdXZnUmRQaXVkYXJObEdKM1FoaktSX3BPQ0o2R1ZlNFJua054T196TDVpM0ZoeFhORWpNRTNIVmRuWExjUVgyeE42NExfOG1mV0swZXBheHJoYmxJVDlNMGtyQmNmT19zckh5ZE9TR1M2UWdtaVpmMXhjdV9QQlNpZUFQQVI0Q1lELUFpS0I1VXJFWkhWbXptMmduM09tZ3NNdHhJSVhCOVZEb0pKcm5CVWk2b3BvMlBFVlpVaVYtN3hyeEVB?oc=5",
+      "url": "https://adanews.ada.org/ada-news/2026/june/ada-urges-dentalspecificapproach-incms-interoperability-prior-authorization-proposal/",
+      "title": "ADA urges dental-specific approach in CMS interoperability, prior authorization proposal - American Dental Association",
+      "content_text": "ADA urges dental-specific approach in CMS interoperability, prior authorization proposal - American Dental Association ADA urges dental-specific approach in CMS interoperability, prior authorization proposal American Dental Association ADA urges dental-specific approach in CMS interoperability, prior authorization prop ...",
+      "date_published": "2026-06-12T14:40:58.000Z",
+      "tags": [
+        "Prior authorization & claims"
+      ],
+      "sourceName": "Google News Health Insurance Search",
+      "sourceFeedUrl": "https://news.google.com/rss/search?q=%22Medicare+Advantage%22+OR+%22prior+authorization%22+OR+%22medical+debt%22+OR+%22health+insurance+premiums%22+OR+%22PBM%22+OR+%22No+Surprises+Act%22+OR+%22ACA+coverage+losses%22+OR+%22GLP-1+coverage%22+OR+%22payer+issues%22+when%3A7d&hl=en-US&gl=US&ceid=US%3Aen",
+      "link": "https://adanews.ada.org/ada-news/2026/june/ada-urges-dentalspecificapproach-incms-interoperability-prior-authorization-proposal/",
+      "guid": "https://news.google.com/rss/articles/CBMixwFBVV95cUxOOFlkdXZnUmRQaXVkYXJObEdKM1FoaktSX3BPQ0o2R1ZlNFJua054T196TDVpM0ZoeFhORWpNRTNIVmRuWExjUVgyeE42NExfOG1mV0swZXBheHJoYmxJVDlNMGtyQmNmT19zckh5ZE9TR1M2UWdtaVpmMXhjdV9QQlNpZUFQQVI0Q1lELUFpS0I1VXJFWkhWbXptMmduM09tZ3NNdHhJSVhCOVZEb0pKcm5CVWk2b3BvMlBFVlpVaVYtN3hyeEVB?oc=5",
+      "pubDate": "2026-06-12T14:40:58.000Z",
+      "matchedTerms": [
+        "Prior authorization & claims"
+      ],
+      "category": "VT Health Care",
+      "snippet": "ADA urges dental-specific approach in CMS interoperability, prior authorization proposal - American Dental Association ADA urges dental-specific approach in CMS interoperability, prior authorization proposal American Dental Association ADA urges dental-specific approach in CMS interoperability, prior authorization prop ...",
+      "summary": "",
+      "reason": "",
+      "comments": [],
+      "articleError": "",
+      "matchSource": "text"
+    },
     {
       "id": "https://www.mychamplainvalley.com/news/national-news/massive-measles-outbreak-in-virginia-county-continues-to-grow-nearly-90-cases-reported/",
       "url": "https://www.mychamplainvalley.com/news/national-news/massive-measles-outbreak-in-virginia-county-continues-to-grow-nearly-90-cases-reported/",
