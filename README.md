@@ -121,8 +121,9 @@ The matcher includes exact and similar variants, including:
 | `SUMMARY_BATCH_DELAY_MS` | `5000` | Delay between Gemini summary requests |
 | `SUMMARY_MAX_REQUESTS_PER_RUN` | `10` | Maximum Gemini summary requests per run |
 | `SUMMARY_REJUDGE_ALL` | empty | Set to `true` for one run after changing the relevance rubric to re-judge every item |
-| `SLACK_WEBHOOK_URL` | empty | Optional Slack webhook pinged when sources fail to fetch |
-| `DISCORD_WEBHOOK_URL` | empty | Optional Discord webhook pinged when sources fail to fetch |
+| `SLACK_WEBHOOK_URL` | empty | Optional Slack webhook pinged when a source crosses the failure threshold |
+| `DISCORD_WEBHOOK_URL` | empty | Optional Discord webhook pinged when a source crosses the failure threshold |
+| `WEBHOOK_FAILURE_THRESHOLD` | `24` | Consecutive failed runs before a source triggers a webhook alert |
 | `FACEBOOK_POST_URLS` | empty | Optional comma- or newline-separated `Name\|URL` public Facebook posts to include |
 | `FACEBOOK_PAGE_URLS` | empty | Optional comma- or newline-separated `Name\|URL` public Facebook pages to scan when Facebook exposes no-login post HTML |
 | `FACEBOOK_PAGE_MAX_POSTS` | `10` | Maximum post links to read from each configured Facebook page |
