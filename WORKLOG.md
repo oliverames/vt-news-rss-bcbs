@@ -1,3 +1,15 @@
+## 2026-06-13 - Apply branded README style
+
+**What changed**: Reworked the public README around the `ames-writing:readme-style` structure: centered project mark, badges, strategic "Why This Exists" framing, quick start, source coverage, matching and relevance behavior, reader experience, configuration, architecture, development commands, and Oliver footer. Added `site/readme-icon.svg` as a small local header mark so the README does not depend on a missing external asset.
+
+**Decisions made**: Used a "license not specified" badge rather than inventing a license file. Kept the README factual to the current implementation: 45 configured sources, GitHub Actions doing the hourly crawl, browser-side reader filtering only, BlueCrossVT.org/social hidden from All by default, direct Blue Cross VT mentions retained indefinitely, and the Jan. 1 through June 13, 2026 backfill carried by the audit archive after the bounded source closes.
+
+**Left off at**: `npm test` passed with 45 tests, `node --check src/*.js` passed, `git diff --check` passed, README local asset and source count checks passed, and the link check confirmed the repo, shields, Buy Me a Coffee, live reader, GitHub, and Bluesky profile. The commit `6fbf24d` was pushed to `main`; publish run `27466251060` built in 6m7s and deployed successfully.
+
+**Open questions**: None. Automated fetches still warn on `ames.consulting` and LinkedIn-style social pages, but the README keeps the required Oliver identity links from the README style guide.
+
+---
+
 ## 2026-06-12 - Clear the review backlog: alerts, parallel fetch, module split
 
 **What changed**: Implemented the remaining items from the morning hardening review. Webhook alerts now gate on per-source consecutive-failure streaks (`WEBHOOK_FAILURE_THRESHOLD`, default 24) persisted in the audit JSON's sources array, which doubles as source-rot visibility; the Gemini prompt marks article text as untrusted. Date-bounded sources are skipped automatically once `maxPubDate` passes, so the 2026 backfill search retires itself on June 13 with no scheduled cleanup. Snippet centering now blanks `strip` regions with same-length whitespace so it cannot center on transport idioms the matcher ignored. Sources fetch concurrently (`RSS_SOURCE_CONCURRENCY`, default 4) with results assembled in source order, and the per-domain throttle was rebuilt as a promise chain that cannot race; source-level and Facebook post fetches now throttle too. All five actions are SHA-pinned with tag comments, and a standalone `test.yml` runs the suite on pull requests. Finally, split the 3,181-line `src/index.js` into eleven flat modules plus a barrel `index.js` that keeps `generateFeed`, `main`, and explicit re-exports, so test imports and `npm run generate` are unchanged.
