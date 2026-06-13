@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">Blue Cross VT News Mentions</title>
+  <desc id="desc">A text news monitor mark with Vermont colors and a document shape.</desc>
+  <rect width="96" height="96" rx="20" fill="#f7f8fb"/>
+  <rect x="18" y="18" width="60" height="60" rx="8" fill="#ffffff" stroke="#172033" stroke-width="3"/>
+  <rect x="28" y="30" width="40" height="5" rx="2.5" fill="#0033a0"/>
+  <rect x="28" y="43" width="40" height="5" rx="2.5" fill="#111111"/>
+  <rect x="28" y="56" width="40" height="5" rx="2.5" fill="#3f8edb"/>
+  <circle cx="72" cy="24" r="9" fill="#f5a542"/>
+</svg>
