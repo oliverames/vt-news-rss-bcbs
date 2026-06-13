@@ -1,75 +1,45 @@
+<p align="center">
+  <img src="site/readme-icon.svg" width="80" height="80" alt="Blue Cross VT News Mentions">
+</p>
+
 <h1 align="center">Blue Cross VT News Mentions</h1>
 
 <p align="center">
-  <strong>RSS feed for mentions of BCBSVT, Blue Cross VT, and Blue Cross and Blue Shield of Vermont in Vermont news outlets</strong>
+  <strong>A text-first news monitor for Blue Cross VT mentions and Vermont health care coverage.</strong>
 </p>
 
 <p align="center">
-  <code>RSS 2.0</code> &bull;
-  <code>Vermont news monitoring</code> &bull;
-  <code>GitHub Pages</code>
+  <code>45 configured sources</code> &bull;
+  <code>RSS + JSON Feed</code> &bull;
+  <code>hourly GitHub Pages refresh</code>
 </p>
 
-## What It Does
+<p align="center">
+  <a href="https://github.com/oliverames/vt-news-rss-bcbs/actions/workflows/publish-feed.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/oliverames/vt-news-rss-bcbs/publish-feed.yml?branch=main&style=flat-square&label=publish&color=f5a542" alt="Publish workflow">
+  </a>
+  <img src="https://img.shields.io/badge/license-not_specified-f5a542?style=flat-square" alt="License not specified">
+  <a href="https://www.buymeacoffee.com/oliverames">
+    <img src="https://img.shields.io/badge/Buy_Me_a_Coffee-support-f5a542?style=flat-square&logo=buy-me-a-coffee&logoColor=white" alt="Buy Me a Coffee">
+  </a>
+  <a href="https://oliverames.github.io/vt-news-rss-bcbs/">
+    <img src="https://img.shields.io/badge/live-reader-f5a542?style=flat-square" alt="Live reader">
+  </a>
+</p>
 
-This project fetches public RSS feeds from Vermont news outlets, fetches article pages from those feed items, searches for Blue Cross VT and Vermont health care topic patterns, and writes **RSS** and **JSON Feed** outputs named **Blue Cross VT News Mentions**.
+---
 
-The generator scans title, RSS summary, feed content, and article-page text. That matters because a story can mention Blue Cross in the article body without putting it in the headline.
+Blue Cross VT News Mentions collects public news items that matter to a Vermont health care communications team: direct Blue Cross VT mentions first, Vermont health care coverage second, then regional and national policy stories when they have a clear payer, coverage, or system angle. It publishes a plain reader, RSS feed, JSON Feed, and audit feed from a scheduled GitHub Actions workflow.
 
-Coverage is limited to the items each outlet exposes through its public RSS feed at run time, plus the major outlets' public Facebook pages. Facebook's no-login HTML exposes each page's most recent post, so the hourly schedule accumulates posts over time; posts are kept only when they mention Blue Cross. Facebook comments are included only when a public HTML response exposes parseable comment text; availability can vary by Facebook response and may be incomplete.
+The project is intentionally text-heavy. It follows the spirit of `text.npr.org`: fast, readable, useful, and clear about what was collected.
 
-The JSON output records source fetch failures, summaries, keyword matches, and comments when present, so a run can be checked before relying on it as complete. Direct Blue Cross VT mentions are retained indefinitely after they leave a source feed; other stories are retained for a bounded archive window.
+## Why This Exists
 
-## Included Sources
+News monitoring gets messy when the search target is both narrow and broad. A direct BCBSVT mention is obvious. A hospital budget story, rate review hearing, Vermont Medicaid update, or Medicare Advantage policy story can matter just as much, but only when it fits the team’s actual geography and business context.
 
-The default source list includes:
+This monitor is built around that judgment. It prioritizes Vermont and Blue Cross VT, keeps official BlueCrossVT.org and social posts available without letting them flood the default view, and archives direct Blue Cross VT mentions indefinitely so important coverage does not disappear when a source feed rolls over.
 
-| Outlet | Feed |
-| --- | --- |
-| WCAX | `https://www.wcax.com/arc/outboundfeeds/whiz-rss/category/news/?outputType=xml&size=50&sort=display_date%3Adesc` |
-| VTDigger | `https://vtdigger.org/feed/` |
-| Vermont Public | `https://www.vermontpublic.org/local-news.rss` |
-| Seven Days | `https://www.sevendaysvt.com/vermont/Rss.xml` |
-| MyNBC5 | `https://www.mynbc5.com/topstories-rss` |
-| MyChamplainValley | `https://www.mychamplainvalley.com/feed/` |
-| Vermont Business Magazine | `https://vermontbiz.com/rss.xml` |
-| UVM Health Newsroom | `https://www.uvmhealth.org/newsroom` listing page |
-| BlueCrossVT Newsroom | `https://www.bluecrossvt.org/health-community/news` listing page |
-| BlueCrossVT Be Well VT Blog | `https://www.bluecrossvt.org/health-community/blog/listing` listing page |
-| BCBSA Association News | `https://www.bcbs.com/about-us/association-news` listing page |
-| Addison Independent | `https://www.addisonindependent.com/feed/` |
-| Rutland Herald | `https://www.rutlandherald.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc` |
-| Times Argus | `https://www.timesargus.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc` |
-| Times Argus UVM Health search | `https://www.timesargus.com/search/?q=%22UVM%20Health%22&f=rss&t=article&l=50&s=start_time&sd=desc` |
-| Bennington Banner | `https://www.benningtonbanner.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc` |
-| Brattleboro Reformer | `https://www.reformer.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc` |
-| Vermont Community Newspaper Group | `https://www.vtcng.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc` |
-| Valley News | `https://vnews.com/feed/` |
-| The Mountain Times | `https://mountaintimes.info/feed/` |
-| Newport Daily Express | `https://www.newportvermontdailyexpress.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc` |
-| Vermont Daily Chronicle | `https://vermontdailychronicle.com/feed/` |
-| St. Albans Messenger | `https://www.samessenger.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc` |
-| Google News brand search | capped BCBSVT/Blue Cross VT search RSS |
-| Google News Blue Cross VT backfill | capped 180-day brand search RSS, bounded to Jan 1 - Jun 13, 2026 |
-| Google News Vermont health search | capped 7-day Vermont health care search RSS |
-| Google News Kristina source search | capped 14-day search RSS over recurring News Export outlets (Burlington Free Press, WSJ, ABC, CBS, CNN, Becker's, St. Albans Messenger, Vermont Daily Chronicle) |
-| Google News health insurance search | capped 7-day national payer/coverage search RSS |
-| ABC News Health | `https://abcnews.go.com/abcnews/healthheadlines` |
-| CBS News Health | `https://www.cbsnews.com/latest/rss/health` |
-| CNN Health | `http://rss.cnn.com/rss/cnn_health.rss` |
-| STAT Health News | `https://www.statnews.com/feed/` |
-| Fierce Healthcare | `https://www.fiercehealthcare.com/rss/xml` |
-| Healthcare Dive | `https://www.healthcaredive.com/feeds/news/` |
-| KFF Health News | `https://kffhealthnews.org/feed/` |
-| The Hill Health Care | `https://thehill.com/policy/healthcare/feed/` |
-| NPR Health | `https://www.npr.org/rss/rss.php?id=1128` |
-| Google News health trade search | capped 14-day Modern Healthcare/Becker's payer search RSS |
-| Google News national health policy search | capped 14-day AP/NBC/NYT/Washington Post/Axios health policy search RSS |
-| Facebook pages (VTDigger, WCAX, Seven Days, Vermont Public, MyNBC5, VermontBiz) | each page's latest public post, kept only on a Blue Cross brand match; comments included when parseable |
-
-BlueCrossVT.org, UVM Health, and BCBSA do not expose RSS/Atom at the usual feed URLs for these pages, so the generator parses the public dated listing rows on their newsroom/blog pages.
-
-Date-bounded sources (like the 2026 backfill search) are skipped automatically once their `maxPubDate` passes; their items persist in the archive, and the skip is recorded per source in the output JSON.
+It also keeps an audit trail. Rejected items, source failures, matched terms, summary reasons, comments, and failure streaks all live in `feed-audit.json`, which makes the system inspectable instead of mysterious.
 
 ## Quick Start
 
@@ -78,62 +48,174 @@ npm install
 npm run generate
 ```
 
-The generated reader feeds are written to `site/feed.rss` and `site/feed.json`. A machine-readable audit file, including rejected items and cache metadata, is written to `site/feed-audit.json`. The web page shows 25 stories per page, newest first; BlueCrossVT.org posts and social posts are available as sections but hidden from All by default.
+The generator writes:
 
-## Mention Matching
-
-The matcher includes exact and similar variants, including:
-
-- `BCBSVT`
-- `BCBS VT`
-- `BCBS of Vermont`
-- `Blue Cross VT`
-- `BlueCrossVT`
-- `Blue CrossVT`
-- `BlueCross VT`
-- `Blue Cross Vermont`
-- `Blue Cross and Blue Shield of Vermont`
-- `Blue Cross Blue Shield of Vermont`
-- `BlueCross BlueShield of Vermont`
-- `Blue Cross`
-
-`Blue Cross` alone is intentionally included for recall. If it creates noise, remove that term in `src/index.js`.
-
-## Environment Variables
-
-| Variable | Default | Description |
+| Output | Path | Purpose |
 | --- | --- | --- |
-| `RSS_OUTPUT_PATH` | `site/feed.rss` | Output path for the RSS file |
-| `JSON_OUTPUT_PATH` | output path next to RSS as `feed.json` | Output path for the public JSON feed |
-| `AUDIT_JSON_OUTPUT_PATH` | output path next to RSS as `feed-audit.json` | Output path for the audit JSON and summary cache |
-| `RSS_CONCURRENCY` | `6` | Number of article pages to fetch at once |
-| `RSS_SOURCE_CONCURRENCY` | `4` | Number of sources to fetch at once (same-domain requests stay 1s apart) |
-| `RSS_DOMAIN_DELAY_MS` | `1000` | Politeness delay between requests to the same domain; the main lever on run length |
-| `RSS_TIMEOUT_MS` | `12000` | Request timeout in milliseconds |
-| `RSS_FETCH_ATTEMPTS` | `3` | Fetch attempts before a source or article is marked failed |
-| `RSS_MAX_RESPONSE_BYTES` | `10485760` (10 MB) | Maximum decompressed response size before a fetch is abandoned |
-| `RSS_ARTICLE_SCAN` | `true` | Set to `false` to filter only RSS feed text |
-| `RSS_MAX_FUTURE_HOURS` | `6` | Future-dated item tolerance before an item is excluded |
-| `ARCHIVE_MAX_AGE_DAYS` | `92` | Maximum age for topic-only archived stories; direct Blue Cross VT mentions are retained indefinitely |
-| `FEED_URL` | empty | Public URL for Atom self-link |
-| `JSON_FEED_URL` | empty | Public URL for the JSON Feed |
-| `SITE_URL` | empty | Public base URL for the channel link |
-| `GEMINI_API_KEY` | empty | Optional Gemini key for one-time batched summaries and reasons |
-| `SUMMARY_BATCH_SIZE` | `10` | Stories summarized per Gemini request |
-| `SUMMARY_BATCH_DELAY_MS` | `5000` | Delay between Gemini summary requests |
-| `SUMMARY_MAX_REQUESTS_PER_RUN` | `10` | Maximum Gemini summary requests per run |
-| `SUMMARY_REJUDGE_ALL` | empty | Set to `true` for one run after changing the relevance rubric to re-judge every item |
-| `SLACK_WEBHOOK_URL` | empty | Optional Slack webhook pinged when a source crosses the failure threshold |
-| `DISCORD_WEBHOOK_URL` | empty | Optional Discord webhook pinged when a source crosses the failure threshold |
-| `WEBHOOK_FAILURE_THRESHOLD` | `24` | Consecutive failed runs before a source triggers a webhook alert |
-| `FACEBOOK_POST_URLS` | empty | Optional comma- or newline-separated `Name\|URL` public Facebook posts to include |
-| `FACEBOOK_PAGE_URLS` | empty | Optional comma- or newline-separated `Name\|URL` public Facebook pages to scan when Facebook exposes no-login post HTML |
-| `FACEBOOK_PAGE_MAX_POSTS` | `10` | Maximum post links to read from each configured Facebook page |
+| RSS | `site/feed.rss` | Subscriber-friendly RSS 2.0 feed |
+| JSON Feed | `site/feed.json` | Public reader data and machine-readable feed |
+| Audit JSON | `site/feed-audit.json` | Rejected items, source status, summary cache, and archive state |
+| Reader | `site/index.html` | Text-only browser with search, sections, and paging |
 
-Gemini's public docs say rate limits vary by project, model, and usage tier; use AI Studio as the source of truth for the active project. The default summarizer starts with `gemini-2.5-flash-lite`, batches stories, caches successful summaries in `feed-audit.json`, and caps requests per run so hourly refreshes stay conservative.
+The live reader is published at [oliverames.github.io/vt-news-rss-bcbs](https://oliverames.github.io/vt-news-rss-bcbs/).
 
-Configured Facebook pages are used as public post discovery pages; when a post URL is exposed without a login, the generator opens the post page and nests any extracted comments under that story.
+## What It Watches
 
-## Automation
+The default source list combines Vermont outlets, official Blue Cross and health system pages, national health policy feeds, Google News searches, and public Facebook page surfaces.
 
-The GitHub Actions workflow publishes `site/` to GitHub Pages on pushes to `main`, manual runs, and an hourly schedule. It runs tests first, seeds the local archive from the live `feed-audit.json` when available, regenerates the feeds, then deploys.
+| Category | Coverage | Notes |
+| --- | --- | --- |
+| Vermont news outlets | WCAX, VTDigger, Vermont Public, Seven Days, MyNBC5, MyChamplainValley, Addison Independent, Valley News, and more | RSS or search feeds, depending on what each outlet exposes |
+| Official pages | BlueCrossVT Newsroom, BlueCrossVT Be Well VT Blog, UVM Health Newsroom, BCBSA Association News | Public listing pages are parsed because normal RSS feeds are not available |
+| Search feeds | Blue Cross VT brand search, Jan. 1, 2026 Blue Cross VT backfill, Vermont health search, Kristina source search, health insurance search, trade search, national policy search | Search feeds are capped and bounded to avoid turning the reader into generic health news |
+| National health feeds | ABC Health, CBS Health, CNN Health, STAT, Fierce Healthcare, Healthcare Dive, KFF Health News, The Hill, NPR Health | Broad national items are filtered unless they have a payer, policy, coverage, or regional angle |
+| Social surfaces | Public Facebook pages for selected Vermont outlets | Social posts are hidden from the default All section and kept only when they mention Blue Cross directly |
+
+Direct Blue Cross VT mentions are kept indefinitely. Other stories are kept for three months. The 2026 backfill source is bounded to Jan. 1 through June 13, 2026; after that window closes, the source skips itself and the archive carries those items forward.
+
+## How Matching Works
+
+The matcher scans feed titles, descriptions, source text, and, when enabled, article pages. Brand terms scan both feed text and article body text. Topic terms scan feed text only, because full article bodies mention health care too often for that to be precise.
+
+The brand matcher includes common variants:
+
+| Canonical area | Examples |
+| --- | --- |
+| BCBSVT shorthand | `BCBSVT`, `BCBS VT`, `BCBS of Vermont` |
+| Blue Cross VT variants | `Blue Cross VT`, `BlueCrossVT`, `Blue Cross Vermont` |
+| Full legal name | `Blue Cross and Blue Shield of Vermont`, `BlueCross & BlueShield of Vermont` |
+| Related products and references | `Vermont Blue Advantage`, `Vermont Blues plan`, `Vermont's largest health insurer` |
+| Community properties | `Girls on the Run`, `Mountain Days`, `Walk@Lunch` |
+
+Topic matching covers Vermont health care agencies, hospitals, providers, coverage programs, rate review, Medicaid, Medicare, prior authorization, pharmacy, rural health, mental health, public health, medical costs, and related policy areas.
+
+The relevance gate then removes common false positives:
+
+| False positive pattern | How it is handled |
+| --- | --- |
+| Crime, crash, and incident briefs | Hospital transport language is stripped before hospital matching |
+| Broad national health lifestyle stories | Rejected unless they include payer, policy, coverage, or regional signals |
+| Out-of-region outbreaks | Rejected unless they include policy, payer, or regional relevance |
+| Infrastructure or grant stories | Rejected when health care is only an incidental phrase |
+| BlueCrossVT.org and social posts | Available as sections but hidden from the default All view |
+
+## Reader Experience
+
+The reader is a static HTML page that loads `feed.json` in the browser. It shows the newest 25 stories first, supports simple search, uses plain checkbox sections for multi-select filtering, and keeps comments hidden behind a per-story button.
+
+Each story can include:
+
+| Field | Purpose |
+| --- | --- |
+| Date | Publication date from the source feed, listing page, or post HTML |
+| Access label | `Free to read`, `Paywall likely`, `May require login`, or `Access varies` |
+| Summary | AI-generated one or two sentence summary when Gemini is configured |
+| Why it is here | Short relevance reason for a reader who wants to skim quickly |
+| Comments | Publicly parseable comments and nested replies, hidden by default |
+
+The browser does not recrawl sources. GitHub Actions does the collection and deploys the latest feed hourly; reloading the page loads the latest published feed.
+
+## Configuration
+
+| Variable | Required | Default | Description |
+| --- | --- | --- | --- |
+| `RSS_OUTPUT_PATH` | No | `site/feed.rss` | Output path for the RSS file |
+| `JSON_OUTPUT_PATH` | No | next to RSS as `feed.json` | Output path for the public JSON feed |
+| `AUDIT_JSON_OUTPUT_PATH` | No | next to RSS as `feed-audit.json` | Output path for the audit JSON and summary cache |
+| `RSS_CONCURRENCY` | No | `6` | Number of article pages to fetch at once |
+| `RSS_SOURCE_CONCURRENCY` | No | `4` | Number of sources to fetch at once |
+| `RSS_DOMAIN_DELAY_MS` | No | `1000` | Politeness delay between requests to the same domain |
+| `RSS_TIMEOUT_MS` | No | `12000` | Request timeout in milliseconds |
+| `RSS_FETCH_ATTEMPTS` | No | `3` | Fetch attempts before a source or article is marked failed |
+| `RSS_MAX_RESPONSE_BYTES` | No | `10485760` | Maximum decompressed response size before a fetch is abandoned |
+| `RSS_ARTICLE_SCAN` | No | `true` | Set to `false` to filter only RSS feed text |
+| `RSS_MAX_FUTURE_HOURS` | No | `6` | Future-dated item tolerance before exclusion |
+| `ARCHIVE_MAX_AGE_DAYS` | No | `92` | Maximum age for topic-only archived stories |
+| `FEED_URL` | No | empty | Public URL for the RSS self-link |
+| `JSON_FEED_URL` | No | empty | Public URL for the JSON Feed |
+| `SITE_URL` | No | empty | Public base URL for the channel link |
+| `GEMINI_API_KEY` | No | empty | Optional Gemini key for batched summaries and reasons |
+| `SUMMARY_BATCH_SIZE` | No | `10` | Stories summarized per Gemini request |
+| `SUMMARY_BATCH_DELAY_MS` | No | `5000` | Delay between Gemini summary requests |
+| `SUMMARY_MAX_REQUESTS_PER_RUN` | No | `10` | Maximum Gemini summary requests per run |
+| `SUMMARY_REJUDGE_ALL` | No | empty | Set to `true` for one run after changing the relevance rubric |
+| `SLACK_WEBHOOK_URL` | No | empty | Optional Slack webhook for source failure alerts |
+| `DISCORD_WEBHOOK_URL` | No | empty | Optional Discord webhook for source failure alerts |
+| `WEBHOOK_FAILURE_THRESHOLD` | No | `24` | Consecutive failed runs before a source triggers an alert |
+| `FACEBOOK_POST_URLS` | No | empty | Optional comma- or newline-separated `Name\|URL` public Facebook posts |
+| `FACEBOOK_PAGE_URLS` | No | empty | Optional comma- or newline-separated `Name\|URL` public Facebook pages |
+| `FACEBOOK_PAGE_MAX_POSTS` | No | `10` | Maximum post links to read from each configured Facebook page |
+
+Gemini rate limits vary by project, model, and usage tier. The summarizer starts with `gemini-2.5-flash-lite`, batches stories, caches successful summaries in `feed-audit.json`, and caps requests per run so hourly refreshes stay conservative.
+
+## Architecture
+
+```text
+src/index.js       Entry point, generator orchestration, public re-export surface
+src/sources.js     Default source list, Google News queries, Facebook env sources
+src/matching.js    Brand terms, topic terms, canonical labels, snippets
+src/parsers.js     RSS, Atom, listing pages, article text, Facebook public HTML
+src/fetching.js    Fetch retries, size caps, source collection, domain throttling
+src/enrich.js      Google News decoding, article scanning, match enrichment
+src/relevance.js   Deterministic relevance, source type, access labels
+src/archive.js     Audit loading, archive retention, dedupe rules
+src/summaries.js   Gemini prompt, batching, parsing, summary cache behavior
+src/alerts.js      Failure streaks and optional webhook alerts
+src/outputs.js     RSS, JSON Feed, audit JSON, file writes
+src/utils.js       Shared text, date, URL, and concurrency helpers
+site/index.html    Static text reader
+test/index.test.js Node test suite
+```
+
+The workflow is deliberately simple:
+
+1. Fetch source feeds and listing pages.
+2. Resolve and enrich matching items.
+3. Merge with the live audit archive.
+4. Apply deterministic relevance rules.
+5. Add summaries when Gemini is configured.
+6. Write RSS, JSON Feed, and audit JSON.
+7. Publish `site/` to GitHub Pages.
+
+## Development
+
+```bash
+npm test
+for file in src/*.js; do node --check "$file"; done
+```
+
+For a local run that does not touch committed outputs, write to a temporary directory:
+
+```bash
+mkdir -p /tmp/vt-news-rss-bcbs
+cp site/feed-audit.json /tmp/vt-news-rss-bcbs/feed-audit.json
+
+RSS_OUTPUT_PATH=/tmp/vt-news-rss-bcbs/feed.rss \
+JSON_OUTPUT_PATH=/tmp/vt-news-rss-bcbs/feed.json \
+AUDIT_JSON_OUTPUT_PATH=/tmp/vt-news-rss-bcbs/feed-audit.json \
+RSS_ARTICLE_SCAN=false \
+npm run generate
+```
+
+The publish workflow runs on pushes to `main`, manual dispatches, and an hourly schedule. It runs tests, seeds the archive from the live `feed-audit.json`, regenerates the feeds, uploads the Pages artifact, and deploys.
+
+## License
+
+No license file is currently included in this repository.
+
+---
+
+<p align="center">
+  <a href="https://www.buymeacoffee.com/oliverames">
+    <img src="https://img.shields.io/badge/Buy_Me_a_Coffee-support-f5a542?style=for-the-badge&logo=buy-me-a-coffee&logoColor=white" alt="Buy Me a Coffee">
+  </a>
+</p>
+
+<p align="center">
+  <sub>
+    Built by <a href="https://ames.consulting">Oliver Ames</a> in Vermont
+    &bull; <a href="https://github.com/oliverames">GitHub</a>
+    &bull; <a href="https://linkedin.com/in/oliverames">LinkedIn</a>
+    &bull; <a href="https://bsky.app/profile/oliverames.bsky.social">Bluesky</a>
+  </sub>
+</p>
