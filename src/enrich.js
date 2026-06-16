@@ -3,6 +3,7 @@
 import { GoogleDecoder } from "google-news-url-decoder";
 import {
   cleanStorySnippet,
+  cleanText,
   mapWithConcurrency,
   parsePositiveInteger,
 } from "./utils.js";
@@ -14,17 +15,54 @@ import {
   MENTION_TERMS,
   TOPIC_TERMS,
 } from "./matching.js";
-import { htmlToArticleText } from "./parsers.js";
+import { extractArticleComments, htmlToArticleText } from "./parsers.js";
 import { fetchText, throttleRequest } from "./fetching.js";
 
 const googleDecoder = new GoogleDecoder();
 
 const CONCURRENCY = parsePositiveInteger(process.env.RSS_CONCURRENCY, 6);
-const SCAN_ARTICLE_PAGES = process.env.RSS_ARTICLE_SCAN !== "false";
+
+function scanArticlePages() {
+  return process.env.RSS_ARTICLE_SCAN !== "false";
+}
+
+function mergeComments(...commentLists) {
+  const merged = [];
+  const seen = new Set();
+
+  for (const comments of commentLists) {
+    if (!Array.isArray(comments)) {
+      continue;
+    }
+
+    for (const comment of comments) {
+      const text = cleanText(comment?.text || "");
+      if (!text) {
+        continue;
+      }
+      const author = cleanText(comment.author || "");
+      const key = `${author.toLowerCase()}|${text.toLowerCase()}`;
+      if (seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      merged.push({
+        ...comment,
+        author,
+        text,
+        date: comment.date || null,
+        replies: Array.isArray(comment.replies) ? comment.replies : [],
+      });
+    }
+  }
+
+  return merged;
+}
 
 export async function enrichAndFilterItems(items, cache = new Map()) {
   const results = await mapWithConcurrency(items, CONCURRENCY, async (item) => {
     let articleText = "";
+    let articleComments = [];
     let articleError = "";
     let resolvedLink = item.link;
 
@@ -63,16 +101,13 @@ export async function enrichAndFilterItems(items, cache = new Map()) {
         summary: cached.summary || "",
         reason: cached.reason || "",
         relevant: cached.relevant,
-        comments:
-          Array.isArray(item.comments) && item.comments.length > 0
-            ? item.comments
-            : cached.comments || [],
+        comments: mergeComments(item.comments, cached.comments),
         articleError: cached.articleError,
         matchSource: cached.matchSource || "",
       };
     }
 
-    if (SCAN_ARTICLE_PAGES && item.scanArticle !== false) {
+    if (scanArticlePages() && item.scanArticle !== false) {
       await throttleRequest(resolvedLink);
       try {
         const { text: html, url: finalUrl } = await fetchText(
@@ -80,6 +115,7 @@ export async function enrichAndFilterItems(items, cache = new Map()) {
           "text/html, application/xhtml+xml, */*",
         );
         articleText = htmlToArticleText(html);
+        articleComments = extractArticleComments(html);
         if (finalUrl) {
           resolvedLink = finalUrl;
         }
@@ -132,7 +168,7 @@ export async function enrichAndFilterItems(items, cache = new Map()) {
         buildSnippet(snippetSource, [...MENTION_TERMS, ...TOPIC_TERMS]),
         item.title,
       ),
-      comments: item.comments || [],
+      comments: mergeComments(item.comments, articleComments),
       articleError,
       matchSource,
     };

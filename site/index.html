@@ -8,8 +8,14 @@
       name="description"
       content="Text-only browser for mentions of Blue Cross and Blue Shield of Vermont across Vermont news outlets."
     >
+    <link rel="icon" href="favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
     <link rel="alternate" type="application/rss+xml" title="Blue Cross VT News Mentions" href="feed.rss">
     <link rel="alternate" type="application/feed+json" title="Blue Cross VT News Mentions JSON Feed" href="feed.json">
+    <meta name="theme-color" content="#0077C8">
     <style>
       :root {
         --fg: #111;
@@ -95,11 +101,25 @@
         }
       }
 
-      h1 {
+      .site-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
         margin: 0 0 6px;
+      }
+
+      .site-logo {
+        flex: 0 0 auto;
+        width: 56px;
+        height: 56px;
+        object-fit: contain;
+      }
+
+      h1 {
+        margin: 0;
         font-size: 1.65rem;
         font-weight: 700;
-        letter-spacing: -0.01em;
+        letter-spacing: 0;
       }
 
       .tricolor {
@@ -356,7 +376,10 @@
         </label>
       </div>
 
-      <h1>Blue Cross VT: News Mentions</h1>
+      <div class="site-header">
+        <img class="site-logo" src="logo.png" width="56" height="56" alt="" aria-hidden="true">
+        <h1>Blue Cross VT: News Mentions</h1>
+      </div>
       <div class="tricolor" aria-hidden="true">
         <span class="c1"></span><span class="c2"></span><span class="c3"></span>
       </div>
@@ -381,7 +404,7 @@
           <dt>Archive</dt>
           <dd>Direct Blue Cross VT mentions are backfilled to Jan. 1, 2026 and kept indefinitely. Other stories are kept for three months.</dd>
           <dt>Sections</dt>
-          <dd>BlueCrossVT.org posts and social posts are available as sections but hidden from All by default.</dd>
+          <dd>BlueCrossVT.org posts are available as a section but hidden from All by default.</dd>
           <dt>Feeds</dt>
           <dd><a href="feed.rss">RSS</a> or <a href="feed.json">JSON</a>. Summaries are AI-generated.</dd>
         </dl>

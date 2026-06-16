@@ -1,6 +1,8 @@
 // Source list: Vermont outlets, national health feeds, Google News searches,
-// listing pages, and Facebook pages, plus env-configured Facebook sources.
+// listing pages, and parked Facebook source definitions.
 import { parsePositiveInteger } from "./utils.js";
+
+const FACEBOOK_HOST_PATTERN = /^https?:\/\/(?:m\.|www\.)?facebook\.com\//i;
 
 function googleNewsSearchUrl(query) {
   const params = new URLSearchParams({
@@ -121,6 +123,18 @@ function blueCrossVtBackfillSource(name, minPubDate, maxPubDate) {
     maxPubDate: `${maxPubDate}T00:00:00Z`,
     maxItems: 100,
   };
+}
+
+export function socialSourcesEnabled() {
+  return process.env.ENABLE_SOCIAL_SOURCES === "true";
+}
+
+export function isSocialSourceItem(item = {}) {
+  return (
+    FACEBOOK_HOST_PATTERN.test(item.link || item.url || "") ||
+    FACEBOOK_HOST_PATTERN.test(item.sourceFeedUrl || "") ||
+    /\bfacebook\b/i.test(item.sourceName || "")
+  );
 }
 
 export const DEFAULT_SOURCES = [
@@ -442,10 +456,12 @@ export const DEFAULT_SOURCES = [
     scanArticle: false,
     maxItems: 75,
   },
-  // Facebook pages of the major VT outlets. No-login HTML exposes each
-  // page's most recent post; hourly runs accumulate posts in the archive.
-  // Posts are kept only when they match a Blue Cross brand term (see
-  // enrichAndFilterItems) so the feed doesn't fill with general news posts.
+];
+
+// Social post collection is intentionally parked. Set
+// ENABLE_SOCIAL_SOURCES=true for a deliberate one-off run that includes the
+// built-in Facebook pages and any configured Facebook URLs.
+const SOCIAL_SOURCES = [
   {
     name: "VTDigger Facebook",
     homepage: "https://www.facebook.com/vtdigger",
@@ -511,6 +527,10 @@ function parseConfiguredUrlSources(value, buildSource) {
 }
 
 export function buildSourcesFromEnv(baseSources = DEFAULT_SOURCES) {
+  if (!socialSourcesEnabled()) {
+    return [...baseSources];
+  }
+
   const configuredPosts = parseConfiguredUrlSources(
     process.env.FACEBOOK_POST_URLS,
     (name, url) => ({
@@ -532,7 +552,8 @@ export function buildSourcesFromEnv(baseSources = DEFAULT_SOURCES) {
     }),
   );
 
-  return [...baseSources, ...configuredPosts, ...configuredPages];
+  const defaultSocialSources = baseSources === DEFAULT_SOURCES ? SOCIAL_SOURCES : [];
+  return [...baseSources, ...defaultSocialSources, ...configuredPosts, ...configuredPages];
 }
 
 export const VERMONT_SOURCE_NAMES = new Set([

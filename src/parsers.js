@@ -704,6 +704,242 @@ export function mergeFacebookPagePostItem(pageItem, postItem, source) {
   };
 }
 
+const ARTICLE_COMMENT_SELECTORS = [
+  "#comments .comment",
+  ".comments-area .comment",
+  ".comment-list .comment",
+  ".commentlist .comment",
+  "ol.comment-list li",
+  "ul.comment-list li",
+  ".reader-comments .comment",
+  ".article-comments .comment",
+  ".story-comments .comment",
+  "[itemprop='comment']",
+  "[itemtype*='Comment']",
+];
+
+const ARTICLE_COMMENT_TEXT_SELECTORS = [
+  ".comment-content",
+  ".comment-body",
+  ".comment-text",
+  ".comment-copy",
+  ".comment-message",
+  "[itemprop='text']",
+];
+
+const ARTICLE_COMMENT_AUTHOR_SELECTORS = [
+  "[itemprop='author'] [itemprop='name']",
+  "[itemprop='author']",
+  ".comment-author .fn",
+  ".comment-author",
+  ".byuser",
+  ".byline",
+  ".author",
+  ".username",
+  "cite",
+];
+
+const ARTICLE_COMMENT_DATE_SELECTORS = [
+  "time[datetime]",
+  "[datetime]",
+  ".comment-date",
+  ".comment-time",
+  ".date",
+];
+
+const ARTICLE_COMMENT_BOILERPLATE_PATTERN =
+  /\b(?:add a comment|cancel reply|comments are closed|join the conversation|leave a reply|log in to comment|post a comment|reply to|sign in to comment|submit comment)\b/i;
+
+function firstCleanTextIncludingSelf($element, selectors) {
+  for (const selector of selectors) {
+    const target = $element.is(selector)
+      ? $element
+      : $element.find(selector).first();
+    const value = cleanText(target.text());
+    if (value) {
+      return value;
+    }
+  }
+
+  return "";
+}
+
+function extractArticleCommentAuthor($comment) {
+  for (const selector of ARTICLE_COMMENT_AUTHOR_SELECTORS) {
+    const target = $comment.find(selector).first();
+    const value = cleanText(
+      target.attr("content") ||
+        target.attr("aria-label") ||
+        target.text(),
+    )
+      .replace(/\s+says:?$/i, "")
+      .trim();
+    if (value && !ARTICLE_COMMENT_BOILERPLATE_PATTERN.test(value)) {
+      return value;
+    }
+  }
+
+  return "";
+}
+
+function extractArticleCommentDate($comment) {
+  for (const selector of ARTICLE_COMMENT_DATE_SELECTORS) {
+    const target = $comment.find(selector).first();
+    const raw =
+      target.attr("datetime") ||
+      target.attr("content") ||
+      target.attr("title") ||
+      target.text();
+    const parsed = parseDate(raw);
+    if (parsed) {
+      return parsed.toISOString();
+    }
+  }
+
+  return null;
+}
+
+function extractArticleCommentText($, $comment) {
+  const clone = $comment.clone();
+  clone
+    .find(
+      [
+        ARTICLE_COMMENT_SELECTORS.join(","),
+        ".children",
+        ".comment",
+        ".comment-author",
+        ".comment-meta",
+        ".comment-reply-link",
+        ".reply",
+        ".avatar",
+        "button",
+        "form",
+        "script",
+        "style",
+        "time",
+      ].join(","),
+    )
+    .remove();
+
+  let text = firstCleanTextIncludingSelf(clone, ARTICLE_COMMENT_TEXT_SELECTORS);
+  if (!text) {
+    const paragraphs = clone
+      .find("p")
+      .map((_, el) => $(el).text().trim())
+      .get()
+      .filter(Boolean);
+    text = cleanText(paragraphs.join(" "));
+  }
+  if (!text) {
+    text = cleanText(clone.text());
+  }
+
+  if (ARTICLE_COMMENT_BOILERPLATE_PATTERN.test(text)) {
+    return "";
+  }
+
+  return text.length > 1200 ? `${text.slice(0, 1197).trim()}...` : text;
+}
+
+function normalizeArticleComment(comment, seen) {
+  const text = cleanText(comment.text || "");
+  if (text.length < 12 || ARTICLE_COMMENT_BOILERPLATE_PATTERN.test(text)) {
+    return null;
+  }
+
+  const author = cleanText(comment.author || "");
+  const key = `${author.toLowerCase()}|${text.toLowerCase()}`;
+  if (seen.has(key)) {
+    return null;
+  }
+  seen.add(key);
+
+  return {
+    author,
+    text,
+    date: comment.date || null,
+    replies: [],
+  };
+}
+
+function walkJsonLdForComments(value, comments, seen) {
+  if (!value || typeof value !== "object") {
+    return;
+  }
+
+  if (Array.isArray(value)) {
+    for (const child of value) {
+      walkJsonLdForComments(child, comments, seen);
+    }
+    return;
+  }
+
+  const type = Array.isArray(value["@type"])
+    ? value["@type"].join(" ")
+    : value["@type"] || "";
+  if (/\bComment\b/i.test(type)) {
+    const authorValue = value.author;
+    const author =
+      typeof authorValue === "string"
+        ? authorValue
+        : authorValue?.name || authorValue?.alternateName || "";
+    const date =
+      parseDate(value.datePublished || value.dateCreated || value.dateModified)
+        ?.toISOString() || null;
+    const normalized = normalizeArticleComment(
+      {
+        author,
+        text: value.text || value.commentText || value.description || "",
+        date,
+      },
+      seen,
+    );
+    if (normalized) {
+      comments.push(normalized);
+    }
+  }
+
+  for (const child of Object.values(value)) {
+    walkJsonLdForComments(child, comments, seen);
+  }
+}
+
+export function extractArticleComments(html) {
+  const $ = cheerio.load(html);
+  const comments = [];
+  const seen = new Set();
+  const selector = ARTICLE_COMMENT_SELECTORS.join(",");
+
+  $(selector).each((_, element) => {
+    const $comment = $(element);
+    if ($comment.parents(selector).length > 0) {
+      return;
+    }
+
+    const normalized = normalizeArticleComment(
+      {
+        author: extractArticleCommentAuthor($comment),
+        text: extractArticleCommentText($, $comment),
+        date: extractArticleCommentDate($comment),
+      },
+      seen,
+    );
+    if (normalized) {
+      comments.push(normalized);
+    }
+  });
+
+  $("script[type='application/ld+json']").each((_, element) => {
+    try {
+      walkJsonLdForComments(JSON.parse($(element).text()), comments, seen);
+    } catch {
+      // Ignore malformed embedded data; comments are best-effort enrichment.
+    }
+  });
+
+  return comments.slice(0, 25);
+}
+
 export function htmlToArticleText(html) {
   const $ = cheerio.load(html);
   // Remove navigation, sidebar, ads, and header/footer elements

@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="site/readme-icon.svg" width="80" height="80" alt="Blue Cross VT News Mentions">
+  <img src="site/logo.png" width="80" height="80" alt="Blue Cross VT News Mentions">
 </p>
 
 <h1 align="center">Blue Cross VT News Mentions</h1>
@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <code>45 configured sources</code> &bull;
+  <code>39 default sources</code> &bull;
   <code>RSS + JSON Feed</code> &bull;
   <code>hourly GitHub Pages refresh</code>
 </p>
@@ -37,7 +37,7 @@ The project is intentionally text-heavy. It follows the spirit of `text.npr.org`
 
 News monitoring gets messy when the search target is both narrow and broad. A direct BCBSVT mention is obvious. A hospital budget story, rate review hearing, Vermont Medicaid update, or Medicare Advantage policy story can matter just as much, but only when it fits the team’s actual geography and business context.
 
-This monitor is built around that judgment. It prioritizes Vermont and Blue Cross VT, keeps official BlueCrossVT.org and social posts available without letting them flood the default view, and archives direct Blue Cross VT mentions indefinitely so important coverage does not disappear when a source feed rolls over.
+This monitor is built around that judgment. It prioritizes Vermont and Blue Cross VT, keeps official BlueCrossVT.org posts available without letting them flood the default view, and archives direct Blue Cross VT mentions indefinitely so important coverage does not disappear when a source feed rolls over.
 
 It also keeps an audit trail. Rejected items, source failures, matched terms, summary reasons, comments, and failure streaks all live in `feed-audit.json`, which makes the system inspectable instead of mysterious.
 
@@ -61,7 +61,7 @@ The live reader is published at [oliverames.github.io/vt-news-rss-bcbs](https://
 
 ## What It Watches
 
-The default source list combines Vermont outlets, official Blue Cross and health system pages, national health policy feeds, Google News searches, and public Facebook page surfaces. Some direct outlet feeds also have site-scoped Google News fallbacks for GitHub runner blocks or rate limits.
+The default source list combines Vermont outlets, official Blue Cross and health system pages, national health policy feeds, and Google News searches. Some direct outlet feeds also have site-scoped Google News fallbacks for GitHub runner blocks or rate limits.
 
 | Category | Coverage | Notes |
 | --- | --- | --- |
@@ -69,7 +69,7 @@ The default source list combines Vermont outlets, official Blue Cross and health
 | Official pages | BlueCrossVT Newsroom, BlueCrossVT Be Well VT Blog, UVM Health Newsroom, BCBSA Association News | Public listing pages are parsed because normal RSS feeds are not available |
 | Search feeds | Blue Cross VT brand search, Jan. 1, 2026 Blue Cross VT backfill, Vermont health search, Kristina source search, health insurance search, trade search, national policy search, outlet fallbacks | Search feeds are capped and bounded to avoid turning the reader into generic health news |
 | National health feeds | ABC Health, CBS Health, CNN Health, STAT, Fierce Healthcare, Healthcare Dive, KFF Health News, The Hill, NPR Health | Broad national items are filtered unless they have a payer, policy, coverage, or regional angle |
-| Social surfaces | Public Facebook pages for selected Vermont outlets | Social posts are hidden from the default All section and kept only when they mention Blue Cross directly |
+| Social surfaces | Public Facebook pages for selected Vermont outlets | Parked by default; set `ENABLE_SOCIAL_SOURCES=true` for a deliberate one-off Facebook collection run |
 
 Direct Blue Cross VT mentions are kept indefinitely. Other stories are kept for three months. The 2026 backfill source is bounded to Jan. 1 through June 13, 2026; after that window closes, the source skips itself and the archive carries those items forward.
 
@@ -100,7 +100,8 @@ The relevance gate then removes common false positives:
 | Broad national health lifestyle stories | Rejected unless they include payer, policy, coverage, or regional signals |
 | Out-of-region outbreaks | Rejected unless they include policy, payer, or regional relevance |
 | Infrastructure or grant stories | Rejected when health care is only an incidental phrase |
-| BlueCrossVT.org and social posts | Available as sections but hidden from the default All view |
+| BlueCrossVT.org posts | Available as a section but hidden from the default All view |
+| Social posts | Not collected by default; archived social items are pruned unless `ENABLE_SOCIAL_SOURCES=true` is set |
 
 ## Reader Experience
 
@@ -114,7 +115,7 @@ Each story can include:
 | Access label | `Free to read`, `Paywall likely`, `May require login`, or `Access varies` |
 | Summary | AI-generated one or two sentence summary when Gemini is configured |
 | Why it is here | Short relevance reason for a reader who wants to skim quickly |
-| Comments | Publicly parseable comments and nested replies, hidden by default |
+| Comments | Publicly parseable article or post comments, hidden by default |
 
 The browser does not recrawl sources. GitHub Actions does the collection and deploys the latest feed hourly; reloading the page loads the latest published feed.
 
@@ -146,9 +147,10 @@ The browser does not recrawl sources. GitHub Actions does the collection and dep
 | `SLACK_WEBHOOK_URL` | No | empty | Optional Slack webhook for source failure alerts |
 | `DISCORD_WEBHOOK_URL` | No | empty | Optional Discord webhook for source failure alerts |
 | `WEBHOOK_FAILURE_THRESHOLD` | No | `24` | Consecutive failed runs before a source triggers an alert |
-| `FACEBOOK_POST_URLS` | No | empty | Optional comma- or newline-separated `Name\|URL` public Facebook posts |
-| `FACEBOOK_PAGE_URLS` | No | empty | Optional comma- or newline-separated `Name\|URL` public Facebook pages |
-| `FACEBOOK_PAGE_MAX_POSTS` | No | `10` | Maximum post links to read from each configured Facebook page |
+| `ENABLE_SOCIAL_SOURCES` | No | `false` | Set to `true` to include the parked built-in Facebook pages and configured Facebook URLs |
+| `FACEBOOK_POST_URLS` | No | empty | Optional comma- or newline-separated `Name\|URL` public Facebook posts, used only when social sources are enabled |
+| `FACEBOOK_PAGE_URLS` | No | empty | Optional comma- or newline-separated `Name\|URL` public Facebook pages, used only when social sources are enabled |
+| `FACEBOOK_PAGE_MAX_POSTS` | No | `10` | Maximum post links to read from each configured Facebook page when social sources are enabled |
 
 Gemini rate limits vary by project, model, and usage tier. The summarizer starts with `gemini-2.5-flash-lite`, batches stories, caches successful summaries in `feed-audit.json`, and caps requests per run so hourly refreshes stay conservative.
 
@@ -156,9 +158,9 @@ Gemini rate limits vary by project, model, and usage tier. The summarizer starts
 
 ```text
 src/index.js       Entry point, generator orchestration, public re-export surface
-src/sources.js     Default source list, Google News queries, Facebook env sources
+src/sources.js     Default source list, Google News queries, parked Facebook sources
 src/matching.js    Brand terms, topic terms, canonical labels, snippets
-src/parsers.js     RSS, Atom, listing pages, article text, Facebook public HTML
+src/parsers.js     RSS, Atom, listing pages, article text and comments, Facebook public HTML
 src/fetching.js    Fetch retries, size caps, source collection, domain throttling
 src/enrich.js      Google News decoding, article scanning, match enrichment
 src/relevance.js   Deterministic relevance, source type, access labels

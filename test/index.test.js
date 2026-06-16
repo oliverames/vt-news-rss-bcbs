@@ -34,6 +34,7 @@ import {
   parseUvmHealthNewsroomItems,
   collectFeedItems,
   enrichAndFilterItems,
+  extractArticleComments,
   filterSourceItemsByDateWindow,
   isObituaryItem,
   isSourceWindowClosed,
@@ -815,6 +816,69 @@ test("generateFeed drops obituaries loaded from the archive", async () => {
   );
 });
 
+test("generateFeed drops archived social items when social sources are disabled", async () => {
+  const originalEnabled = process.env.ENABLE_SOCIAL_SOURCES;
+  delete process.env.ENABLE_SOCIAL_SOURCES;
+
+  const workdir = await mkdtemp(path.join(tmpdir(), "vt-news-archive-social-"));
+  const rssOutputPath = path.join(workdir, "feed.rss");
+  const jsonOutputPath = path.join(workdir, "feed.json");
+  const auditJsonOutputPath = path.join(workdir, "feed-audit.json");
+  await writeFile(
+    auditJsonOutputPath,
+    JSON.stringify({
+      version: "https://jsonfeed.org/version/1.1",
+      generatedAt: "2026-06-16T16:10:08.282Z",
+      sources: [],
+      items: [
+        {
+          title: "VTDigger Facebook post: Blue Cross VT update",
+          link: "https://www.facebook.com/vtdigger/posts/123",
+          guid: "social-1",
+          pubDate: "2026-06-16T16:10:08.000Z",
+          sourceName: "VTDigger Facebook",
+          sourceFeedUrl: "https://www.facebook.com/vtdigger",
+          matchedTerms: ["Blue Cross VT"],
+          summary: "A social post about Blue Cross VT.",
+          relevant: true,
+        },
+        {
+          title: "Blue Cross VT rate filing",
+          link: "https://example.com/blue-cross-vt-rate-filing",
+          guid: "story-1",
+          pubDate: "2026-06-16T15:10:08.000Z",
+          sourceName: "Example",
+          matchedTerms: ["Blue Cross VT"],
+          summary: "A news story about Blue Cross VT.",
+          relevant: true,
+        },
+      ],
+    }),
+  );
+
+  try {
+    await generateFeed({
+      sources: [],
+      now: new Date("2026-06-16T16:30:00Z"),
+      rssOutputPath,
+      jsonOutputPath,
+      auditJsonOutputPath,
+    });
+
+    const output = JSON.parse(await readFile(auditJsonOutputPath, "utf8"));
+    assert.deepEqual(
+      output.items.map((item) => item.title),
+      ["Blue Cross VT rate filing"],
+    );
+  } finally {
+    if (originalEnabled === undefined) {
+      delete process.env.ENABLE_SOCIAL_SOURCES;
+    } else {
+      process.env.ENABLE_SOCIAL_SOURCES = originalEnabled;
+    }
+  }
+});
+
 test("mergeWithArchive drops future-dated stories beyond clock skew", () => {
   const now = new Date("2026-06-12T12:00:00Z");
   const merged = mergeWithArchive(
@@ -1428,10 +1492,52 @@ test("mergeFacebookPagePostItem nests comments from enriched public posts", () =
   assert.match(merged.feedContent, /BCBS VT members/);
 });
 
+test("buildSourcesFromEnv leaves social sources disabled by default", () => {
+  const originalEnabled = process.env.ENABLE_SOCIAL_SOURCES;
+  const originalPosts = process.env.FACEBOOK_POST_URLS;
+  const originalPages = process.env.FACEBOOK_PAGE_URLS;
+
+  delete process.env.ENABLE_SOCIAL_SOURCES;
+  process.env.FACEBOOK_POST_URLS =
+    "VTDigger|https://www.facebook.com/vtdigger/posts/123";
+  process.env.FACEBOOK_PAGE_URLS =
+    "WCAX|https://www.facebook.com/WCAXTV";
+
+  try {
+    assert.deepEqual(buildSourcesFromEnv([]), []);
+    assert.equal(
+      buildSourcesFromEnv().some(
+        (source) =>
+          /facebook/i.test(source.name) ||
+          /facebook\.com/i.test(source.homepage || ""),
+      ),
+      false,
+    );
+  } finally {
+    if (originalEnabled === undefined) {
+      delete process.env.ENABLE_SOCIAL_SOURCES;
+    } else {
+      process.env.ENABLE_SOCIAL_SOURCES = originalEnabled;
+    }
+    if (originalPosts === undefined) {
+      delete process.env.FACEBOOK_POST_URLS;
+    } else {
+      process.env.FACEBOOK_POST_URLS = originalPosts;
+    }
+    if (originalPages === undefined) {
+      delete process.env.FACEBOOK_PAGE_URLS;
+    } else {
+      process.env.FACEBOOK_PAGE_URLS = originalPages;
+    }
+  }
+});
+
 test("buildSourcesFromEnv adds configured Facebook post and page sources", () => {
+  const originalEnabled = process.env.ENABLE_SOCIAL_SOURCES;
   const originalPosts = process.env.FACEBOOK_POST_URLS;
   const originalPages = process.env.FACEBOOK_PAGE_URLS;
   const originalMaxPosts = process.env.FACEBOOK_PAGE_MAX_POSTS;
+  process.env.ENABLE_SOCIAL_SOURCES = "true";
   process.env.FACEBOOK_POST_URLS =
     "VTDigger|https://www.facebook.com/vtdigger/posts/123";
   process.env.FACEBOOK_PAGE_URLS =
@@ -1456,6 +1562,11 @@ test("buildSourcesFromEnv adds configured Facebook post and page sources", () =>
       },
     ]);
   } finally {
+    if (originalEnabled === undefined) {
+      delete process.env.ENABLE_SOCIAL_SOURCES;
+    } else {
+      process.env.ENABLE_SOCIAL_SOURCES = originalEnabled;
+    }
     if (originalPosts === undefined) {
       delete process.env.FACEBOOK_POST_URLS;
     } else {
@@ -1727,6 +1838,122 @@ test("htmlToArticleText extracts clean editorial text ignoring boilerplates", ()
   assert.ok(!text.includes("Trending Articles"));
   assert.ok(!text.includes("About Us"));
   assert.ok(!text.includes("Publisher"));
+});
+
+test("extractArticleComments reads server-rendered article comments", () => {
+  const html = `
+    <!doctype html>
+    <html>
+      <body>
+        <article>
+          <p>Blue Cross VT filed a rate request.</p>
+        </article>
+        <section id="comments">
+          <ol class="comment-list">
+            <li id="comment-1" class="comment">
+              <div class="comment-author"><span class="fn">Jane Reader</span></div>
+              <time datetime="2026-06-16T10:00:00-04:00">June 16</time>
+              <div class="comment-content">
+                <p>This affects BCBS VT members in Vermont.</p>
+              </div>
+              <ul class="children">
+                <li id="comment-2" class="comment">
+                  <div class="comment-content"><p>Nested reply text.</p></div>
+                </li>
+              </ul>
+            </li>
+          </ol>
+          <form><textarea>Leave a reply</textarea></form>
+        </section>
+        <script type="application/ld+json">
+          {
+            "@type": "NewsArticle",
+            "comment": {
+              "@type": "Comment",
+              "author": { "name": "Json Reader" },
+              "text": "JSON-LD comment about the story.",
+              "datePublished": "2026-06-16T15:00:00Z"
+            }
+          }
+        </script>
+      </body>
+    </html>
+  `;
+
+  assert.deepEqual(extractArticleComments(html), [
+    {
+      author: "Jane Reader",
+      text: "This affects BCBS VT members in Vermont.",
+      date: "2026-06-16T14:00:00.000Z",
+      replies: [],
+    },
+    {
+      author: "Json Reader",
+      text: "JSON-LD comment about the story.",
+      date: "2026-06-16T15:00:00.000Z",
+      replies: [],
+    },
+  ]);
+});
+
+test("enrichAndFilterItems attaches comments from matched article pages", async () => {
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "true";
+
+  const server = createServer((_request, response) => {
+    response.setHeader("content-type", "text/html");
+    response.end(`<!doctype html>
+      <html>
+        <body>
+          <article>
+            <h1>Rate request</h1>
+            <p>Blue Cross VT filed a new rate request for Vermont members.</p>
+          </article>
+          <section class="comments-area">
+            <div class="comment">
+              <div class="comment-author">Local Reader</div>
+              <div class="comment-content">
+                <p>Useful local context from the comment section.</p>
+              </div>
+            </div>
+          </section>
+        </body>
+      </html>`);
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+  const { port } = server.address();
+
+  try {
+    const filtered = await enrichAndFilterItems([
+      {
+        sourceName: "Local Outlet",
+        title: "Rate request story",
+        link: `http://127.0.0.1:${port}/story`,
+        feedContent: "Rate request story",
+      },
+    ]);
+
+    assert.equal(filtered.length, 1);
+    assert.deepEqual(filtered[0].matchedTerms, [
+      "Blue Cross VT",
+      "Premiums & rate review",
+    ]);
+    assert.deepEqual(filtered[0].comments, [
+      {
+        author: "Local Reader",
+        text: "Useful local context from the comment section.",
+        date: null,
+        replies: [],
+      },
+    ]);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+    if (originalScan === undefined) {
+      delete process.env.RSS_ARTICLE_SCAN;
+    } else {
+      process.env.RSS_ARTICLE_SCAN = originalScan;
+    }
+  }
 });
 
 test("readResponseTextWithLimit decodes normal bodies and rejects oversized ones", async () => {

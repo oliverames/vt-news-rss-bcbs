@@ -17,6 +17,7 @@ import {
   TOPIC_TERMS,
 } from "./matching.js";
 import { parseFacebookRelativeDate } from "./parsers.js";
+import { isSocialSourceItem, socialSourcesEnabled } from "./sources.js";
 
 export async function loadPreviousState(...jsonOutputPaths) {
   const cache = new Map();
@@ -41,6 +42,9 @@ export async function loadPreviousState(...jsonOutputPaths) {
             continue;
           }
           if (isObituaryItem(item)) {
+            continue;
+          }
+          if (!socialSourcesEnabled() && isSocialSourceItem(item)) {
             continue;
           }
           const matchedTerms = canonicalizeMatchedTerms(item.matchedTerms || []);

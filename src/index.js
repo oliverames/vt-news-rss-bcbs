@@ -134,7 +134,12 @@ export {
   escapeXml,
   wrapCdata,
 } from "./utils.js";
-export { DEFAULT_SOURCES, buildSourcesFromEnv } from "./sources.js";
+export {
+  DEFAULT_SOURCES,
+  buildSourcesFromEnv,
+  isSocialSourceItem,
+  socialSourcesEnabled,
+} from "./sources.js";
 export {
   buildSnippet,
   canonicalizeMatchedTerms,
@@ -146,6 +151,7 @@ export {
   TOPIC_TERMS,
 } from "./matching.js";
 export {
+  extractArticleComments,
   htmlToArticleText,
   mergeFacebookPagePostItem,
   parseBcbsAssociationNewsItems,
