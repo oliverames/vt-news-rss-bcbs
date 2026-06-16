@@ -241,6 +241,7 @@ test("default sources cover recurring Kristina export outlets", () => {
     const source = DEFAULT_SOURCES.find((candidate) => candidate.name === sourceName);
     assert.equal(Number.isInteger(source.throttleDelayMs), true);
     assert.equal(source.throttleDelayMs > 0, true);
+    assert.match(source.fallbackFeed?.feedUrl || "", /news\.google\.com\/rss\/search/);
   }
 });
 

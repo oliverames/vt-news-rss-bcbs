@@ -203,6 +203,7 @@ export const DEFAULT_SOURCES = [
     homepage: "https://www.rutlandherald.com/",
     feedUrl:
       "https://www.rutlandherald.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("rutlandherald.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
@@ -210,6 +211,7 @@ export const DEFAULT_SOURCES = [
     homepage: "https://www.timesargus.com/",
     feedUrl:
       "https://www.timesargus.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("timesargus.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
@@ -219,6 +221,7 @@ export const DEFAULT_SOURCES = [
       "https://www.timesargus.com/search/?q=%22UVM%20Health%22&f=rss&t=article&l=50&s=start_time&sd=desc",
     scanArticle: false,
     maxItems: 20,
+    fallbackFeed: localOutletFallbackFeed("timesargus.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
@@ -226,6 +229,7 @@ export const DEFAULT_SOURCES = [
     homepage: "https://www.benningtonbanner.com/",
     feedUrl:
       "https://www.benningtonbanner.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("benningtonbanner.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
@@ -233,6 +237,7 @@ export const DEFAULT_SOURCES = [
     homepage: "https://www.reformer.com/",
     feedUrl:
       "https://www.reformer.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("reformer.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
@@ -240,6 +245,7 @@ export const DEFAULT_SOURCES = [
     homepage: "https://www.vtcng.com/",
     feedUrl:
       "https://www.vtcng.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("vtcng.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
@@ -258,6 +264,7 @@ export const DEFAULT_SOURCES = [
     homepage: "https://www.newportvermontdailyexpress.com/",
     feedUrl:
       "https://www.newportvermontdailyexpress.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("newportvermontdailyexpress.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
@@ -270,6 +277,7 @@ export const DEFAULT_SOURCES = [
     homepage: "https://www.samessenger.com/",
     feedUrl:
       "https://www.samessenger.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("samessenger.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
