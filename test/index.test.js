@@ -93,6 +93,35 @@ test("findMentionTerms groups close Blue Cross spelling variants under canonical
   );
 });
 
+test("findMentionTerms catches Kristina's Blue Cross Boolean pairings", () => {
+  const cases = [
+    ["BlueCross announced a change in VT.", "Blue Cross VT"],
+    ["BlueCross announced a change in Vermont.", "Blue Cross VT"],
+    ["BCBS announced a change in VT.", "BCBSVT"],
+    ["bcbs announced a change in Vermont.", "BCBSVT"],
+    [
+      "Blue Cross and Blue Shield announced a change in Vermont.",
+      "Blue Cross and Blue Shield of Vermont",
+    ],
+    [
+      "Blue Cross and Blue Shield announced a change in VT.",
+      "Blue Cross and Blue Shield of Vermont",
+    ],
+    [
+      "BlueCross BlueShield announced a change in Vermont.",
+      "Blue Cross and Blue Shield of Vermont",
+    ],
+  ];
+
+  for (const [text, expectedTerm] of cases) {
+    const matches = findMentionTerms(text);
+    assert.ok(
+      matches.includes(expectedTerm),
+      `"${text}" should match "${expectedTerm}", got: ${matches.join(", ")}`,
+    );
+  }
+});
+
 test("findMentionTerms catches indirect and branded variants", () => {
   assert.deepEqual(findMentionTerms("Blue Cross of Vermont announced a plan."), [
     "Blue Cross of Vermont",
@@ -153,6 +182,33 @@ test("default sources cover recurring Kristina export outlets", () => {
 
   for (const host of expectedHosts) {
     assert.match(sourceText, new RegExp(host.replaceAll(".", "\\.")));
+  }
+  const kristinaBooleans = [
+    '"Blue Cross VT"',
+    '"blue cross" AND VT',
+    '"blue cross" AND Vermont',
+    '"bluecross" AND VT',
+    '"bluecross" AND Vermont',
+    '"BCBS" AND VT',
+    '"bcbs" AND Vermont',
+    '"BCBSVT"',
+    '"Blue Cross and Blue Shield" AND Vermont',
+    '"Blue Cross and Blue Shield" AND VT',
+    '"Bluecross Blueshield" AND Vermont',
+    'Vermont AND "healthcare"',
+    'Vermont AND "health care"',
+    'Vermont AND "hospitals"',
+    '"health insurers"',
+    '"health care" AND affordability',
+    '"UVM Health"',
+    '"MVP Health Care"',
+  ];
+
+  for (const booleanQuery of kristinaBooleans) {
+    assert.ok(
+      sourceText.includes(booleanQuery),
+      `DEFAULT_SOURCES should include Kristina Boolean query: ${booleanQuery}`,
+    );
   }
   assert.match(sourceText, /Google News Blue Cross VT Backfill Since Jan 1 2026/);
   assert.match(sourceText, /when:180d/);

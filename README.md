@@ -89,6 +89,8 @@ The brand matcher includes common variants:
 
 Topic matching covers Vermont health care agencies, hospitals, providers, coverage programs, rate review, Medicaid, Medicare, prior authorization, pharmacy, rural health, mental health, public health, medical costs, and related policy areas.
 
+The Google News search feeds also carry Kristina's current Boolean set directly: Blue Cross and BCBS variants paired with VT/Vermont, Vermont healthcare/health care/hospitals, health insurers, health care affordability, UVM Health, and MVP Health Care.
+
 The relevance gate then removes common false positives:
 
 | False positive pattern | How it is handled |

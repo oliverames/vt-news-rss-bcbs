@@ -5,11 +5,21 @@ import { cleanText } from "./utils.js";
 export const MENTION_TERMS = [
   { label: "BCBSVT", pattern: /\bbcbs[\s-]?vt\b/i },
   { label: "BCBS of Vermont", pattern: /\bbcbs\s+(?:of\s+)?vermont\b|\bbcbs\s+of\s+vt\b/i },
+  {
+    label: "BCBS Vermont",
+    pattern:
+      /\bbcbs\b[\s\S]*\b(?:vermont|vt)\b\.?|\b(?:vermont|vt)\b\.?[\s\S]*\bbcbs\b/i,
+  },
   { label: "Blue Cross VT", pattern: /\bblue\s*cross\s*(?:vt|vermont)\b/i },
+  {
+    label: "BlueCross Vermont",
+    pattern:
+      /\bbluecross\b(?!\s*(?:(?:and|&|\/)\s*)?blue\s*shield\b)[\s\S]*\b(?:vermont|vt)\b\.?|\b(?:vermont|vt)\b\.?[\s\S]*\bbluecross\b(?!\s*(?:(?:and|&|\/)\s*)?blue\s*shield\b)/i,
+  },
   {
     label: "Blue Cross and Blue Shield of Vermont",
     pattern:
-      /\bblue\s*cross\s*(?:(?:and|&|\/)\s*)?blue\s*shield\s*(?:of\s*)?(?:vermont|vt)\b/i,
+      /\bblue\s*cross\s*(?:(?:and|&|\/)\s*)?blue\s*shield\b[\s\S]*\b(?:vermont|vt)\b\.?|\b(?:vermont|vt)\b\.?[\s\S]*\bblue\s*cross\s*(?:(?:and|&|\/)\s*)?blue\s*shield\b/i,
   },
   {
     label: "Blue Cross of Vermont",
@@ -215,7 +225,9 @@ export const CATEGORY_BRAND = "Blue Cross VT";
 export const CATEGORY_TOPIC = "VT Health Care";
 
 const TERM_LABEL_ALIASES = new Map([
+  ["BCBS Vermont", "BCBSVT"],
   ["Blue Cross Vermont", "Blue Cross VT"],
+  ["BlueCross Vermont", "Blue Cross VT"],
   ["BlueCrossVT", "Blue Cross VT"],
   ["Blue CrossVT", "Blue Cross VT"],
   ["BlueCross VT", "Blue Cross VT"],
