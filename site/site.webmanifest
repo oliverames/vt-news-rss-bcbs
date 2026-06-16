@@ -1,0 +1,21 @@
+{
+  "name": "Blue Cross VT News Mentions",
+  "short_name": "BCVT News",
+  "description": "News monitor for Blue Cross VT mentions and Vermont health care coverage.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0077C8",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

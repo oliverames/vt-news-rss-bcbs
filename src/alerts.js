@@ -1,7 +1,7 @@
 // Source-failure alerting: consecutive-failure streaks and webhook pings.
 import { parsePositiveInteger } from "./utils.js";
 
-// One-off fetch failures are routine (Facebook especially), so webhook
+// One-off fetch failures are routine across public feeds, so webhook
 // alerts fire only when a source crosses this many consecutive failed runs
 // (~a day at the hourly cadence). Streaks persist in the audit JSON.
 const WEBHOOK_FAILURE_THRESHOLD = parsePositiveInteger(
