@@ -22,8 +22,8 @@ const REQUEST_TIMEOUT_MS = parsePositiveInteger(
   12000,
 );
 // Sources fetched in parallel. Kept modest: most sources are distinct
-// domains, and throttleRequest keeps same-domain requests (the Google News
-// searches, the Facebook pages) a second apart regardless.
+// domains, and throttleRequest keeps same-domain or shared-platform requests
+// apart regardless.
 const SOURCE_CONCURRENCY = parsePositiveInteger(
   process.env.RSS_SOURCE_CONCURRENCY,
   4,
@@ -58,18 +58,27 @@ const PER_DOMAIN_DELAY_MS = parsePositiveInteger(
 // below runs synchronously (no await between them), so concurrent callers
 // cannot grab the same slot — the previous timestamp-based check raced when
 // multiple workers hit the same domain at once.
-export async function throttleRequest(url) {
+export async function throttleRequest(
+  url,
+  throttleGroup = "",
+  throttleDelayMs = PER_DOMAIN_DELAY_MS,
+) {
   let hostname = "";
   try {
     hostname = new URL(url).hostname;
   } catch {
     return; // Unparseable URL: skip throttling, the fetch will fail anyway
   }
+  if (!hostname) {
+    return;
+  }
 
-  const previousSlot = DOMAIN_QUEUES.get(hostname) || Promise.resolve();
+  const queueKey = throttleGroup || hostname;
+  const delayMs = parsePositiveInteger(throttleDelayMs, PER_DOMAIN_DELAY_MS);
+  const previousSlot = DOMAIN_QUEUES.get(queueKey) || Promise.resolve();
   DOMAIN_QUEUES.set(
-    hostname,
-    previousSlot.then(() => sleep(PER_DOMAIN_DELAY_MS)),
+    queueKey,
+    previousSlot.then(() => sleep(delayMs)),
   );
   await previousSlot;
 }
@@ -199,6 +208,50 @@ async function enrichFacebookPageItemsFromPosts(pageItems, source) {
   });
 }
 
+async function throttleSourceRequest(source, url) {
+  await throttleRequest(url, source.throttleGroup, source.throttleDelayMs);
+}
+
+function feedSource(source, feedConfig = {}) {
+  const { fallbackFeed: _fallbackFeed, ...baseSource } = source;
+  return {
+    ...baseSource,
+    ...feedConfig,
+  };
+}
+
+async function fetchSourceFeedXml(source) {
+  const primarySource = feedSource(source);
+  try {
+    await throttleSourceRequest(primarySource, primarySource.feedUrl);
+    const { text } = await fetchText(
+      primarySource.feedUrl,
+      "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
+    );
+    return { xml: text, source: primarySource };
+  } catch (primaryError) {
+    if (!source.fallbackFeed?.feedUrl) {
+      throw primaryError;
+    }
+
+    const fallbackSource = feedSource(source, source.fallbackFeed);
+    console.warn(
+      `Primary feed failed for ${source.name}: ${primaryError.message}; trying fallback feed`,
+    );
+    await throttleSourceRequest(fallbackSource, fallbackSource.feedUrl);
+    const { text } = await fetchText(
+      fallbackSource.feedUrl,
+      "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
+    );
+    return {
+      xml: text,
+      source: fallbackSource,
+      fallbackFrom: primarySource.feedUrl,
+      primaryError: primaryError.message,
+    };
+  }
+}
+
 function dedupeItems(items) {
   const byKey = new Map();
 
@@ -273,10 +326,12 @@ async function fetchItemsForSource(source, now) {
   try {
     let feedUrl;
     let sourceItems;
+    let feedFallbackFrom;
+    let primaryFeedError;
 
     if (source.facebookPostUrl) {
       feedUrl = source.facebookPostUrl;
-      await throttleRequest(feedUrl);
+      await throttleSourceRequest(source, feedUrl);
       const { text: html } = await fetchText(
         feedUrl,
         "text/html, application/xhtml+xml, */*",
@@ -287,7 +342,7 @@ async function fetchItemsForSource(source, now) {
       );
     } else if (source.facebookPageUrl) {
       feedUrl = source.facebookPageUrl;
-      await throttleRequest(feedUrl);
+      await throttleSourceRequest(source, feedUrl);
       const { text: html } = await fetchText(
         feedUrl,
         "text/html, application/xhtml+xml, */*",
@@ -301,7 +356,7 @@ async function fetchItemsForSource(source, now) {
       }));
     } else if (source.listingUrl) {
       feedUrl = source.listingUrl;
-      await throttleRequest(feedUrl);
+      await throttleSourceRequest(source, feedUrl);
       const { text: html } = await fetchText(
         feedUrl,
         "text/html, application/xhtml+xml, */*",
@@ -315,14 +370,12 @@ async function fetchItemsForSource(source, now) {
       }
       sourceItems = applySourceItemBounds(sourceItems, source);
     } else {
-      feedUrl = source.feedUrl;
-      await throttleRequest(feedUrl);
-      const { text: xml } = await fetchText(
-        feedUrl,
-        "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
-      );
-      sourceItems = parseFeedItems(xml, source);
-      sourceItems = applySourceItemBounds(sourceItems, source);
+      const feed = await fetchSourceFeedXml(source);
+      feedUrl = feed.source.feedUrl;
+      sourceItems = parseFeedItems(feed.xml, feed.source);
+      sourceItems = applySourceItemBounds(sourceItems, feed.source);
+      feedFallbackFrom = feed.fallbackFrom;
+      primaryFeedError = feed.primaryError;
     }
 
     console.log(`Fetched ${sourceItems.length} items from ${source.name}`);
@@ -332,6 +385,12 @@ async function fetchItemsForSource(source, now) {
         feedUrl,
         ok: true,
         itemCount: sourceItems.length,
+        ...(feedFallbackFrom
+          ? {
+              fallbackFrom: feedFallbackFrom,
+              primaryError: primaryFeedError,
+            }
+          : {}),
       },
       items: sourceItems,
     };

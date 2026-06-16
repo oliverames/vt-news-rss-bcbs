@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { createServer } from "node:http";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import test from "node:test";
@@ -165,6 +166,7 @@ test("default sources cover recurring Kristina export outlets", () => {
         source.name,
         source.homepage,
         source.feedUrl,
+        source.fallbackFeed?.feedUrl,
         source.listingUrl,
         source.minPubDate,
         source.maxPubDate,
@@ -219,6 +221,27 @@ test("default sources cover recurring Kristina export outlets", () => {
   assert.match(sourceText, /when:180d/);
   assert.match(sourceText, /2026-01-01T00:00:00Z/);
   assert.match(sourceText, /2026-06-13T00:00:00Z/);
+  assert.match(sourceText, /site:vermontbiz\.com/);
+  assert.match(sourceText, /site:mountaintimes\.info/);
+
+  const townNewsSourceNames = DEFAULT_SOURCES.filter(
+    (source) => source.throttleGroup === "townnews-search",
+  ).map((source) => source.name);
+  assert.deepEqual(townNewsSourceNames, [
+    "Rutland Herald",
+    "Times Argus",
+    "Times Argus UVM Health Search",
+    "Bennington Banner",
+    "Brattleboro Reformer",
+    "Vermont Community Newspaper Group",
+    "Newport Daily Express",
+    "St. Albans Messenger",
+  ]);
+  for (const sourceName of townNewsSourceNames) {
+    const source = DEFAULT_SOURCES.find((candidate) => candidate.name === sourceName);
+    assert.equal(Number.isInteger(source.throttleDelayMs), true);
+    assert.equal(source.throttleDelayMs > 0, true);
+  }
 });
 
 test("topic terms catch the healthcare stories the comms team pulls", () => {
@@ -962,6 +985,57 @@ test("collectFeedItems excludes obituary feed entries", async () => {
     ["UVM Health announces new primary care clinic"],
   );
   assert.equal(sourceResults[0].itemCount, 1);
+});
+
+test("collectFeedItems uses a fallback feed after a blocked primary feed", async () => {
+  const server = createServer((_request, response) => {
+    response.writeHead(403, { "content-type": "text/plain" });
+    response.end("blocked");
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+
+  try {
+    const { port } = server.address();
+    const xml = `<?xml version="1.0"?>
+      <rss version="2.0">
+        <channel>
+          <item>
+            <title>UVM Health expands primary care access</title>
+            <link>https://example.com/uvm-health-primary-care</link>
+            <guid>story-1</guid>
+            <pubDate>Tue, 16 Jun 2026 15:10:08 GMT</pubDate>
+            <description><![CDATA[The Vermont clinic expands access for patients.]]></description>
+          </item>
+        </channel>
+      </rss>`;
+    const primaryFeedUrl = `http://127.0.0.1:${port}/rss.xml`;
+    const fallbackFeedUrl = `data:application/rss+xml,${encodeURIComponent(xml)}`;
+    const { items, sourceResults } = await collectFeedItems(
+      [
+        {
+          name: "Blocked Outlet",
+          homepage: "https://example.com/",
+          feedUrl: primaryFeedUrl,
+          fallbackFeed: {
+            feedUrl: fallbackFeedUrl,
+            isSearchFeed: true,
+            scanArticle: false,
+          },
+        },
+      ],
+      new Date("2026-06-16T16:30:00Z"),
+    );
+
+    assert.equal(sourceResults[0].ok, true);
+    assert.equal(sourceResults[0].feedUrl, fallbackFeedUrl);
+    assert.equal(sourceResults[0].fallbackFrom, primaryFeedUrl);
+    assert.match(sourceResults[0].primaryError, /HTTP 403/);
+    assert.equal(items[0].sourceFeedUrl, fallbackFeedUrl);
+    assert.equal(items[0].isSearchFeed, true);
+    assert.equal(items[0].scanArticle, false);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
 });
 
 test("parseFeedItems parses RSS items", () => {

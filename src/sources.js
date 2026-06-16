@@ -74,6 +74,38 @@ const BLUE_CROSS_CURRENT_SEARCH_QUERY =
 const BLUE_CROSS_VT_BACKFILL_QUERY =
   BLUE_CROSS_VT_BACKFILL_TERMS.join(" OR ");
 
+const LOCAL_OUTLET_FALLBACK_TERMS = [
+  '"Blue Cross VT"',
+  '"blue cross" AND Vermont',
+  '"BCBS" AND Vermont',
+  'Vermont AND "healthcare"',
+  'Vermont AND "health care"',
+  'Vermont AND "hospitals"',
+  '"health insurers"',
+  '"health care" AND affordability',
+  '"UVM Health"',
+  '"MVP Health Care"',
+  '"Green Mountain Care Board"',
+  '"Vermont health care"',
+  '"health insurance" AND Vermont',
+];
+
+const TOWNNEWS_SEARCH_THROTTLE = {
+  throttleGroup: "townnews-search",
+  throttleDelayMs: parsePositiveInteger(process.env.RSS_TOWNNEWS_DELAY_MS, 8000),
+};
+
+function localOutletFallbackFeed(site, days = 30) {
+  return {
+    feedUrl: googleNewsSearchUrl(
+      `site:${site} (${LOCAL_OUTLET_FALLBACK_TERMS.join(" OR ")}) when:${days}d`,
+    ),
+    isSearchFeed: true,
+    scanArticle: false,
+    maxItems: 25,
+  };
+}
+
 // Once maxPubDate passes, collectFeedItems skips this source automatically
 // (see isSourceWindowClosed); its items persist via the archive. The
 // definition is kept for provenance and can be deleted at leisure.
@@ -127,6 +159,7 @@ export const DEFAULT_SOURCES = [
     name: "Vermont Business Magazine",
     homepage: "https://vermontbiz.com/",
     feedUrl: "https://vermontbiz.com/rss.xml",
+    fallbackFeed: localOutletFallbackFeed("vermontbiz.com"),
   },
   {
     name: "UVM Health Newsroom",
@@ -170,12 +203,14 @@ export const DEFAULT_SOURCES = [
     homepage: "https://www.rutlandherald.com/",
     feedUrl:
       "https://www.rutlandherald.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+    ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
     name: "Times Argus",
     homepage: "https://www.timesargus.com/",
     feedUrl:
       "https://www.timesargus.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+    ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
     name: "Times Argus UVM Health Search",
@@ -184,24 +219,28 @@ export const DEFAULT_SOURCES = [
       "https://www.timesargus.com/search/?q=%22UVM%20Health%22&f=rss&t=article&l=50&s=start_time&sd=desc",
     scanArticle: false,
     maxItems: 20,
+    ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
     name: "Bennington Banner",
     homepage: "https://www.benningtonbanner.com/",
     feedUrl:
       "https://www.benningtonbanner.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+    ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
     name: "Brattleboro Reformer",
     homepage: "https://www.reformer.com/",
     feedUrl:
       "https://www.reformer.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+    ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
     name: "Vermont Community Newspaper Group",
     homepage: "https://www.vtcng.com/",
     feedUrl:
       "https://www.vtcng.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
     name: "Valley News",
@@ -212,12 +251,14 @@ export const DEFAULT_SOURCES = [
     name: "The Mountain Times",
     homepage: "https://mountaintimes.info/",
     feedUrl: "https://mountaintimes.info/feed/",
+    fallbackFeed: localOutletFallbackFeed("mountaintimes.info"),
   },
   {
     name: "Newport Daily Express",
     homepage: "https://www.newportvermontdailyexpress.com/",
     feedUrl:
       "https://www.newportvermontdailyexpress.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
     name: "Vermont Daily Chronicle",
@@ -229,6 +270,7 @@ export const DEFAULT_SOURCES = [
     homepage: "https://www.samessenger.com/",
     feedUrl:
       "https://www.samessenger.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    ...TOWNNEWS_SEARCH_THROTTLE,
   },
   {
     name: "Google News Search",

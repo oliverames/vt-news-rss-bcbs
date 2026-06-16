@@ -1,3 +1,13 @@
+## 2026-06-16 - Reduce recurring source failures
+
+**What changed**: Added per-source feed fallbacks so a blocked primary RSS feed can still collect through a site-scoped Google News search. Vermont Business Magazine and The Mountain Times keep their direct feeds as primary sources, but now fall back to Google News if the GitHub runner gets a 403. Added a shared `townnews-search` throttle group for the Rutland Herald, Times Argus, Bennington Banner, Brattleboro Reformer, VTCNG, Newport Daily Express, and St. Albans Messenger search feeds, with `RSS_TOWNNEWS_DELAY_MS` defaulting to eight seconds.
+
+**Left off at**: `npm test` passed with 51 tests, `node --check src/fetching.js src/sources.js test/index.test.js` passed, and `git diff --check` passed. A live-seeded scratch generate to `/tmp/vt-news-failures.QfXfH0` with article scanning off loaded 390 prior live archive items, fetched all 45 sources with zero failures, wrote 393 audit items and 272 public items, produced a valid RSS feed via `xmllint --noout`, and returned zero obituary hits. A forced-403 check against the configured Vermont Business Magazine and The Mountain Times primary feeds proved both fall back to `news.google.com` and stay `ok: true`.
+
+**Open questions**: The direct Vermont Business Magazine and Mountain Times feeds return 200 locally, so this targets the repeated GitHub Actions runner blocks shown in the live audit rather than a universal feed outage.
+
+---
+
 ## 2026-06-16 - Exclude obituaries from collection and archive
 
 **What changed**: Added a shared obituary exclusion filter that catches RSS obituary categories, obituary/death-notice URL and title patterns, and narrow obituary prose such as `passed away`, funeral-home/service language, celebration-of-life, and memorial-service wording. Feed parsers now preserve RSS/Atom categories as `sourceCategories` for filtering without adding category text to matcher evidence. The filter runs before source item bounds and again while loading the durable audit archive, so newly fetched obituaries are not collected and previously cached obituaries are purged on the next generation.
