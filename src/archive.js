@@ -19,10 +19,102 @@ import {
 import { parseFacebookRelativeDate } from "./parsers.js";
 import { isSocialSourceItem, socialSourcesEnabled } from "./sources.js";
 
+const CRAWL_STATE_VERSION = 1;
+
+function normalizeString(value) {
+  return typeof value === "string" ? value : "";
+}
+
+function normalizeHeaderState(value) {
+  if (!value || typeof value !== "object") {
+    return {};
+  }
+
+  const normalized = {};
+  for (const [url, headers] of Object.entries(value)) {
+    if (!url || !headers || typeof headers !== "object") {
+      continue;
+    }
+    const etag = normalizeString(headers.etag);
+    const lastModified = normalizeString(headers.lastModified);
+    const checkedAt = normalizeString(headers.checkedAt);
+    if (!etag && !lastModified && !checkedAt) {
+      continue;
+    }
+    normalized[url] = { etag, lastModified, checkedAt };
+  }
+  return normalized;
+}
+
+function normalizeSourceState(value) {
+  if (!value || typeof value !== "object") {
+    return {};
+  }
+
+  const normalized = {};
+  for (const [sourceName, state] of Object.entries(value)) {
+    if (!sourceName || !state || typeof state !== "object") {
+      continue;
+    }
+    normalized[sourceName] = {
+      primaryCooldownUntil: normalizeString(state.primaryCooldownUntil),
+      lastPrimaryError: normalizeString(state.lastPrimaryError),
+      lastPrimaryAttemptAt: normalizeString(state.lastPrimaryAttemptAt),
+      lastPrimarySuccessAt: normalizeString(state.lastPrimarySuccessAt),
+      feedHeaders: normalizeHeaderState(state.feedHeaders),
+    };
+  }
+  return normalized;
+}
+
+function normalizeArticleCache(value) {
+  if (!value || typeof value !== "object") {
+    return {};
+  }
+
+  const normalized = {};
+  for (const [url, entry] of Object.entries(value)) {
+    if (!url || !entry || typeof entry !== "object") {
+      continue;
+    }
+
+    const expiresAt = normalizeString(entry.expiresAt);
+    if (expiresAt && !parseDate(expiresAt)) {
+      continue;
+    }
+
+    normalized[url] = {
+      url: normalizeString(entry.url) || url,
+      resolvedUrl: normalizeString(entry.resolvedUrl) || url,
+      title: normalizeString(entry.title),
+      sourceName: normalizeString(entry.sourceName),
+      checkedAt: normalizeString(entry.checkedAt),
+      expiresAt,
+      matchedTerms: canonicalizeMatchedTerms(entry.matchedTerms || []),
+      snippet: cleanStorySnippet(entry.snippet || "", entry.title || ""),
+      articleError: normalizeString(entry.articleError),
+      comments: Array.isArray(entry.comments) ? entry.comments : [],
+      matchSource: normalizeString(entry.matchSource),
+      articleHeaders: normalizeHeaderState({ article: entry.articleHeaders })
+        .article || {},
+    };
+  }
+  return normalized;
+}
+
+export function normalizeCrawlState(value = {}) {
+  return {
+    version: CRAWL_STATE_VERSION,
+    sourceState: normalizeSourceState(value.sourceState),
+    articleCache: normalizeArticleCache(value.articleCache),
+  };
+}
+
 export async function loadPreviousState(...jsonOutputPaths) {
   const cache = new Map();
   const archivedItems = [];
   const previousFailureStreaks = new Map();
+  let crawlState = normalizeCrawlState();
   const attemptedPaths = jsonOutputPaths.filter(Boolean);
   let loadedPath = "";
 
@@ -36,6 +128,7 @@ export async function loadPreviousState(...jsonOutputPaths) {
           previousFailureStreaks.set(source.name, source.consecutiveFailures);
         }
       }
+      crawlState = normalizeCrawlState(parsed?.crawlState || {});
       if (parsed && Array.isArray(parsed.items)) {
         for (const item of parsed.items) {
           if (!item.link) {
@@ -107,7 +200,7 @@ export async function loadPreviousState(...jsonOutputPaths) {
     console.log("No existing feed found to populate cache, starting fresh.");
   }
 
-  return { cache, archivedItems, previousFailureStreaks };
+  return { cache, archivedItems, previousFailureStreaks, crawlState };
 }
 
 // Stories stay in the archive even after they fall out of their source

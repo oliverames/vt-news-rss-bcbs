@@ -39,6 +39,33 @@ jobs:
           # This workflow never pushes back to the repo; don't leave the
           # workflow token in .git/config for later steps to read.
           persist-credentials: false
+          fetch-depth: 2
+
+      - name: Decide generation mode
+        id: mode
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" != "push" ]; then
+            echo "full=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          before="${{ github.event.before }}"
+          sha="${{ github.sha }}"
+          if ! changed="$(git diff --name-only "$before" "$sha" 2>/dev/null)"; then
+            changed="$(git diff --name-only HEAD^ HEAD 2>/dev/null || true)"
+          fi
+
+          echo "Changed files:"
+          printf '%s\n' "$changed"
+
+          if [ -z "$changed" ]; then
+            echo "full=true" >> "$GITHUB_OUTPUT"
+          elif printf '%s\n' "$changed" | grep -Eq '^(src/|test/|package(-lock)?\.json$|\.github/workflows/publish-feed\.yml$)'; then
+            echo "full=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "full=false" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
@@ -46,15 +73,18 @@ jobs:
           enablement: true
 
       - name: Set up Node.js
+        if: steps.mode.outputs.full == 'true'
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
           cache: npm
 
       - name: Install dependencies
+        if: steps.mode.outputs.full == 'true'
         run: npm ci
 
       - name: Run tests
+        if: steps.mode.outputs.full == 'true'
         run: npm test
 
       # The live feed-audit.json is the durable archive and summary cache.
@@ -74,10 +104,15 @@ jobs:
           fi
 
       - name: Generate feed
+        if: steps.mode.outputs.full == 'true'
         env:
           SITE_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: npm run generate
+
+      - name: Reuse live feed for static deploy
+        if: steps.mode.outputs.full != 'true'
+        run: echo "Static-only change; reusing the live feed seeded into site/."
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
