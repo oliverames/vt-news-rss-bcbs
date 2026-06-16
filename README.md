@@ -61,13 +61,13 @@ The live reader is published at [oliverames.github.io/vt-news-rss-bcbs](https://
 
 ## What It Watches
 
-The default source list combines Vermont outlets, official Blue Cross and health system pages, national health policy feeds, Google News searches, and public Facebook page surfaces.
+The default source list combines Vermont outlets, official Blue Cross and health system pages, national health policy feeds, Google News searches, and public Facebook page surfaces. A few direct outlet feeds also have site-scoped Google News fallbacks for GitHub runner blocks.
 
 | Category | Coverage | Notes |
 | --- | --- | --- |
-| Vermont news outlets | WCAX, VTDigger, Vermont Public, Seven Days, MyNBC5, MyChamplainValley, Addison Independent, Valley News, and more | RSS or search feeds, depending on what each outlet exposes |
+| Vermont news outlets | WCAX, VTDigger, Vermont Public, Seven Days, MyNBC5, MyChamplainValley, Addison Independent, Valley News, and more | RSS or search feeds, depending on what each outlet exposes; blocked primary feeds can fall back to site-scoped Google News |
 | Official pages | BlueCrossVT Newsroom, BlueCrossVT Be Well VT Blog, UVM Health Newsroom, BCBSA Association News | Public listing pages are parsed because normal RSS feeds are not available |
-| Search feeds | Blue Cross VT brand search, Jan. 1, 2026 Blue Cross VT backfill, Vermont health search, Kristina source search, health insurance search, trade search, national policy search | Search feeds are capped and bounded to avoid turning the reader into generic health news |
+| Search feeds | Blue Cross VT brand search, Jan. 1, 2026 Blue Cross VT backfill, Vermont health search, Kristina source search, health insurance search, trade search, national policy search, outlet fallbacks | Search feeds are capped and bounded to avoid turning the reader into generic health news |
 | National health feeds | ABC Health, CBS Health, CNN Health, STAT, Fierce Healthcare, Healthcare Dive, KFF Health News, The Hill, NPR Health | Broad national items are filtered unless they have a payer, policy, coverage, or regional angle |
 | Social surfaces | Public Facebook pages for selected Vermont outlets | Social posts are hidden from the default All section and kept only when they mention Blue Cross directly |
 
@@ -128,6 +128,7 @@ The browser does not recrawl sources. GitHub Actions does the collection and dep
 | `RSS_CONCURRENCY` | No | `6` | Number of article pages to fetch at once |
 | `RSS_SOURCE_CONCURRENCY` | No | `4` | Number of sources to fetch at once |
 | `RSS_DOMAIN_DELAY_MS` | No | `1000` | Politeness delay between requests to the same domain |
+| `RSS_TOWNNEWS_DELAY_MS` | No | `8000` | Shared delay between TownNews search-feed requests across outlet domains |
 | `RSS_TIMEOUT_MS` | No | `12000` | Request timeout in milliseconds |
 | `RSS_FETCH_ATTEMPTS` | No | `3` | Fetch attempts before a source or article is marked failed |
 | `RSS_MAX_RESPONSE_BYTES` | No | `10485760` | Maximum decompressed response size before a fetch is abandoned |
