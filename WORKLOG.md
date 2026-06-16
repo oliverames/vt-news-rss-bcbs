@@ -1,3 +1,15 @@
+## 2026-06-16 - Disable social collection, add article comments and icons
+
+**What changed**: Parked the built-in Facebook/social sources behind `ENABLE_SOCIAL_SOURCES=true` and made env-configured Facebook post/page URLs inactive unless that flag is set. Archived Facebook/social items are now pruned when social collection is disabled, so old social posts do not carry forward from the live audit cache. Added conservative article comment extraction from server-rendered comment sections and JSON-LD `Comment` objects, then merged those comments into already-identified news items during enrichment. Added favicon, Apple touch icon, web manifest icons, and a visible reader logo generated from the BCBS profile asset at `the provided BCBS profile asset`.
+
+**Decisions made**: Kept the existing Facebook parsers and reader Social fallback instead of deleting them, so a deliberate one-off social run remains possible with `ENABLE_SOCIAL_SOURCES=true`. Article comments enrich matched stories but do not create new relevance matches by themselves. Used the profile image directly for browser/iPhone assets because it is already square and brand-ready.
+
+**Left off at**: `npm test` passed with 55 tests, `node --check test/index.test.js` and `node --check src/*.js` passed, `git diff --check` passed, `site/site.webmanifest` parsed as JSON, and ImageMagick verified the generated icon sizes (`16x16`, `32x32`, `180x180`, `192x192`, `512x512`, and `256x256`). A live-seeded scratch generate to `/tmp/vt-news-rss-bcbs-social-off*` with article scanning off loaded 168 archived items, wrote 278 audit items and 205 public items, and returned zero Facebook/social sources or items in both public and audit JSON. Implementation commit `a29ac13` was pushed to `main`; publish run `27643286441` had passed setup, install, tests, and archive seeding and was still in the live `Generate feed` step when wrap-up began.
+
+**Open questions**: Live article-comment capture depends on each publisher rendering comments in the fetched article HTML. Iframe-only or client-rendered comment systems will not expose comments to this parser.
+
+---
+
 ## 2026-06-16 - Reduce recurring source failures
 
 **What changed**: Added per-source feed fallbacks so a blocked or rate-limited primary RSS feed can still collect through a site-scoped Google News search. Vermont Business Magazine and The Mountain Times keep their direct feeds as primary sources, but now fall back to Google News if the GitHub runner gets a 403. The TownNews search feeds also fall back to Google News when they hit 429. Added a shared `townnews-search` throttle group for the Rutland Herald, Times Argus, Bennington Banner, Brattleboro Reformer, VTCNG, Newport Daily Express, and St. Albans Messenger search feeds, with `RSS_TOWNNEWS_DELAY_MS` defaulting to eight seconds.
