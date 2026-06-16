@@ -1,3 +1,13 @@
+## 2026-06-16 - Align source searches with Kristina's Boolean list
+
+**What changed**: Added Kristina's current Boolean search set directly to the Google News source queries: Blue Cross/BCBS variants paired with VT or Vermont, Vermont healthcare/health care/hospitals, health insurers, health care affordability, UVM Health, and MVP Health Care. Tightened local brand matching so `BCBS ... Vermont`, `BlueCross ... Vermont`, and `Blue Cross and Blue Shield ... Vermont/VT` are classified as Blue Cross VT evidence instead of relying only on search fallback. Documented the Boolean coverage in the README and added regression tests for source-query coverage and matcher behavior.
+
+**Left off at**: `npm test` passed with 46 tests, `node --check src/*.js` passed, `git diff --check` passed, and the explicit Boolean comparison script returned YES for all 18 provided Boolean queries. A scratch live generate to `/tmp/vt-news-booleans.u0uqqb` with article scanning off fetched all 45 sources without failures, skipped only the closed Jan. 1-June 13 backfill source, wrote 277 audit items, 203 visible public items, and produced a well-formed RSS feed via `xmllint --noout`.
+
+**Open questions**: None.
+
+---
+
 ## 2026-06-13 - Apply branded README style
 
 **What changed**: Reworked the public README around the `ames-writing:readme-style` structure: centered project mark, badges, strategic "Why This Exists" framing, quick start, source coverage, matching and relevance behavior, reader experience, configuration, architecture, development commands, and Oliver footer. Added `site/readme-icon.svg` as a small local header mark so the README does not depend on a missing external asset.
