@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="site/logo.png" width="80" height="80" alt="Blue Cross VT News Mentions">
+  <img src="site/readme-icon.svg" width="80" height="80" alt="Blue Cross VT News Mentions">
 </p>
 
 <h1 align="center">Blue Cross VT News Mentions</h1>
