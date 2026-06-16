@@ -196,17 +196,15 @@
       }
 
       ul.stories .reason {
-        margin: 8px 0 0;
-        padding: 7px 10px;
-        border-left: 4px solid var(--bar-1);
-        background: var(--surface);
-        color: #1b2f52;
-        font-size: 0.82rem;
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.84rem;
+        line-height: 1.35;
       }
 
       ul.stories .reason-label {
         display: inline;
-        font-weight: 700;
+        font-weight: 600;
       }
 
       ul.stories .meta {
@@ -744,7 +742,7 @@
             reason.className = "reason";
             const reasonLabel = document.createElement("span");
             reasonLabel.className = "reason-label";
-            reasonLabel.textContent = "Why it's here: ";
+            reasonLabel.textContent = "Included because: ";
             reason.appendChild(reasonLabel);
             reason.appendChild(document.createTextNode(item.reason));
             li.appendChild(reason);
