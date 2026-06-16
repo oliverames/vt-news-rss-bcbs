@@ -61,7 +61,7 @@ The live reader is published at [oliverames.github.io/vt-news-rss-bcbs](https://
 
 ## What It Watches
 
-The default source list combines Vermont outlets, official Blue Cross and health system pages, national health policy feeds, Google News searches, and public Facebook page surfaces. A few direct outlet feeds also have site-scoped Google News fallbacks for GitHub runner blocks.
+The default source list combines Vermont outlets, official Blue Cross and health system pages, national health policy feeds, Google News searches, and public Facebook page surfaces. Some direct outlet feeds also have site-scoped Google News fallbacks for GitHub runner blocks or rate limits.
 
 | Category | Coverage | Notes |
 | --- | --- | --- |
