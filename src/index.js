@@ -163,6 +163,7 @@ export {
   isSourceWindowClosed,
   readResponseTextWithLimit,
 } from "./fetching.js";
+export { isObituaryItem } from "./filters.js";
 export { enrichAndFilterItems } from "./enrich.js";
 export { applyDeterministicRelevance } from "./relevance.js";
 export { dedupeResolvedItems, mergeWithArchive } from "./archive.js";

@@ -1,3 +1,13 @@
+## 2026-06-16 - Exclude obituaries from collection and archive
+
+**What changed**: Added a shared obituary exclusion filter that catches RSS obituary categories, obituary/death-notice URL and title patterns, and narrow obituary prose such as `passed away`, funeral-home/service language, celebration-of-life, and memorial-service wording. Feed parsers now preserve RSS/Atom categories as `sourceCategories` for filtering without adding category text to matcher evidence. The filter runs before source item bounds and again while loading the durable audit archive, so newly fetched obituaries are not collected and previously cached obituaries are purged on the next generation.
+
+**Left off at**: `npm test` passed with 50 tests, `node --check src/*.js` passed, and `git diff --check` passed. A live-seeded scratch generate to `/tmp/vt-news-obits-final.5tWr6N` with article scanning off loaded 390 prior live archive items, wrote 393 audit items and 272 public items, produced a valid RSS feed via `xmllint --noout`, and returned zero public/audit obituary hits. Known live obituaries (`David Jon Bursey, 77, of Monkton`, `Michael Ray Jensen, 54, of Brandon`, and `Obituary: Dieter Gump, 1933-2026`) were absent from the generated public and audit JSON.
+
+**Open questions**: None.
+
+---
+
 ## 2026-06-16 - Align source searches with Kristina's Boolean list
 
 **What changed**: Added Kristina's current Boolean search set directly to the Google News source queries: Blue Cross/BCBS variants paired with VT or Vermont, Vermont healthcare/health care/hospitals, health insurers, health care affordability, UVM Health, and MVP Health Care. Tightened local brand matching so `BCBS ... Vermont`, `BlueCross ... Vermont`, and `Blue Cross and Blue Shield ... Vermont/VT` are classified as Blue Cross VT evidence instead of relying only on search fallback. Documented the Boolean coverage in the README and added regression tests for source-query coverage and matcher behavior.
