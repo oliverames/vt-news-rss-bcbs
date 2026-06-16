@@ -35,10 +35,12 @@ import {
   collectFeedItems,
   enrichAndFilterItems,
   extractArticleComments,
+  fetchText,
   filterSourceItemsByDateWindow,
   isObituaryItem,
   isSourceWindowClosed,
   htmlToArticleText,
+  normalizeCrawlState,
   readResponseTextWithLimit,
   TOPIC_TERMS,
 } from "../src/index.js";
@@ -1103,6 +1105,72 @@ test("collectFeedItems uses a fallback feed after a blocked primary feed", async
   }
 });
 
+test("collectFeedItems honors active primary feed cooldowns", async () => {
+  let primaryRequests = 0;
+  const server = createServer((_request, response) => {
+    primaryRequests += 1;
+    response.writeHead(500, { "content-type": "text/plain" });
+    response.end("primary should be cooled down");
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+
+  try {
+    const { port } = server.address();
+    const now = new Date("2026-06-16T16:30:00Z");
+    const xml = `<?xml version="1.0"?>
+      <rss version="2.0">
+        <channel>
+          <item>
+            <title>Blue Cross VT fallback story</title>
+            <link>https://example.com/blue-cross-vt-fallback</link>
+            <guid>story-1</guid>
+            <pubDate>Tue, 16 Jun 2026 15:10:08 GMT</pubDate>
+            <description><![CDATA[Blue Cross VT appears in fallback search.]]></description>
+          </item>
+        </channel>
+      </rss>`;
+    const primaryFeedUrl = `http://127.0.0.1:${port}/rss.xml`;
+    const fallbackFeedUrl = `data:application/rss+xml,${encodeURIComponent(xml)}`;
+    const crawlState = normalizeCrawlState({
+      sourceState: {
+        "Cooldown Outlet": {
+          primaryCooldownUntil: "2026-06-16T18:30:00.000Z",
+          lastPrimaryError: "HTTP 429 while fetching primary",
+        },
+      },
+    });
+    const metrics = { collection: {} };
+
+    const { items, sourceResults } = await collectFeedItems(
+      [
+        {
+          name: "Cooldown Outlet",
+          homepage: "https://example.com/",
+          feedUrl: primaryFeedUrl,
+          fallbackFeed: {
+            feedUrl: fallbackFeedUrl,
+            isSearchFeed: true,
+            scanArticle: false,
+          },
+        },
+      ],
+      now,
+      crawlState,
+      metrics,
+    );
+
+    assert.equal(primaryRequests, 0);
+    assert.equal(sourceResults[0].ok, true);
+    assert.equal(sourceResults[0].primaryCooldown, true);
+    assert.equal(sourceResults[0].primaryCooldownUntil, "2026-06-16T18:30:00.000Z");
+    assert.equal(sourceResults[0].fallbackFrom, primaryFeedUrl);
+    assert.equal(metrics.collection.sourceCooldowns, 1);
+    assert.equal(items[0].title, "Blue Cross VT fallback story");
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
 test("parseFeedItems parses RSS items", () => {
   const xml = `<?xml version="1.0"?>
     <rss version="2.0">
@@ -1749,6 +1817,51 @@ test("buildJsonSummary keeps rejected items out of the public JSON feed", () => 
   );
 });
 
+test("buildJsonSummary keeps crawl state and metrics audit-only", () => {
+  const crawlState = normalizeCrawlState({
+    sourceState: {
+      "Example Source": {
+        primaryCooldownUntil: "2026-06-16T18:30:00.000Z",
+        lastPrimaryError: "HTTP 429",
+      },
+    },
+    articleCache: {
+      "https://example.com/no-match": {
+        resolvedUrl: "https://example.com/no-match",
+        expiresAt: "2026-06-30T18:30:00.000Z",
+        matchedTerms: [],
+      },
+    },
+  });
+  const crawlMetrics = {
+    startedAt: "2026-06-16T16:30:00.000Z",
+    finishedAt: "2026-06-16T16:31:00.000Z",
+    durationMs: 60000,
+    collection: { sourceCooldowns: 1 },
+    enrichment: { negativeCacheHits: 1 },
+  };
+  const publicSummary = buildJsonSummary(
+    [],
+    [],
+    new Date("2026-06-16T16:30:00Z"),
+    { crawlState, crawlMetrics },
+  );
+  const auditSummary = buildJsonSummary(
+    [],
+    [],
+    new Date("2026-06-16T16:30:00Z"),
+    { includeRejected: true, crawlState, crawlMetrics },
+  );
+
+  assert.equal(publicSummary.crawlState, undefined);
+  assert.equal(publicSummary.crawlMetrics, undefined);
+  assert.equal(
+    auditSummary.crawlState.sourceState["Example Source"].primaryCooldownUntil,
+    "2026-06-16T18:30:00.000Z",
+  );
+  assert.equal(auditSummary.crawlMetrics.collection.sourceCooldowns, 1);
+});
+
 test("parseFeedItems supports isSearchFeed property", () => {
   const xml = `<?xml version="1.0"?>
     <rss version="2.0">
@@ -1773,6 +1886,7 @@ test("parseFeedItems supports isSearchFeed property", () => {
   assert.equal(items[0].isSearchFeed, true);
   assert.deepEqual(items[0].searchFallbackTerms, ["Blue Cross"]);
   assert.equal(items[0].scanArticle, false);
+  assert.equal(items[0].articleScanMode, "feedOnly");
 });
 
 test("enrichAndFilterItems only uses fallback terms when the source declares them", async () => {
@@ -1803,6 +1917,106 @@ test("enrichAndFilterItems only uses fallback terms when the source declares the
   assert.equal(filtered[0].link, "https://example.com/implicit-story");
   assert.deepEqual(filtered[0].matchedTerms, ["Blue Cross"]);
   assert.equal(filtered[0].matchSource, "searchFallback");
+});
+
+test("enrichAndFilterItems skips fresh negative article-cache entries", async () => {
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "true";
+  let requests = 0;
+  const server = createServer((_request, response) => {
+    requests += 1;
+    response.writeHead(200, { "content-type": "text/html" });
+    response.end("<article><p>Blue Cross VT should not be fetched.</p></article>");
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+
+  try {
+    const { port } = server.address();
+    const now = new Date("2026-06-16T16:30:00Z");
+    const link = `http://127.0.0.1:${port}/cached-negative`;
+    const articleCache = {
+      [link]: {
+        url: link,
+        resolvedUrl: link,
+        checkedAt: "2026-06-16T15:30:00.000Z",
+        expiresAt: "2026-06-30T15:30:00.000Z",
+        matchedTerms: [],
+        comments: [],
+        articleHeaders: {},
+      },
+    };
+    const metrics = { enrichment: { scanModes: {} } };
+
+    const filtered = await enrichAndFilterItems(
+      [
+        {
+          sourceName: "Cached Negative Outlet",
+          title: "Unrelated story",
+          link,
+          feedContent: "Unrelated local story without target terms.",
+        },
+      ],
+      new Map(),
+      { articleCache, metrics, now },
+    );
+
+    assert.deepEqual(filtered, []);
+    assert.equal(requests, 0);
+    assert.equal(metrics.enrichment.negativeCacheHits, 1);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+    if (originalScan === undefined) {
+      delete process.env.RSS_ARTICLE_SCAN;
+    } else {
+      process.env.RSS_ARTICLE_SCAN = originalScan;
+    }
+  }
+});
+
+test("enrichAndFilterItems skips smart article fetches with no feed signal", async () => {
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "true";
+  let requests = 0;
+  const server = createServer((_request, response) => {
+    requests += 1;
+    response.writeHead(200, { "content-type": "text/html" });
+    response.end("<article><p>Blue Cross VT would match if fetched.</p></article>");
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+
+  try {
+    const { port } = server.address();
+    const articleCache = {};
+    const metrics = { enrichment: { scanModes: {} } };
+    const filtered = await enrichAndFilterItems(
+      [
+        {
+          sourceName: "No Signal Outlet",
+          title: "School budget story",
+          link: `http://127.0.0.1:${port}/no-signal`,
+          feedContent: "School board discusses budget timing.",
+          articleScanMode: "smart",
+        },
+      ],
+      new Map(),
+      { articleCache, metrics, now: new Date("2026-06-16T16:30:00Z") },
+    );
+
+    assert.deepEqual(filtered, []);
+    assert.equal(requests, 0);
+    assert.equal(metrics.enrichment.articleFetchSkipped, 1);
+    assert.deepEqual(Object.keys(articleCache), [
+      `http://127.0.0.1:${port}/no-signal`,
+    ]);
+    assert.deepEqual(articleCache[`http://127.0.0.1:${port}/no-signal`].matchedTerms, []);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+    if (originalScan === undefined) {
+      delete process.env.RSS_ARTICLE_SCAN;
+    } else {
+      process.env.RSS_ARTICLE_SCAN = originalScan;
+    }
+  }
 });
 
 test("htmlToArticleText extracts clean editorial text ignoring boilerplates", () => {
@@ -1838,6 +2052,31 @@ test("htmlToArticleText extracts clean editorial text ignoring boilerplates", ()
   assert.ok(!text.includes("Trending Articles"));
   assert.ok(!text.includes("About Us"));
   assert.ok(!text.includes("Publisher"));
+});
+
+test("htmlToArticleText prefers domain-specific article selectors", () => {
+  const html = `
+    <!doctype html>
+    <html>
+      <body>
+        <main>
+          <p>Layout shell copy that should not become the article body.</p>
+          <section class="storyBody">
+            <p>Seven Days article text about Blue Cross VT members.</p>
+            <p>Second paragraph with Vermont health care context.</p>
+          </section>
+        </main>
+      </body>
+    </html>
+  `;
+
+  const text = htmlToArticleText(
+    html,
+    "https://www.sevendaysvt.com/news/example-story-12345",
+  );
+  assert.match(text, /Seven Days article text/);
+  assert.match(text, /Second paragraph/);
+  assert.ok(!text.includes("Layout shell copy"));
 });
 
 test("extractArticleComments reads server-rendered article comments", () => {
@@ -1953,6 +2192,53 @@ test("enrichAndFilterItems attaches comments from matched article pages", async 
     } else {
       process.env.RSS_ARTICLE_SCAN = originalScan;
     }
+  }
+});
+
+test("fetchText sends conditional headers and handles not-modified responses", async () => {
+  const requests = [];
+  const server = createServer((request, response) => {
+    requests.push(request.headers);
+    if (request.headers["if-none-match"] === '"feed-v1"') {
+      response.writeHead(304, {
+        etag: '"feed-v1"',
+        "last-modified": "Tue, 16 Jun 2026 15:00:00 GMT",
+      });
+      response.end();
+      return;
+    }
+
+    response.writeHead(200, {
+      "content-type": "text/plain",
+      etag: '"feed-v1"',
+      "last-modified": "Tue, 16 Jun 2026 15:00:00 GMT",
+    });
+    response.end("fresh body");
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+
+  try {
+    const { port } = server.address();
+    const url = `http://127.0.0.1:${port}/feed.xml`;
+    const first = await fetchText(url, "text/plain");
+    const second = await fetchText(url, "text/plain", {
+      conditionalHeaders: {
+        etag: first.etag,
+        lastModified: first.lastModified,
+      },
+    });
+
+    assert.equal(first.text, "fresh body");
+    assert.equal(first.etag, '"feed-v1"');
+    assert.equal(second.notModified, true);
+    assert.equal(second.text, "");
+    assert.equal(requests[1]["if-none-match"], '"feed-v1"');
+    assert.equal(
+      requests[1]["if-modified-since"],
+      "Tue, 16 Jun 2026 15:00:00 GMT",
+    );
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
   }
 });
 

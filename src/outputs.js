@@ -201,6 +201,8 @@ export function buildJsonSummary(items, sourceResults, now = new Date(), options
     rejectedItemCount,
     audit: includeRejected || undefined,
     sources: sourceResults,
+    crawlMetrics: includeRejected ? options.crawlMetrics : undefined,
+    crawlState: includeRejected ? options.crawlState : undefined,
     items: outputItems.map((item) => {
       const matchedTerms = canonicalizeMatchedTerms(item.matchedTerms || []);
       const comments = Array.isArray(item.comments) ? item.comments : [];

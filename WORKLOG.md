@@ -1,3 +1,15 @@
+## 2026-06-16 - Harden crawling, caching, and deploy mode
+
+**What changed**: Added persisted audit-only crawl state with per-source feed validators, primary-feed cooldowns, article-cache entries, and crawl metrics. Primary feeds with fallbacks now cool down after repeated 403/429/other failures instead of hammering a known-bad URL every run. Fetches now preserve `ETag` and `Last-Modified` headers and can handle 304 not-modified responses. Article enrichment now uses selective scan modes, skips no-signal article fetches, caches negative no-match decisions for a bounded TTL, and has domain-specific article text selectors for priority outlets. The publish workflow now distinguishes full feed-generation pushes from static-only site/docs pushes so static reader changes can deploy without recrawling every source.
+
+**Decisions made**: Kept crawler state out of the public JSON feed and stored it only in `feed-audit.json`. Left the existing matched-item archive cache as the first positive cache layer so old summaries and accepted items continue to work. Used `smart` as the default article scan mode: fetch article pages only when feed text, topic text, search fallback metadata, or brand-required metadata gives the item a reason to be worth scraping. Kept source cooldown durations conservative: 24 hours for 403, `Retry-After` or two hours for 429, and one hour for other primary-feed errors.
+
+**Left off at**: `npm test` passed with 61 tests, `node --check src/*.js test/index.test.js` passed, and `git diff --check` passed. A live-seeded scratch generate to `/tmp/vt-news-crawl.Ss6UhL` with `RSS_ARTICLE_SCAN=false` loaded 414 prior live items, fetched 39 configured sources with zero failures, skipped only the closed Jan. 1-June 13 backfill source, wrote 417 audit items and 286 public items, produced a well-formed RSS feed via `xmllint --noout`, and verified that crawler state/metrics are present in audit JSON but absent from public `feed.json`.
+
+**Open questions**: None. The first production run with this commit should populate source cooldown state for any primary feeds blocked specifically on GitHub runners; the local scratch run did not hit those runner-only 403/429 cases.
+
+---
+
 ## 2026-06-16 - Disable social collection, add article comments and icons
 
 **What changed**: Parked the built-in Facebook/social sources behind `ENABLE_SOCIAL_SOURCES=true` and made env-configured Facebook post/page URLs inactive unless that flag is set. Archived Facebook/social items are now pruned when social collection is disabled, so old social posts do not carry forward from the live audit cache. Added conservative article comment extraction from server-rendered comment sections and JSON-LD `Comment` objects, then merged those comments into already-identified news items during enrichment. Added favicon, Apple touch icon, and web manifest icons generated from the BCBS profile asset at `/Users/oliverames/Documents/BCBS/Social/Profile Assets/Profile Photo.png`.

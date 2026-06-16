@@ -45,6 +45,13 @@ function normalizeGuid(link, fallback) {
   return value.trim();
 }
 
+function sourceArticleScanMode(source) {
+  if (source.articleScanMode) {
+    return source.articleScanMode;
+  }
+  return source.scanArticle === false ? "feedOnly" : "smart";
+}
+
 export function parseFeedItems(feedXml, source) {
   const $ = cheerio.load(feedXml, { xmlMode: true });
   const rssItems = $("item")
@@ -88,6 +95,7 @@ export function parseFeedItems(feedXml, source) {
         isSearchFeed: !!source.isSearchFeed,
         searchFallbackTerms: source.searchFallbackTerms || [],
         scanArticle: source.scanArticle !== false,
+        articleScanMode: sourceArticleScanMode(source),
         title,
         link,
         guid,
@@ -141,6 +149,7 @@ export function parseFeedItems(feedXml, source) {
         isSearchFeed: !!source.isSearchFeed,
         searchFallbackTerms: source.searchFallbackTerms || [],
         scanArticle: source.scanArticle !== false,
+        articleScanMode: sourceArticleScanMode(source),
         title,
         link,
         guid,
@@ -193,6 +202,7 @@ export function parseBlueCrossVtListingItems(html, source) {
       sourceFeedUrl: source.listingUrl,
       searchFallbackTerms: source.searchFallbackTerms || [],
       scanArticle: source.scanArticle !== false,
+      articleScanMode: sourceArticleScanMode(source),
       title,
       link,
       guid: link,
@@ -245,6 +255,7 @@ export function parseBcbsAssociationNewsItems(html, source) {
       sourceFeedUrl: source.listingUrl,
       searchFallbackTerms: source.searchFallbackTerms || [],
       scanArticle: source.scanArticle !== false,
+      articleScanMode: sourceArticleScanMode(source),
       title,
       link,
       guid: link,
@@ -295,6 +306,7 @@ export function parseUvmHealthNewsroomItems(html, source) {
       sourceFeedUrl: source.listingUrl,
       searchFallbackTerms: source.searchFallbackTerms || [],
       scanArticle: source.scanArticle !== false,
+      articleScanMode: sourceArticleScanMode(source),
       title,
       link,
       guid: link,
@@ -524,6 +536,7 @@ export function parseFacebookPostHtml(html, source) {
     description,
     comments,
     scanArticle: false,
+    articleScanMode: "feedOnly",
     feedContent: cleanText([title, description, commentText].filter(Boolean).join(" ")),
   };
 }
@@ -606,6 +619,7 @@ export function parseFacebookEmbeddedPosts(html, source) {
       description: message,
       comments: [],
       scanArticle: false,
+      articleScanMode: "feedOnly",
       feedContent: cleanText([source.name, message].join(" ")),
     });
   }
@@ -657,6 +671,7 @@ export function parseFacebookPageHtml(html, source) {
       description,
       comments: [],
       scanArticle: false,
+      articleScanMode: "feedOnly",
       feedContent: cleanText([pageTitle, description].join(" ")),
     });
   });
@@ -692,6 +707,7 @@ export function mergeFacebookPagePostItem(pageItem, postItem, source) {
     description,
     comments,
     scanArticle: false,
+    articleScanMode: "feedOnly",
     feedContent: cleanText(
       [
         postItem.feedContent,
@@ -749,6 +765,79 @@ const ARTICLE_COMMENT_DATE_SELECTORS = [
 
 const ARTICLE_COMMENT_BOILERPLATE_PATTERN =
   /\b(?:add a comment|cancel reply|comments are closed|join the conversation|leave a reply|log in to comment|post a comment|reply to|sign in to comment|submit comment)\b/i;
+
+const DEFAULT_ARTICLE_TEXT_SELECTORS = [
+  "article",
+  "main",
+  "[itemprop='articleBody']",
+  ".article-body",
+  ".story-body",
+  ".entry-content",
+  ".post-content",
+  ".field--name-body",
+  ".body-content",
+];
+
+const DOMAIN_ARTICLE_TEXT_SELECTORS = [
+  {
+    hostPattern: /(^|\.)vtdigger\.org$/i,
+    selectors: [".entry-content", ".post-content", "article"],
+  },
+  {
+    hostPattern: /(^|\.)wcax\.com$/i,
+    selectors: [
+      "[data-testid='article-body']",
+      "[data-testid='story-body']",
+      ".article-body",
+      "article",
+    ],
+  },
+  {
+    hostPattern: /(^|\.)vermontpublic\.org$/i,
+    selectors: [".storytext", ".entry-content", "[itemprop='articleBody']", "article"],
+  },
+  {
+    hostPattern: /(^|\.)sevendaysvt\.com$/i,
+    selectors: [".storyBody", ".article-content", ".entry-content", "article"],
+  },
+  {
+    hostPattern: /(^|\.)vermontbiz\.com$/i,
+    selectors: [".field--name-body", ".node__content", ".article-body", "article"],
+  },
+  {
+    hostPattern: /(^|\.)bluecrossvt\.org$/i,
+    selectors: [".field--name-body", ".body-content", ".paragraph--type--text", "article"],
+  },
+  {
+    hostPattern: /(^|\.)uvmhealth\.org$/i,
+    selectors: [".field--name-body", ".content-body", "main", "article"],
+  },
+  {
+    hostPattern: /(^|\.)addisonindependent\.com$/i,
+    selectors: [".entry-content", ".post-content", "article"],
+  },
+  {
+    hostPattern: /(^|\.)valleynews\.com$/i,
+    selectors: [".article-body", ".story-body", "[itemprop='articleBody']", "article"],
+  },
+];
+
+function articleSelectorsForUrl(pageUrl = "") {
+  let hostname = "";
+  try {
+    hostname = new URL(pageUrl).hostname.replace(/^www\./i, "");
+  } catch {
+    return DEFAULT_ARTICLE_TEXT_SELECTORS;
+  }
+
+  const matched = DOMAIN_ARTICLE_TEXT_SELECTORS.find((entry) =>
+    entry.hostPattern.test(hostname),
+  );
+  return [
+    ...(matched?.selectors || []),
+    ...DEFAULT_ARTICLE_TEXT_SELECTORS,
+  ].filter((selector, index, selectors) => selectors.indexOf(selector) === index);
+}
 
 function firstCleanTextIncludingSelf($element, selectors) {
   for (const selector of selectors) {
@@ -940,22 +1029,12 @@ export function extractArticleComments(html) {
   return comments.slice(0, 25);
 }
 
-export function htmlToArticleText(html) {
+export function htmlToArticleText(html, pageUrl = "") {
   const $ = cheerio.load(html);
   // Remove navigation, sidebar, ads, and header/footer elements
   $("script, style, noscript, svg, iframe, form, nav, footer, header, aside, .sidebar, #sidebar, .nav, .menu, .ads, .ad, .advertisement, [role='banner'], [role='navigation'], [role='contentinfo']").remove();
 
-  const candidates = [
-    "article",
-    "main",
-    "[itemprop='articleBody']",
-    ".article-body",
-    ".story-body",
-    ".entry-content",
-    ".post-content",
-    ".field--name-body",
-    ".body-content",
-  ];
+  const candidates = articleSelectorsForUrl(pageUrl);
 
   for (const selector of candidates) {
     const element = $(selector);

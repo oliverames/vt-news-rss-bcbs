@@ -45,6 +45,52 @@ function resolveAuditJsonOutputPath(rssOutputPath) {
   return path.join(path.dirname(rssOutputPath), "feed-audit.json");
 }
 
+function createCrawlMetrics(sources, startedAt) {
+  return {
+    startedAt: startedAt.toISOString(),
+    finishedAt: "",
+    durationMs: 0,
+    phases: {},
+    collection: {
+      sourceCount: sources.length,
+      sourceFetches: 0,
+      sourceFailures: 0,
+      sourceFallbacks: 0,
+      sourceCooldowns: 0,
+      notModifiedFeeds: 0,
+      skippedSources: 0,
+      feedItemsCollected: 0,
+      dedupedFeedItems: 0,
+    },
+    enrichment: {
+      itemsSeen: 0,
+      matchedCacheHits: 0,
+      articleCacheHits: 0,
+      negativeCacheHits: 0,
+      articleFetches: 0,
+      articleFetchSkipped: 0,
+      articleNotModified: 0,
+      articleErrors: 0,
+      commentsFound: 0,
+      scanModes: {},
+    },
+  };
+}
+
+async function measurePhase(metrics, name, callback) {
+  const startedMs = Date.now();
+  try {
+    return await callback();
+  } finally {
+    metrics.phases[`${name}Ms`] = Date.now() - startedMs;
+  }
+}
+
+function finishCrawlMetrics(metrics, startedMs) {
+  metrics.finishedAt = new Date().toISOString();
+  metrics.durationMs = Date.now() - startedMs;
+}
+
 export async function generateFeed({
   sources = buildSourcesFromEnv(),
   now = new Date(),
@@ -52,9 +98,20 @@ export async function generateFeed({
   jsonOutputPath = resolveJsonOutputPath(rssOutputPath),
   auditJsonOutputPath = resolveAuditJsonOutputPath(rssOutputPath),
 } = {}) {
-  const { cache, archivedItems, previousFailureStreaks } =
-    await loadPreviousState(auditJsonOutputPath, jsonOutputPath);
-  const collected = await collectFeedItems(sources, now);
+  const runStartedAt = new Date();
+  const runStartedMs = Date.now();
+  const crawlMetrics = createCrawlMetrics(sources, runStartedAt);
+  const {
+    cache,
+    archivedItems,
+    previousFailureStreaks,
+    crawlState,
+  } = await measurePhase(crawlMetrics, "load", () =>
+    loadPreviousState(auditJsonOutputPath, jsonOutputPath),
+  );
+  const collected = await measurePhase(crawlMetrics, "collect", () =>
+    collectFeedItems(sources, now, crawlState, crawlMetrics),
+  );
   const items = collected.items;
   // Streaks ride along in the published sources array, so the audit JSON
   // doubles as the source-rot dashboard and the persistence layer.
@@ -67,16 +124,29 @@ export async function generateFeed({
   // consecutive-failure threshold.
   triggerWebhooks(selectFailureAlerts(sourceResults)).catch(err => console.error("Webhook trigger error:", err));
 
-  const currentMatched = await enrichAndFilterItems(items, cache);
-  const matchedItems = dedupeResolvedItems(
-    sortItemsByDate(mergeWithArchive(currentMatched, archivedItems, now)),
-  ).map(applyDeterministicRelevance);
-  await summarizeItems(matchedItems);
+  const currentMatched = await measurePhase(crawlMetrics, "enrich", () =>
+    enrichAndFilterItems(items, cache, {
+      articleCache: crawlState.articleCache,
+      metrics: crawlMetrics,
+      now,
+    }),
+  );
+  const matchedItems = await measurePhase(crawlMetrics, "merge", async () =>
+    dedupeResolvedItems(
+      sortItemsByDate(mergeWithArchive(currentMatched, archivedItems, now)),
+    ).map(applyDeterministicRelevance),
+  );
+  await measurePhase(crawlMetrics, "summarize", () =>
+    summarizeItems(matchedItems),
+  );
+  finishCrawlMetrics(crawlMetrics, runStartedMs);
   const rss = buildRss(matchedItems, { now });
   const jsonSummary = buildJsonSummary(matchedItems, sourceResults, now);
   const auditJsonSummary = buildJsonSummary(matchedItems, sourceResults, now, {
     includeRejected: true,
     feedUrl: "",
+    crawlMetrics,
+    crawlState,
   });
 
   await writeOutput(
@@ -95,6 +165,8 @@ export async function generateFeed({
     sourceResults,
     itemCount: matchedItems.length,
     items: matchedItems,
+    crawlMetrics,
+    crawlState,
   };
 }
 
@@ -165,6 +237,7 @@ export {
 } from "./parsers.js";
 export {
   collectFeedItems,
+  fetchText,
   filterSourceItemsByDateWindow,
   isSourceWindowClosed,
   readResponseTextWithLimit,
@@ -172,7 +245,7 @@ export {
 export { isObituaryItem } from "./filters.js";
 export { enrichAndFilterItems } from "./enrich.js";
 export { applyDeterministicRelevance } from "./relevance.js";
-export { dedupeResolvedItems, mergeWithArchive } from "./archive.js";
+export { dedupeResolvedItems, mergeWithArchive, normalizeCrawlState } from "./archive.js";
 export {
   buildSummaryPrompt,
   parseSummaryResponse,

@@ -39,7 +39,7 @@ News monitoring gets messy when the search target is both narrow and broad. A di
 
 This monitor is built around that judgment. It prioritizes Vermont and Blue Cross VT, keeps official BlueCrossVT.org posts available without letting them flood the default view, and archives direct Blue Cross VT mentions indefinitely so important coverage does not disappear when a source feed rolls over.
 
-It also keeps an audit trail. Rejected items, source failures, matched terms, summary reasons, comments, and failure streaks all live in `feed-audit.json`, which makes the system inspectable instead of mysterious.
+It also keeps an audit trail. Rejected items, source failures, matched terms, summary reasons, comments, failure streaks, source cooldowns, crawler cache state, and crawl metrics all live in `feed-audit.json`, which makes the system inspectable instead of mysterious.
 
 ## Quick Start
 
@@ -75,7 +75,9 @@ Direct Blue Cross VT mentions are kept indefinitely. Other stories are kept for 
 
 ## How Matching Works
 
-The matcher scans feed titles, descriptions, source text, and, when enabled, article pages. Brand terms scan both feed text and article body text. Topic terms scan feed text only, because full article bodies mention health care too often for that to be precise.
+The matcher scans feed titles, descriptions, source text, and, when enabled, selected article pages. Brand terms scan both feed text and article body text. Topic terms scan feed text only, because full article bodies mention health care too often for that to be precise.
+
+Article scanning is selective. Items with a brand, topic, declared search fallback, or brand-required source signal can fetch article pages for body text and comments. Items with no feed-level signal are cached as negative results for a bounded period instead of being scraped again every run. Sources can also opt into `feedOnly`, `smart`, `brandBody`, or `always` article scan modes through source metadata.
 
 The brand matcher includes common variants:
 
@@ -134,6 +136,7 @@ The browser does not recrawl sources. GitHub Actions does the collection and dep
 | `RSS_FETCH_ATTEMPTS` | No | `3` | Fetch attempts before a source or article is marked failed |
 | `RSS_MAX_RESPONSE_BYTES` | No | `10485760` | Maximum decompressed response size before a fetch is abandoned |
 | `RSS_ARTICLE_SCAN` | No | `true` | Set to `false` to filter only RSS feed text |
+| `RSS_NEGATIVE_CACHE_TTL_DAYS` | No | `14` | Days to keep article cache entries, including negative no-match results, before validating or refreshing |
 | `RSS_MAX_FUTURE_HOURS` | No | `6` | Future-dated item tolerance before exclusion |
 | `ARCHIVE_MAX_AGE_DAYS` | No | `92` | Maximum age for topic-only archived stories |
 | `FEED_URL` | No | empty | Public URL for the RSS self-link |
@@ -153,6 +156,8 @@ The browser does not recrawl sources. GitHub Actions does the collection and dep
 | `FACEBOOK_PAGE_MAX_POSTS` | No | `10` | Maximum post links to read from each configured Facebook page when social sources are enabled |
 
 Gemini rate limits vary by project, model, and usage tier. The summarizer starts with `gemini-2.5-flash-lite`, batches stories, caches successful summaries in `feed-audit.json`, and caps requests per run so hourly refreshes stay conservative.
+
+Source cooldowns are automatic when a primary feed has a fallback. HTTP 403 primary failures cool down for 24 hours, HTTP 429 failures use `Retry-After` when present or two hours otherwise, and other primary errors cool down for one hour. During cooldown, the run goes straight to the fallback feed and records the reason in the audit feed. Feed and article responses also store `ETag` and `Last-Modified` validators when servers provide them.
 
 ## Architecture
 
@@ -176,12 +181,13 @@ test/index.test.js Node test suite
 The workflow is deliberately simple:
 
 1. Fetch source feeds and listing pages.
-2. Resolve and enrich matching items.
-3. Merge with the live audit archive.
-4. Apply deterministic relevance rules.
-5. Add summaries when Gemini is configured.
-6. Write RSS, JSON Feed, and audit JSON.
-7. Publish `site/` to GitHub Pages.
+2. Apply source cooldowns and fallbacks when primary feeds are blocked.
+3. Resolve and enrich matching items, using selective article scanning and the article cache.
+4. Merge with the live audit archive.
+5. Apply deterministic relevance rules.
+6. Add summaries when Gemini is configured.
+7. Write RSS, JSON Feed, and audit JSON.
+8. Publish `site/` to GitHub Pages.
 
 ## Development
 
@@ -203,7 +209,7 @@ RSS_ARTICLE_SCAN=false \
 npm run generate
 ```
 
-The publish workflow runs on pushes to `main`, manual dispatches, and an hourly schedule. It runs tests, seeds the archive from the live `feed-audit.json`, regenerates the feeds, uploads the Pages artifact, and deploys.
+The publish workflow runs on pushes to `main`, manual dispatches, and an hourly schedule. Scheduled and manual runs always do a full test and feed generation pass. Pushes that only change static reader or documentation files reuse the live feed seeded into `site/` and deploy the static artifact without crawling every source again.
 
 ## License
 

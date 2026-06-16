@@ -41,6 +41,9 @@ const MAX_RESPONSE_BYTES = parsePositiveInteger(
   process.env.RSS_MAX_RESPONSE_BYTES,
   10 * 1024 * 1024,
 );
+const PRIMARY_COOLDOWN_FORBIDDEN_MS = 24 * 60 * 60 * 1000;
+const PRIMARY_COOLDOWN_RATE_LIMITED_MS = 2 * 60 * 60 * 1000;
+const PRIMARY_COOLDOWN_ERROR_MS = 60 * 60 * 1000;
 
 const DOMAIN_QUEUES = new Map();
 // Politeness delay between request starts on the same domain. Note: before
@@ -128,27 +131,51 @@ export async function readResponseTextWithLimit(
   return new TextDecoder().decode(Buffer.concat(chunks, receivedBytes));
 }
 
-export async function fetchText(url, accept) {
+function responseHeaderState(response) {
+  return {
+    etag: response.headers?.get?.("etag") || "",
+    lastModified: response.headers?.get?.("last-modified") || "",
+  };
+}
+
+export async function fetchText(url, accept, options = {}) {
   let lastError = null;
 
   for (let attempt = 1; attempt <= MAX_FETCH_ATTEMPTS; attempt += 1) {
     try {
+      const headers = {
+        accept,
+        "user-agent": USER_AGENT,
+        "accept-language": "en-US,en;q=0.9",
+        "sec-ch-ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"macOS"',
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "none",
+        "sec-fetch-user": "?1",
+      };
+      if (options.conditionalHeaders?.etag) {
+        headers["if-none-match"] = options.conditionalHeaders.etag;
+      }
+      if (options.conditionalHeaders?.lastModified) {
+        headers["if-modified-since"] = options.conditionalHeaders.lastModified;
+      }
+
       const response = await fetch(url, {
-        headers: {
-          accept,
-          "user-agent": USER_AGENT,
-          "accept-language": "en-US,en;q=0.9",
-          "sec-ch-ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-          "sec-ch-ua-mobile": "?0",
-          "sec-ch-ua-platform": '"macOS"',
-          "sec-fetch-dest": "document",
-          "sec-fetch-mode": "navigate",
-          "sec-fetch-site": "none",
-          "sec-fetch-user": "?1",
-        },
+        headers,
         redirect: "follow",
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
+
+      if (response.status === 304) {
+        return {
+          text: "",
+          url: response.url || url,
+          notModified: true,
+          ...responseHeaderState(response),
+        };
+      }
 
       if (!response.ok) {
         const error = new Error(`HTTP ${response.status} while fetching ${url}`);
@@ -166,6 +193,7 @@ export async function fetchText(url, accept) {
       return {
         text: await readResponseTextWithLimit(response),
         url: response.url,
+        ...responseHeaderState(response),
       };
     } catch (error) {
       lastError = error;
@@ -220,34 +248,167 @@ function feedSource(source, feedConfig = {}) {
   };
 }
 
-async function fetchSourceFeedXml(source) {
+function bumpMetric(metrics, section, key, amount = 1) {
+  if (!metrics?.[section]) {
+    return;
+  }
+  metrics[section][key] = (metrics[section][key] || 0) + amount;
+}
+
+function sourceStateFor(crawlState, sourceName) {
+  if (!crawlState.sourceState || typeof crawlState.sourceState !== "object") {
+    crawlState.sourceState = {};
+  }
+  if (!crawlState.sourceState[sourceName]) {
+    crawlState.sourceState[sourceName] = {
+      primaryCooldownUntil: "",
+      lastPrimaryError: "",
+      lastPrimaryAttemptAt: "",
+      lastPrimarySuccessAt: "",
+      feedHeaders: {},
+    };
+  }
+  if (!crawlState.sourceState[sourceName].feedHeaders) {
+    crawlState.sourceState[sourceName].feedHeaders = {};
+  }
+  return crawlState.sourceState[sourceName];
+}
+
+function feedHeaderStateFor(sourceState, url) {
+  return sourceState.feedHeaders?.[url] || {};
+}
+
+function updateFeedHeaderState(sourceState, url, result, now) {
+  if (!result.etag && !result.lastModified) {
+    return;
+  }
+  sourceState.feedHeaders[url] = {
+    etag: result.etag || "",
+    lastModified: result.lastModified || "",
+    checkedAt: now.toISOString(),
+  };
+}
+
+function activeCooldownUntil(sourceState, now) {
+  const cooldown = parseDate(sourceState.primaryCooldownUntil);
+  if (!cooldown || cooldown.valueOf() <= now.valueOf()) {
+    return null;
+  }
+  return cooldown;
+}
+
+function cooldownDurationForError(error) {
+  if (Number.isFinite(error.retryAfterMs) && error.retryAfterMs > 0) {
+    return error.retryAfterMs;
+  }
+  if (error.status === 403) {
+    return PRIMARY_COOLDOWN_FORBIDDEN_MS;
+  }
+  if (error.status === 429) {
+    return PRIMARY_COOLDOWN_RATE_LIMITED_MS;
+  }
+  return PRIMARY_COOLDOWN_ERROR_MS;
+}
+
+function setPrimaryCooldown(sourceState, error, now) {
+  const durationMs = cooldownDurationForError(error);
+  sourceState.primaryCooldownUntil = new Date(
+    now.valueOf() + durationMs,
+  ).toISOString();
+  sourceState.lastPrimaryError = error.message || String(error);
+}
+
+async function fetchSourceText(source, sourceState, url, accept, metrics, now) {
+  await throttleSourceRequest(source, url);
+  bumpMetric(metrics, "collection", "sourceFetches");
+  const result = await fetchText(url, accept, {
+    conditionalHeaders: feedHeaderStateFor(sourceState, url),
+  });
+  updateFeedHeaderState(sourceState, url, result, now);
+  if (result.notModified) {
+    bumpMetric(metrics, "collection", "notModifiedFeeds");
+  }
+  return result;
+}
+
+const FEED_ACCEPT =
+  "application/rss+xml, application/atom+xml, application/xml, text/xml, */*";
+
+async function fetchSourceFeedXml(source, crawlState, now, metrics) {
   const primarySource = feedSource(source);
-  try {
-    await throttleSourceRequest(primarySource, primarySource.feedUrl);
-    const { text } = await fetchText(
-      primarySource.feedUrl,
-      "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
+  const sourceState = sourceStateFor(crawlState, source.name);
+  const cooldownUntil = source.fallbackFeed?.feedUrl
+    ? activeCooldownUntil(sourceState, now)
+    : null;
+
+  if (cooldownUntil) {
+    const fallbackSource = feedSource(source, source.fallbackFeed);
+    bumpMetric(metrics, "collection", "sourceCooldowns");
+    console.warn(
+      `Primary feed cooldown active for ${source.name} until ${cooldownUntil.toISOString()}; trying fallback feed`,
     );
-    return { xml: text, source: primarySource };
+    const fallback = await fetchSourceText(
+      fallbackSource,
+      sourceState,
+      fallbackSource.feedUrl,
+      FEED_ACCEPT,
+      metrics,
+      now,
+    );
+    return {
+      xml: fallback.text,
+      source: fallbackSource,
+      fallbackFrom: primarySource.feedUrl,
+      primaryError: sourceState.lastPrimaryError || "Primary feed cooldown active",
+      primaryCooldown: true,
+      primaryCooldownUntil: cooldownUntil.toISOString(),
+      notModified: fallback.notModified,
+    };
+  }
+
+  try {
+    sourceState.lastPrimaryAttemptAt = now.toISOString();
+    const primary = await fetchSourceText(
+      primarySource,
+      sourceState,
+      primarySource.feedUrl,
+      FEED_ACCEPT,
+      metrics,
+      now,
+    );
+    sourceState.primaryCooldownUntil = "";
+    sourceState.lastPrimaryError = "";
+    sourceState.lastPrimarySuccessAt = now.toISOString();
+    return {
+      xml: primary.text,
+      source: primarySource,
+      notModified: primary.notModified,
+    };
   } catch (primaryError) {
     if (!source.fallbackFeed?.feedUrl) {
       throw primaryError;
     }
 
+    setPrimaryCooldown(sourceState, primaryError, now);
     const fallbackSource = feedSource(source, source.fallbackFeed);
     console.warn(
       `Primary feed failed for ${source.name}: ${primaryError.message}; trying fallback feed`,
     );
-    await throttleSourceRequest(fallbackSource, fallbackSource.feedUrl);
-    const { text } = await fetchText(
+    const fallback = await fetchSourceText(
+      fallbackSource,
+      sourceState,
       fallbackSource.feedUrl,
-      "application/rss+xml, application/atom+xml, application/xml, text/xml, */*",
+      FEED_ACCEPT,
+      metrics,
+      now,
     );
     return {
-      xml: text,
+      xml: fallback.text,
       source: fallbackSource,
       fallbackFrom: primarySource.feedUrl,
       primaryError: primaryError.message,
+      primaryCooldownUntil: sourceState.primaryCooldownUntil,
+      notModified: fallback.notModified,
     };
   }
 }
@@ -307,7 +468,7 @@ export function isSourceWindowClosed(source, now = new Date()) {
 
 // Fetch one source and return its items plus a result row. Never throws:
 // failures become an ok:false result so one broken source cannot stop a run.
-async function fetchItemsForSource(source, now) {
+async function fetchItemsForSource(source, now, crawlState, metrics) {
   if (isSourceWindowClosed(source, now)) {
     console.log(`Skipped ${source.name}: date window closed`);
     return {
@@ -328,25 +489,37 @@ async function fetchItemsForSource(source, now) {
     let sourceItems;
     let feedFallbackFrom;
     let primaryFeedError;
+    let primaryCooldown;
+    let primaryCooldownUntil;
+    let notModified;
+    const sourceState = sourceStateFor(crawlState, source.name);
 
     if (source.facebookPostUrl) {
       feedUrl = source.facebookPostUrl;
-      await throttleSourceRequest(source, feedUrl);
-      const { text: html } = await fetchText(
+      const { text: html, notModified: pageNotModified } = await fetchSourceText(
+        source,
+        sourceState,
         feedUrl,
         "text/html, application/xhtml+xml, */*",
+        metrics,
+        now,
       );
+      notModified = pageNotModified;
       const facebookItem = parseFacebookPostHtml(html, source);
       sourceItems = (facebookItem ? [facebookItem] : []).map(
         (item) => ({ ...item, requireBrandMatch: !!source.requireBrandMatch }),
       );
     } else if (source.facebookPageUrl) {
       feedUrl = source.facebookPageUrl;
-      await throttleSourceRequest(source, feedUrl);
-      const { text: html } = await fetchText(
+      const { text: html, notModified: pageNotModified } = await fetchSourceText(
+        source,
+        sourceState,
         feedUrl,
         "text/html, application/xhtml+xml, */*",
+        metrics,
+        now,
       );
+      notModified = pageNotModified;
       sourceItems = parseFacebookPageHtml(html, source);
       sourceItems = applySourceItemBounds(sourceItems, source);
       sourceItems = await enrichFacebookPageItemsFromPosts(sourceItems, source);
@@ -356,11 +529,15 @@ async function fetchItemsForSource(source, now) {
       }));
     } else if (source.listingUrl) {
       feedUrl = source.listingUrl;
-      await throttleSourceRequest(source, feedUrl);
-      const { text: html } = await fetchText(
+      const { text: html, notModified: pageNotModified } = await fetchSourceText(
+        source,
+        sourceState,
         feedUrl,
         "text/html, application/xhtml+xml, */*",
+        metrics,
+        now,
       );
+      notModified = pageNotModified;
       if (source.listingParser === "uvmHealthNewsroom") {
         sourceItems = parseUvmHealthNewsroomItems(html, source);
       } else if (source.listingParser === "bcbsAssociationNews") {
@@ -370,12 +547,15 @@ async function fetchItemsForSource(source, now) {
       }
       sourceItems = applySourceItemBounds(sourceItems, source);
     } else {
-      const feed = await fetchSourceFeedXml(source);
+      const feed = await fetchSourceFeedXml(source, crawlState, now, metrics);
       feedUrl = feed.source.feedUrl;
       sourceItems = parseFeedItems(feed.xml, feed.source);
       sourceItems = applySourceItemBounds(sourceItems, feed.source);
       feedFallbackFrom = feed.fallbackFrom;
       primaryFeedError = feed.primaryError;
+      primaryCooldown = feed.primaryCooldown;
+      primaryCooldownUntil = feed.primaryCooldownUntil;
+      notModified = feed.notModified;
     }
 
     console.log(`Fetched ${sourceItems.length} items from ${source.name}`);
@@ -385,16 +565,20 @@ async function fetchItemsForSource(source, now) {
         feedUrl,
         ok: true,
         itemCount: sourceItems.length,
+        ...(notModified ? { notModified: true } : {}),
         ...(feedFallbackFrom
           ? {
               fallbackFrom: feedFallbackFrom,
               primaryError: primaryFeedError,
+              primaryCooldown: primaryCooldown || undefined,
+              primaryCooldownUntil,
             }
           : {}),
       },
       items: sourceItems,
     };
   } catch (error) {
+    bumpMetric(metrics, "collection", "sourceFailures");
     console.warn(`Failed to fetch ${source.name}: ${error.message}`);
     return {
       sourceResult: {
@@ -413,15 +597,33 @@ async function fetchItemsForSource(source, now) {
 // keeps same-domain requests a second apart), but results are assembled in
 // source-list order so dedupeItems keeps the same first-seen winner
 // regardless of completion timing.
-export async function collectFeedItems(sources, now = new Date()) {
+export async function collectFeedItems(
+  sources,
+  now = new Date(),
+  crawlState = { sourceState: {}, articleCache: {} },
+  metrics = {},
+) {
   const results = await mapWithConcurrency(
     sources,
     SOURCE_CONCURRENCY,
-    (source) => fetchItemsForSource(source, now),
+    (source) => fetchItemsForSource(source, now, crawlState, metrics),
   );
+  const allItems = results.flatMap((result) => result.items);
+  const dedupedItems = dedupeItems(allItems);
+  if (metrics.collection) {
+    metrics.collection.sourceCount = sources.length;
+    metrics.collection.feedItemsCollected = allItems.length;
+    metrics.collection.dedupedFeedItems = dedupedItems.length;
+    metrics.collection.sourceFallbacks = results.filter(
+      (result) => result.sourceResult.fallbackFrom,
+    ).length;
+    metrics.collection.skippedSources = results.filter(
+      (result) => result.sourceResult.skipped,
+    ).length;
+  }
 
   return {
-    items: dedupeItems(results.flatMap((result) => result.items)),
+    items: dedupedItems,
     sourceResults: results.map((result) => result.sourceResult),
   };
 }
