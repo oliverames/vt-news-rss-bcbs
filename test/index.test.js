@@ -1,9 +1,13 @@
 import assert from "node:assert/strict";
+import { mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import test from "node:test";
 import {
   buildJsonSummary,
   buildRss,
   DEFAULT_SOURCES,
+  generateFeed,
   cleanStorySnippet,
   buildSourcesFromEnv,
   buildSnippet,
@@ -30,6 +34,7 @@ import {
   collectFeedItems,
   enrichAndFilterItems,
   filterSourceItemsByDateWindow,
+  isObituaryItem,
   isSourceWindowClosed,
   htmlToArticleText,
   readResponseTextWithLimit,
@@ -734,6 +739,58 @@ test("mergeWithArchive keeps stories that left their source feeds", () => {
   assert.equal(shared.summary, "fresh");
 });
 
+test("generateFeed drops obituaries loaded from the archive", async () => {
+  const workdir = await mkdtemp(path.join(tmpdir(), "vt-news-archive-obit-"));
+  const rssOutputPath = path.join(workdir, "feed.rss");
+  const jsonOutputPath = path.join(workdir, "feed.json");
+  const auditJsonOutputPath = path.join(workdir, "feed-audit.json");
+  await writeFile(
+    auditJsonOutputPath,
+    JSON.stringify({
+      version: "https://jsonfeed.org/version/1.1",
+      generatedAt: "2026-06-16T16:10:08.282Z",
+      sources: [],
+      items: [
+        {
+          title: "David Jon Bursey, 77, of Monkton",
+          link: "https://www.addisonindependent.com/2026/06/16/david-jon-bursey-77-of-monkton/",
+          guid: "obit-1",
+          pubDate: "2026-06-16T16:10:08.000Z",
+          sourceName: "Addison Independent",
+          matchedTerms: ["UVM Health"],
+          summary: "This article is an obituary for David Jon Bursey.",
+          content_text:
+            "This article is an obituary for David Jon Bursey, who passed away at UVM Medical Center.",
+        },
+        {
+          title: "UVM Health announces new primary care clinic",
+          link: "https://example.com/uvm-health-primary-care",
+          guid: "story-1",
+          pubDate: "2026-06-16T15:10:08.000Z",
+          sourceName: "Example",
+          matchedTerms: ["UVM Health"],
+          summary: "UVM Health announced a new primary care clinic.",
+          relevant: true,
+        },
+      ],
+    }),
+  );
+
+  await generateFeed({
+    sources: [],
+    now: new Date("2026-06-16T16:30:00Z"),
+    rssOutputPath,
+    jsonOutputPath,
+    auditJsonOutputPath,
+  });
+
+  const output = JSON.parse(await readFile(auditJsonOutputPath, "utf8"));
+  assert.deepEqual(
+    output.items.map((item) => item.title),
+    ["UVM Health announces new primary care clinic"],
+  );
+});
+
 test("mergeWithArchive drops future-dated stories beyond clock skew", () => {
   const now = new Date("2026-06-12T12:00:00Z");
   const merged = mergeWithArchive(
@@ -827,6 +884,86 @@ test("filterSourceItemsByDateWindow enforces backfill boundaries", () => {
   );
 });
 
+test("isObituaryItem catches source categories, title/path signals, and obituary prose", () => {
+  const items = [
+    {
+      title: "David Jon Bursey, 77, of Monkton",
+      link: "https://www.addisonindependent.com/2026/06/16/david-jon-bursey-77-of-monkton/",
+      sourceCategories: "Obituaries",
+      description:
+        "MONKTON — David Jon Bursey, 77, passed away Thursday, June 11, 2026, at University of Vermont Medical Center in Burlington.",
+    },
+    {
+      title: "Obituary: Dieter Gump, 1933-2026",
+      link: "https://www.sevendaysvt.com/life-lines/obituaries/obituary-dieter-gump-1933-2026/",
+      description: "Accomplished research physician and professor.",
+    },
+    {
+      title: "Michael Ray Jensen, 54, of Brandon",
+      link: "https://www.example.com/story",
+      description:
+        "BRANDON — Michael Ray Jensen, 54, passed away Wednesday, June 3, 2026, at Dartmouth Hitchcock Medical Center.",
+    },
+  ];
+
+  for (const item of items) {
+    assert.equal(isObituaryItem(item), true, `${item.title} should be an obituary`);
+  }
+});
+
+test("isObituaryItem avoids general mortality and policy stories", () => {
+  assert.equal(
+    isObituaryItem({
+      title: "Hospital leaders discuss overdose death prevention",
+      link: "https://example.com/news/overdose-prevention/",
+      sourceCategories: "Health News",
+      description:
+        "Officials discussed new public health funding after overdose deaths rose statewide.",
+    }),
+    false,
+  );
+});
+
+test("collectFeedItems excludes obituary feed entries", async () => {
+  const xml = `<?xml version="1.0"?>
+    <rss version="2.0">
+      <channel>
+        <item>
+          <title>David Jon Bursey, 77, of Monkton</title>
+          <link>https://example.com/2026/06/16/david-jon-bursey-77-of-monkton/</link>
+          <guid>obit-1</guid>
+          <pubDate>Tue, 16 Jun 2026 16:10:08 GMT</pubDate>
+          <category><![CDATA[Obituaries]]></category>
+          <description><![CDATA[Passed away at University of Vermont Medical Center.]]></description>
+        </item>
+        <item>
+          <title>UVM Health announces new primary care clinic</title>
+          <link>https://example.com/2026/06/16/uvm-health-primary-care/</link>
+          <guid>story-1</guid>
+          <pubDate>Tue, 16 Jun 2026 15:10:08 GMT</pubDate>
+          <category><![CDATA[Health Care]]></category>
+          <description><![CDATA[The clinic expands access for patients.]]></description>
+        </item>
+      </channel>
+    </rss>`;
+  const source = {
+    name: "Inline RSS",
+    homepage: "https://example.com/",
+    feedUrl: `data:application/rss+xml,${encodeURIComponent(xml)}`,
+  };
+
+  const { items, sourceResults } = await collectFeedItems(
+    [source],
+    new Date("2026-06-16T16:30:00Z"),
+  );
+
+  assert.deepEqual(
+    items.map((item) => item.title),
+    ["UVM Health announces new primary care clinic"],
+  );
+  assert.equal(sourceResults[0].itemCount, 1);
+});
+
 test("parseFeedItems parses RSS items", () => {
   const xml = `<?xml version="1.0"?>
     <rss version="2.0">
@@ -836,6 +973,7 @@ test("parseFeedItems parses RSS items", () => {
           <link>/story</link>
           <guid>story-1</guid>
           <pubDate>Tue, 12 May 2026 12:00:00 GMT</pubDate>
+          <category><![CDATA[Health Care]]></category>
           <description><![CDATA[Regulators received the filing.]]></description>
         </item>
       </channel>
@@ -854,6 +992,7 @@ test("parseFeedItems parses RSS items", () => {
   );
   assert.equal(items[0].sourceName, "Example");
   assert.equal(items[0].description, "Regulators received the filing.");
+  assert.equal(items[0].sourceCategories, "Health Care");
 });
 
 test("parseFeedItems parses Atom entries", () => {

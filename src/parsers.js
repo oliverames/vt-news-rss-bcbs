@@ -59,6 +59,13 @@ export function parseFeedItems(feedXml, source) {
         "content\\:encoded",
       ]);
       const description = decodeFeedText(descriptionHtml);
+      const sourceCategories = cleanText(
+        $item
+          .find("category")
+          .map((__, category) => $(category).text())
+          .get()
+          .join(" "),
+      );
       const pubDateRaw = getFirstText($item, [
         "pubDate",
         "published",
@@ -86,6 +93,7 @@ export function parseFeedItems(feedXml, source) {
         guid,
         pubDate,
         description,
+        sourceCategories,
         feedContent: cleanText(
           [title, description].filter(Boolean).join(" "),
         ),
@@ -105,6 +113,16 @@ export function parseFeedItems(feedXml, source) {
       const link = resolveUrl(href, source.homepage || source.feedUrl);
       const contentHtml = getFirstHtml($item, ["content", "summary"]);
       const description = decodeFeedText(contentHtml);
+      const sourceCategories = cleanText(
+        $item
+          .find("category")
+          .map((__, category) => {
+            const $category = $(category);
+            return $category.attr("term") || $category.text();
+          })
+          .get()
+          .join(" "),
+      );
       const pubDate = parseDate(
         getFirstText($item, ["published", "updated", "dc\\:date"]),
       );
@@ -128,6 +146,7 @@ export function parseFeedItems(feedXml, source) {
         guid,
         pubDate,
         description,
+        sourceCategories,
         feedContent: cleanText([title, description].filter(Boolean).join(" ")),
       };
     })

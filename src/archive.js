@@ -7,6 +7,7 @@ import {
   parseDate,
   parsePositiveInteger,
 } from "./utils.js";
+import { isObituaryItem } from "./filters.js";
 import {
   canonicalizeMatchedTerms,
   categorizeTerms,
@@ -37,6 +38,9 @@ export async function loadPreviousState(...jsonOutputPaths) {
       if (parsed && Array.isArray(parsed.items)) {
         for (const item of parsed.items) {
           if (!item.link) {
+            continue;
+          }
+          if (isObituaryItem(item)) {
             continue;
           }
           const matchedTerms = canonicalizeMatchedTerms(item.matchedTerms || []);

@@ -96,6 +96,7 @@ The relevance gate then removes common false positives:
 | False positive pattern | How it is handled |
 | --- | --- |
 | Crime, crash, and incident briefs | Hospital transport language is stripped before hospital matching |
+| Obituaries | RSS categories, obituary URLs/titles, and narrow obituary prose are excluded before matching and archive merge |
 | Broad national health lifestyle stories | Rejected unless they include payer, policy, coverage, or regional signals |
 | Out-of-region outbreaks | Rejected unless they include policy, payer, or regional relevance |
 | Infrastructure or grant stories | Rejected when health care is only an incidental phrase |

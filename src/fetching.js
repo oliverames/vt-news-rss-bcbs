@@ -6,6 +6,7 @@ import {
   parsePositiveInteger,
   sleep,
 } from "./utils.js";
+import { isObituaryItem } from "./filters.js";
 import {
   mergeFacebookPagePostItem,
   parseBcbsAssociationNewsItems,
@@ -237,7 +238,8 @@ export function filterSourceItemsByDateWindow(items, source) {
 
 function applySourceItemBounds(items, source) {
   const datedItems = filterSourceItemsByDateWindow(items, source);
-  return source.maxItems ? datedItems.slice(0, source.maxItems) : datedItems;
+  const filteredItems = datedItems.filter((item) => !isObituaryItem(item));
+  return source.maxItems ? filteredItems.slice(0, source.maxItems) : filteredItems;
 }
 
 // A bounded source (e.g. the 2026 backfill search) whose maxPubDate has
