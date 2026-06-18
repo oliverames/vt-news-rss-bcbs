@@ -1,3 +1,15 @@
+## 2026-06-18 - Expand Vermont local source coverage
+
+**What changed**: Expanded `DEFAULT_SOURCES` from 39 to 81 rows by adding the missing Vermont Press Association and community-news outlets requested in the coverage audit. Used direct RSS or outlet search feeds where available, including Caledonian-Record, Barton Chronicle, Journal Opinion, Brandon Reporter, Charlotte News, County Courier, Hardwick Gazette, Hinesburg Record, Vermont Journal/The Shopper, The Bridge, The Islander, White River Valley Herald, Times Ink, Valley Reporter, Deerfield Valley News, Vermont Standard, Community News Service, Chester Telegraph, Newport Dispatch, Town Meeting TV, and iBrattleboro. Added site-scoped Google News sources for outlets with no reliable feed or stale/no-content web surfaces, including The Commons, The World, North Avenue News, Lakeside News & The Rutland Sun, Eagle Times, Vermont News Guide, Addison Eagle, Northfield News, Lakes Region Free Press, Mountain Gazette, Waterbury Roundabout, Cabot Chronicle, and East Montpelier Signpost.
+
+**Decisions made**: Kept Vermont Journal and The Shopper as one source because the publisher exposes one combined feed. Used the Springfield Vermont News Blogspot RSS feed for the Springfield Reporter surface because the current Reporter web presence is subscription/Facebook oriented. Avoided directly fetching the Northfield News domain after the probe returned unrelated spam HTML, and covered it only through a site-scoped Google News search. Added the new TownNews-style sources to the shared `townnews-search` throttle group to preserve politeness and avoid recurring 429s.
+
+**Left off at**: `npm test` passed with 61 tests, `node --check src/*.js test/index.test.js` passed, and a live-seeded scratch generate to `/tmp/vt-news-expanded-sources.XAONwM` with `RSS_ARTICLE_SCAN=false` fetched 81 source rows with zero failures. Only the closed Jan. 1-June 13 backfill source skipped as designed; the run wrote 318 audit items and 223 visible public items, and `xmllint --noout` validated the generated RSS.
+
+**Open questions**: Some Google-only sources returned zero current search items. That is expected for stale, static, or lightly indexed local outlets, but the source rows are now present so any future Google-indexed health/Blue Cross results can be collected.
+
+---
+
 ## 2026-06-16 - Harden crawling, caching, and deploy mode
 
 **What changed**: Added persisted audit-only crawl state with per-source feed validators, primary-feed cooldowns, article-cache entries, and crawl metrics. Primary feeds with fallbacks now cool down after repeated 403/429/other failures instead of hammering a known-bad URL every run. Fetches now preserve `ETag` and `Last-Modified` headers and can handle 304 not-modified responses. Article enrichment now uses selective scan modes, skips no-signal article fetches, caches negative no-match decisions for a bounded TTL, and has domain-specific article text selectors for priority outlets. The publish workflow now distinguishes full feed-generation pushes from static-only site/docs pushes so static reader changes can deploy without recrawling every source.

@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <code>39 default sources</code> &bull;
+  <code>81 default sources</code> &bull;
   <code>RSS + JSON Feed</code> &bull;
   <code>hourly GitHub Pages refresh</code>
 </p>
@@ -65,7 +65,7 @@ The default source list combines Vermont outlets, official Blue Cross and health
 
 | Category | Coverage | Notes |
 | --- | --- | --- |
-| Vermont news outlets | WCAX, VTDigger, Vermont Public, Seven Days, MyNBC5, MyChamplainValley, Addison Independent, Valley News, and more | RSS or search feeds, depending on what each outlet exposes; blocked primary feeds can fall back to site-scoped Google News |
+| Vermont news outlets | WCAX, VTDigger, Vermont Public, Seven Days, MyNBC5, MyChamplainValley, Addison Independent, Valley News, Caledonian-Record, The Chronicle/Barton Chronicle, The Commons, The Bridge, Community News Service, Waterbury Roundabout, and more | RSS, outlet search feeds, or site-scoped Google News depending on what each outlet exposes; blocked primary feeds can fall back to site-scoped Google News |
 | Official pages | BlueCrossVT Newsroom, BlueCrossVT Be Well VT Blog, UVM Health Newsroom, BCBSA Association News | Public listing pages are parsed because normal RSS feeds are not available |
 | Search feeds | Blue Cross VT brand search, Jan. 1, 2026 Blue Cross VT backfill, Vermont health search, Kristina source search, health insurance search, trade search, national policy search, outlet fallbacks | Search feeds are capped and bounded to avoid turning the reader into generic health news |
 | National health feeds | ABC Health, CBS Health, CNN Health, STAT, Fierce Healthcare, Healthcare Dive, KFF Health News, The Hill, NPR Health | Broad national items are filtered unless they have a payer, policy, coverage, or regional angle |
