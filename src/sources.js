@@ -108,6 +108,14 @@ function localOutletFallbackFeed(site, days = 30) {
   };
 }
 
+function localOutletSearchSource(name, homepage, site, days = 30) {
+  return {
+    name,
+    homepage,
+    ...localOutletFallbackFeed(site, days),
+  };
+}
+
 // Once maxPubDate passes, collectFeedItems skips this source automatically
 // (see isSourceWindowClosed); its items persist via the archive. The
 // definition is kept for provenance and can be deleted at leisure.
@@ -293,6 +301,252 @@ export const DEFAULT_SOURCES = [
       "https://www.samessenger.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
     fallbackFeed: localOutletFallbackFeed("samessenger.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
+  },
+  {
+    name: "Caledonian-Record",
+    homepage: "https://www.caledonianrecord.com/",
+    feedUrl:
+      "https://www.caledonianrecord.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("caledonianrecord.com"),
+    ...TOWNNEWS_SEARCH_THROTTLE,
+  },
+  {
+    name: "The Chronicle / Barton Chronicle",
+    homepage: "https://www.bartonchronicle.com/",
+    feedUrl: "https://www.bartonchronicle.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("bartonchronicle.com"),
+  },
+  localOutletSearchSource(
+    "The Commons",
+    "https://www.commonsnews.org/",
+    "commonsnews.org",
+  ),
+  localOutletSearchSource("The World", "https://www.vt-world.com/", "vt-world.com"),
+  {
+    name: "Journal Opinion",
+    homepage: "https://www.jonews.com/",
+    feedUrl: "https://www.jonews.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("jonews.com"),
+  },
+  {
+    name: "Brandon Reporter",
+    homepage: "https://brandonreporter.com/",
+    feedUrl: "https://brandonreporter.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("brandonreporter.com"),
+  },
+  localOutletSearchSource(
+    "North Avenue News",
+    "https://www.northavenuenews.com/",
+    "northavenuenews.com",
+  ),
+  localOutletSearchSource(
+    "Lakeside News & The Rutland Sun",
+    "https://www.lakesidenews.org/",
+    "lakesidenews.org",
+  ),
+  {
+    name: "Charlotte News",
+    homepage: "https://www.charlottenewsvt.org/",
+    feedUrl: "https://www.charlottenewsvt.org/feed/",
+    fallbackFeed: localOutletFallbackFeed("charlottenewsvt.org"),
+  },
+  localOutletSearchSource("Eagle Times", "https://www.eagletimes.com/", "eagletimes.com"),
+  {
+    name: "Colchester Sun",
+    homepage: "https://www.colchestersun.com/",
+    feedUrl:
+      "https://www.colchestersun.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("colchestersun.com"),
+    ...TOWNNEWS_SEARCH_THROTTLE,
+  },
+  {
+    name: "North Star Monthly",
+    homepage: "https://www.northstarmonthly.com/",
+    feedUrl:
+      "https://www.northstarmonthly.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("northstarmonthly.com"),
+    ...TOWNNEWS_SEARCH_THROTTLE,
+  },
+  {
+    name: "County Courier",
+    homepage: "https://countycourier.net/",
+    feedUrl: "https://countycourier.net/feed/",
+    fallbackFeed: localOutletFallbackFeed("countycourier.net"),
+  },
+  {
+    name: "Essex Reporter",
+    homepage: "https://www.essexreporter.com/",
+    feedUrl:
+      "https://www.essexreporter.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("essexreporter.com"),
+    ...TOWNNEWS_SEARCH_THROTTLE,
+  },
+  {
+    name: "The Hardwick Gazette",
+    homepage: "https://hardwickgazette.com/",
+    feedUrl: "https://hardwickgazette.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("hardwickgazette.com"),
+  },
+  {
+    name: "Hinesburg Record",
+    homepage: "https://www.hinesburgrecord.org/",
+    feedUrl: "https://www.hinesburgrecord.org/feed/",
+    fallbackFeed: localOutletFallbackFeed("hinesburgrecord.org"),
+  },
+  {
+    name: "Vermont Journal & The Shopper",
+    homepage: "https://www.vermontjournal.com/",
+    feedUrl: "https://www.vermontjournal.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("vermontjournal.com"),
+  },
+  {
+    name: "Manchester Journal",
+    homepage: "https://www.manchesterjournal.com/",
+    feedUrl:
+      "https://www.manchesterjournal.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("manchesterjournal.com"),
+    ...TOWNNEWS_SEARCH_THROTTLE,
+  },
+  localOutletSearchSource(
+    "Vermont News Guide",
+    "https://www.vtnewsguide.com/",
+    "vtnewsguide.com",
+  ),
+  localOutletSearchSource(
+    "Addison Eagle",
+    "https://www.suncommunitynews.com/",
+    "suncommunitynews.com",
+  ),
+  {
+    name: "Milton Independent",
+    homepage: "https://www.miltonindependent.com/",
+    feedUrl:
+      "https://www.miltonindependent.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("miltonindependent.com"),
+    ...TOWNNEWS_SEARCH_THROTTLE,
+  },
+  {
+    name: "The Bridge",
+    homepage: "https://montpelierbridge.org/",
+    feedUrl: "https://montpelierbridge.org/feed/",
+    fallbackFeed: localOutletFallbackFeed("montpelierbridge.org"),
+  },
+  localOutletSearchSource(
+    "Northfield News",
+    "https://www.thenorthfieldnews.com/",
+    "thenorthfieldnews.com",
+  ),
+  {
+    name: "The Islander",
+    homepage: "https://www.theislandernewspaper.com/",
+    feedUrl: "https://www.theislandernewspaper.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("theislandernewspaper.com"),
+  },
+  localOutletSearchSource(
+    "Lakes Region Free Press",
+    "https://nyvtmedia.com/",
+    "nyvtmedia.com",
+  ),
+  {
+    name: "White River Valley Herald",
+    homepage: "https://www.ourherald.com/",
+    feedUrl: "https://www.ourherald.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("ourherald.com"),
+  },
+  {
+    name: "The Times Ink",
+    homepage: "https://timesinkvt.org/",
+    feedUrl: "https://timesinkvt.org/feed/",
+    fallbackFeed: localOutletFallbackFeed("timesinkvt.org"),
+  },
+  {
+    name: "Springfield Reporter / Springfield Vermont News",
+    homepage: "https://springfieldvt.blogspot.com/p/springfield-reporter.html",
+    feedUrl: "https://springfieldvt.blogspot.com/feeds/posts/default?alt=rss",
+    fallbackFeed: localOutletFallbackFeed("springfieldvt.blogspot.com"),
+  },
+  localOutletSearchSource(
+    "Mountain Gazette",
+    "https://www.mtngazettevt.com/",
+    "mtngazettevt.com",
+  ),
+  {
+    name: "Valley Reporter",
+    homepage: "https://www.valleyreporter.com/",
+    feedUrl:
+      "https://www.valleyreporter.com/index.php/news?format=feed&type=rss",
+    fallbackFeed: localOutletFallbackFeed("valleyreporter.com"),
+  },
+  {
+    name: "Williston Observer",
+    homepage: "https://www.willistonobserver.com/",
+    feedUrl:
+      "https://www.willistonobserver.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
+    fallbackFeed: localOutletFallbackFeed("willistonobserver.com"),
+    ...TOWNNEWS_SEARCH_THROTTLE,
+  },
+  {
+    name: "Deerfield Valley News",
+    homepage: "https://www.dvalnews.com/",
+    feedUrl: "https://www.dvalnews.com/rss.xml",
+    fallbackFeed: localOutletFallbackFeed("dvalnews.com"),
+  },
+  {
+    name: "Vermont Standard",
+    homepage: "https://thevermontstandard.com/",
+    feedUrl: "https://thevermontstandard.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("thevermontstandard.com"),
+  },
+  {
+    name: "Community News Service",
+    homepage: "https://vtcommunitynews.org/",
+    feedUrl: "https://vtcommunitynews.org/feed/",
+    fallbackFeed: localOutletFallbackFeed("vtcommunitynews.org"),
+  },
+  localOutletSearchSource(
+    "Waterbury Roundabout",
+    "https://www.waterburyroundabout.org/",
+    "waterburyroundabout.org",
+  ),
+  {
+    name: "Chester Telegraph",
+    homepage: "https://www.chestertelegraph.org/",
+    feedUrl: "https://www.chestertelegraph.org/feed/",
+    fallbackFeed: localOutletFallbackFeed("chestertelegraph.org"),
+  },
+  {
+    name: "Newport Dispatch",
+    homepage: "https://www.newportdispatch.com/",
+    feedUrl: "https://www.newportdispatch.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("newportdispatch.com"),
+  },
+  localOutletSearchSource(
+    "Cabot Chronicle",
+    "https://www.cabotchronicle.org/",
+    "cabotchronicle.org",
+  ),
+  localOutletSearchSource(
+    "East Montpelier Signpost",
+    "https://emsignpost.com/",
+    "emsignpost.com",
+  ),
+  {
+    name: "Winooski News",
+    homepage: "https://thewinooskinews.com/",
+    feedUrl: "https://vtcommunitynews.org/category/winooski/feed/",
+    fallbackFeed: localOutletFallbackFeed("thewinooskinews.com"),
+  },
+  {
+    name: "Town Meeting TV",
+    homepage: "https://www.cctv.org/",
+    feedUrl: "https://www.cctv.org/rss.xml",
+    fallbackFeed: localOutletFallbackFeed("cctv.org"),
+  },
+  {
+    name: "iBrattleboro",
+    homepage: "https://www.ibrattleboro.com/",
+    feedUrl: "https://www.ibrattleboro.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("ibrattleboro.com"),
   },
   {
     name: "Google News Search",
