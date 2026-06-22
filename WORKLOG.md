@@ -1,3 +1,34 @@
+## 2026-06-22 - Bump upload-pages-artifact to v5; fix sibling bcbs-rss Pages
+
+**What changed**: Bumped `actions/upload-pages-artifact` from `@v4`
+(SHA `7b1f4a76`) to `@v5.0.0` (SHA `fc324d35`) in `publish-feed.yml`. v5
+updates the bundled `actions/upload-artifact` to v7, clearing the Node 20
+deprecation warning that was annotating every run. Most of the session was
+spent on the separate `oliverames/bcbs-rss` repo (the BCBS Be Well VT blog
+RSS, a sibling project to this news monitor), whose weekly "Publish RSS Site"
+run had been failing since 2026-06-08.
+
+**Decisions made**: Root cause on bcbs-rss was not a workflow bug: it is a
+private repo on a Free GitHub plan, and GitHub Pages requires a paid plan for
+private repos (the `POST /pages` API returned "Your current plan does not
+support GitHub Pages for this repository"). Chose to make bcbs-rss public
+(Oliver's call) rather than upgrade to Pro or retire the project, matching this
+repo's already-public posture. Pinned to the immutable v5 commit SHA with a
+`# v5.0.0` comment rather than the floating `@v5` tag, consistent with this
+repo's existing SHA-pin style.
+
+**Left off at**: This repo: run #318 (push of 5e5ba4f) completed `success`
+with 0 annotations on both jobs; full generation ran end to end in 3m24s, so
+v5 is compatible with `deploy-pages@v5`. bcbs-rss: made public, Pages enabled
+with `build_type: workflow`, same v5 bump committed (4e0748b); runs #25 and #26
+both green with 0 annotations; site live at https://oliverames.github.io/bcbs-rss/.
+
+**Open questions**: None. bcbs-rss is now publicly visible (code + history);
+no hardcoded secrets were found in its workflow, but a deeper history scan was
+not performed this session.
+
+---
+
 ## 2026-06-18 - Expand Vermont local source coverage
 
 **What changed**: Expanded `DEFAULT_SOURCES` from 39 to 81 rows by adding the missing Vermont Press Association and community-news outlets requested in the coverage audit. Used direct RSS or outlet search feeds where available, including Caledonian-Record, Barton Chronicle, Journal Opinion, Brandon Reporter, Charlotte News, County Courier, Hardwick Gazette, Hinesburg Record, Vermont Journal/The Shopper, The Bridge, The Islander, White River Valley Herald, Times Ink, Valley Reporter, Deerfield Valley News, Vermont Standard, Community News Service, Chester Telegraph, Newport Dispatch, Town Meeting TV, and iBrattleboro. Added site-scoped Google News sources for outlets with no reliable feed or stale/no-content web surfaces, including The Commons, The World, North Avenue News, Lakeside News & The Rutland Sun, Eagle Times, Vermont News Guide, Addison Eagle, Northfield News, Lakes Region Free Press, Mountain Gazette, Waterbury Roundabout, Cabot Chronicle, and East Montpelier Signpost.
