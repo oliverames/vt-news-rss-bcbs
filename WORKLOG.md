@@ -23,9 +23,11 @@ v5 is compatible with `deploy-pages@v5`. bcbs-rss: made public, Pages enabled
 with `build_type: workflow`, same v5 bump committed (4e0748b); runs #25 and #26
 both green with 0 annotations; site live at https://oliverames.github.io/bcbs-rss/.
 
-**Open questions**: None. bcbs-rss is now publicly visible (code + history);
-no hardcoded secrets were found in its workflow, but a deeper history scan was
-not performed this session.
+**Open questions**: None. bcbs-rss is now publicly visible (code + history).
+Ran `gitleaks detect` over its full 16-commit history: 1 finding, a confirmed
+false positive (an `hkey=` query param in a third-party URL inside published
+blog content in the generated `site/feed.rss`, which is now gitignored). No
+real secrets exposed.
 
 ---
 
