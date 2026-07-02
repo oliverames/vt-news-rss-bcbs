@@ -5,6 +5,14 @@ export function parsePositiveInteger(value, fallback) {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
 }
 
+// Like parsePositiveInteger but accepts 0, for settings where zero is a
+// meaningful "off" value (e.g. RSS_DOMAIN_DELAY_MS=0 disables the
+// politeness delay for local runs).
+export function parseNonNegativeInteger(value, fallback) {
+  const parsed = Number.parseInt(value ?? "", 10);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
+}
+
 export function cleanText(value = "") {
   return String(value)
     .replace(/\u00a0/g, " ")

@@ -45,6 +45,7 @@ export async function triggerWebhooks(failedSources) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: message }),
+        signal: AbortSignal.timeout(10000),
       });
       console.log("Successfully sent Slack alert.");
     } catch (err) {
@@ -58,6 +59,7 @@ export async function triggerWebhooks(failedSources) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: message }),
+        signal: AbortSignal.timeout(10000),
       });
       console.log("Successfully sent Discord alert.");
     } catch (err) {

@@ -2402,3 +2402,241 @@ test("enrichAndFilterItems skips network fetches on cache hits", async () => {
     process.env.RSS_ARTICLE_SCAN = originalScan;
   }
 });
+
+test("fetchText retries 429 responses honoring Retry-After in both forms", async () => {
+  let hits = 0;
+  const server = createServer((request, response) => {
+    hits += 1;
+    if (hits === 1) {
+      response.writeHead(429, { "retry-after": "1" });
+      response.end("slow down");
+      return;
+    }
+    if (hits === 2) {
+      // HTTP-date form: one second in the future.
+      response.writeHead(429, {
+        "retry-after": new Date(Date.now() + 1000).toUTCString(),
+      });
+      response.end("slow down");
+      return;
+    }
+    response.writeHead(200, { "content-type": "text/plain" });
+    response.end("recovered");
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+
+  try {
+    const { port } = server.address();
+    const result = await fetchText(
+      `http://127.0.0.1:${port}/feed.xml`,
+      "text/plain",
+    );
+    assert.equal(result.text, "recovered");
+    assert.equal(hits, 3);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test("fetchText retries HTTP 408 but not other 4xx errors", async () => {
+  let timeoutHits = 0;
+  let forbiddenHits = 0;
+  const server = createServer((request, response) => {
+    if (request.url.includes("timeout")) {
+      timeoutHits += 1;
+      if (timeoutHits === 1) {
+        response.writeHead(408);
+        response.end();
+        return;
+      }
+      response.writeHead(200, { "content-type": "text/plain" });
+      response.end("second try");
+      return;
+    }
+    forbiddenHits += 1;
+    response.writeHead(403);
+    response.end();
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+
+  try {
+    const { port } = server.address();
+    const recovered = await fetchText(
+      `http://127.0.0.1:${port}/timeout`,
+      "text/plain",
+    );
+    assert.equal(recovered.text, "second try");
+    assert.equal(timeoutHits, 2);
+
+    await assert.rejects(
+      () => fetchText(`http://127.0.0.1:${port}/forbidden`, "text/plain"),
+      (error) => error.status === 403,
+    );
+    assert.equal(forbiddenHits, 1);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test("readResponseTextWithLimit decodes non-UTF-8 charsets", async () => {
+  // "Montpelier’s" with a Windows-1252 right single quote (0x92).
+  const win1252Body = Buffer.from("Montpelier\x92s premiums", "latin1");
+
+  const declared = new Response(win1252Body, {
+    headers: { "content-type": "text/xml; charset=windows-1252" },
+  });
+  assert.equal(
+    await readResponseTextWithLimit(declared),
+    "Montpelier’s premiums",
+  );
+
+  // No header charset: the XML prolog declaration is honored instead.
+  const prologBody = Buffer.from(
+    '<?xml version="1.0" encoding="ISO-8859-1"?><rss><channel><title>Qu\xe9bec health</title></channel></rss>',
+    "latin1",
+  );
+  const sniffed = new Response(prologBody, {
+    headers: { "content-type": "text/xml" },
+  });
+  assert.match(await readResponseTextWithLimit(sniffed), /Québec health/);
+
+  // Plain UTF-8 stays the default.
+  const utf8 = new Response("Café stays café");
+  assert.equal(await readResponseTextWithLimit(utf8), "Café stays café");
+});
+
+test("enrichAndFilterItems expires error-based no-match verdicts quickly", async () => {
+  const server = createServer((request, response) => {
+    if (request.url.includes("broken")) {
+      response.writeHead(404);
+      response.end();
+      return;
+    }
+    response.writeHead(200, { "content-type": "text/html" });
+    response.end("<html><body><article><p>Weather and local sports.</p></article></body></html>");
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "true";
+  try {
+    const { port } = server.address();
+    const now = new Date("2026-07-02T12:00:00Z");
+    const articleCache = {};
+    const items = [
+      {
+        sourceName: "Outlet",
+        title: "Story behind a broken page",
+        link: `http://127.0.0.1:${port}/broken`,
+        feedContent: "Announcement",
+        requireBrandMatch: true,
+      },
+      {
+        sourceName: "Outlet",
+        title: "Story that fetched fine",
+        link: `http://127.0.0.1:${port}/ok`,
+        feedContent: "Announcement",
+        requireBrandMatch: true,
+      },
+    ];
+
+    const filtered = await enrichAndFilterItems(items, new Map(), {
+      articleCache,
+      now,
+    });
+    assert.equal(filtered.length, 0);
+
+    const dayMs = 24 * 60 * 60 * 1000;
+    const errorEntry = articleCache[`http://127.0.0.1:${port}/broken`];
+    assert.ok(errorEntry.articleError, "error entry records the fetch failure");
+    assert.ok(
+      new Date(errorEntry.expiresAt).valueOf() - now.valueOf() <= dayMs,
+      "fetch-error no-match entries expire within a day",
+    );
+
+    const cleanEntry = articleCache[`http://127.0.0.1:${port}/ok`];
+    assert.equal(cleanEntry.articleError, "");
+    assert.ok(
+      new Date(cleanEntry.expiresAt).valueOf() - now.valueOf() > dayMs,
+      "clean no-match entries keep the long negative-cache TTL",
+    );
+  } finally {
+    process.env.RSS_ARTICLE_SCAN = originalScan;
+    await new Promise((resolve) => server.close(resolve));
+  }
+});
+
+test("parseSummaryResponse tolerates markdown-fenced JSON", () => {
+  const batch = [{ title: "Rate filing story" }];
+  const fenced = [
+    "```json",
+    '[{"id": 1, "summary": "Regulators review the 2027 rate filing.", "reason": "Premiums affect members", "relevant": true}]',
+    "```",
+  ].join("\n");
+
+  const applied = parseSummaryResponse(fenced, batch);
+  assert.equal(applied, 1);
+  assert.equal(batch[0].summary, "Regulators review the 2027 rate filing.");
+  assert.equal(batch[0].relevant, true);
+});
+
+test("buildRss omits empty source elements and advertises a ttl", () => {
+  const rss = buildRss(
+    [
+      {
+        sourceName: "Archived Outlet",
+        sourceFeedUrl: "",
+        title: "Old story that lost its feed URL",
+        link: "https://example.com/old-story",
+        guid: "https://example.com/old-story",
+        pubDate: new Date("2026-06-01T12:00:00Z"),
+        matchedTerms: ["BCBSVT"],
+        snippet: "BCBSVT mention.",
+      },
+    ],
+    { now: new Date("2026-07-02T12:00:00Z"), feedUrl: "https://example.com/feed.rss" },
+  );
+
+  assert.ok(rss.includes("<ttl>60</ttl>"));
+  assert.ok(!rss.includes("<source url=\"\">"));
+  assert.ok(rss.includes("<link>https://example.com/old-story</link>"));
+});
+
+test("enrichAndFilterItems prunes expired cache entries unless validators remain useful", async () => {
+  const now = new Date("2026-07-02T12:00:00Z");
+  const hourMs = 60 * 60 * 1000;
+  const dayMs = 24 * hourMs;
+  const articleCache = {
+    "https://example.com/expired-plain": {
+      url: "https://example.com/expired-plain",
+      expiresAt: new Date(now.valueOf() - hourMs).toISOString(),
+      matchedTerms: [],
+      articleHeaders: {},
+    },
+    "https://example.com/expired-with-etag": {
+      url: "https://example.com/expired-with-etag",
+      expiresAt: new Date(now.valueOf() - hourMs).toISOString(),
+      matchedTerms: [],
+      articleHeaders: { etag: '"v1"', lastModified: "" },
+    },
+    "https://example.com/long-expired-with-etag": {
+      url: "https://example.com/long-expired-with-etag",
+      expiresAt: new Date(now.valueOf() - 20 * dayMs).toISOString(),
+      matchedTerms: [],
+      articleHeaders: { etag: '"v1"', lastModified: "" },
+    },
+    "https://example.com/still-fresh": {
+      url: "https://example.com/still-fresh",
+      expiresAt: new Date(now.valueOf() + dayMs).toISOString(),
+      matchedTerms: [],
+      articleHeaders: {},
+    },
+  };
+
+  await enrichAndFilterItems([], new Map(), { articleCache, now });
+
+  assert.deepEqual(Object.keys(articleCache).sort(), [
+    "https://example.com/expired-with-etag",
+    "https://example.com/still-fresh",
+  ]);
+});
