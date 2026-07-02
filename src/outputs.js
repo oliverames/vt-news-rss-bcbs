@@ -152,14 +152,17 @@ export function buildRss(items, options = {}) {
       const pubDate = item.pubDate
         ? `\n      <pubDate>${escapeXml(formatPubDate(item.pubDate))}</pubDate>`
         : "";
+      // <source> requires a url attribute; archived items can lose theirs.
+      const sourceTag = item.sourceFeedUrl
+        ? `\n      <source url="${escapeXml(item.sourceFeedUrl)}">${escapeXml(
+            item.sourceName,
+          )}</source>`
+        : "";
 
       return `    <item>
       <title>${escapeXml(`${item.sourceName}: ${item.title}`)}</title>
       <link>${escapeXml(item.link)}</link>
-      <guid isPermaLink="true">${escapeXml(item.guid || item.link)}</guid>${pubDate}
-      <source url="${escapeXml(item.sourceFeedUrl)}">${escapeXml(
-        item.sourceName,
-      )}</source>
+      <guid isPermaLink="true">${escapeXml(item.guid || item.link)}</guid>${pubDate}${sourceTag}
 ${categories}
       <description>${wrapCdata(itemDescription(item))}</description>
     </item>`;
@@ -175,6 +178,7 @@ ${categories}
     <description>Mentions of BCBSVT, Blue Cross VT, and Blue Cross and Blue Shield of Vermont from Vermont news outlets.</description>
     <language>en-us</language>
     <lastBuildDate>${escapeXml(formatPubDate(now))}</lastBuildDate>
+    <ttl>60</ttl>
     <generator>vt-news-rss-bcbs</generator>${atomLink}
 ${itemXml}
   </channel>
@@ -261,8 +265,11 @@ export async function writeOutput(
   await mkdir(path.dirname(rssOutputPath), { recursive: true });
   await writeFile(rssOutputPath, rss, "utf8");
   await writeFile(jsonOutputPath, `${JSON.stringify(jsonSummary, null, 2)}\n`);
+  // The audit JSON is the persistence layer, re-downloaded and re-uploaded
+  // every hourly run; compact serialization cuts megabytes off each cycle.
+  // Use jq to pretty-print when inspecting it by hand.
   await writeFile(
     auditJsonOutputPath,
-    `${JSON.stringify(auditJsonSummary, null, 2)}\n`,
+    `${JSON.stringify(auditJsonSummary)}\n`,
   );
 }

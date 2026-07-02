@@ -53,10 +53,25 @@ export function buildSummaryPrompt(batch) {
   ].join("\n");
 }
 
+// Gemini is asked for raw JSON (responseMimeType), but models occasionally
+// wrap it in markdown fences or lead-in prose anyway; salvage the array.
+function extractJsonArrayText(text) {
+  const trimmed = String(text ?? "").trim();
+  const withoutFences = trimmed
+    .replace(/^```(?:json)?\s*/i, "")
+    .replace(/\s*```$/, "");
+  const start = withoutFences.indexOf("[");
+  const end = withoutFences.lastIndexOf("]");
+  if (start === -1 || end < start) {
+    return withoutFences;
+  }
+  return withoutFences.slice(start, end + 1);
+}
+
 export function parseSummaryResponse(text, batch) {
   let parsed;
   try {
-    parsed = JSON.parse(text);
+    parsed = JSON.parse(extractJsonArrayText(text));
   } catch {
     return 0;
   }
