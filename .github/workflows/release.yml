@@ -1,12 +1,20 @@
-# Pushing a v* tag creates the matching GitHub release. Curated notes come
-# from .github/RELEASE_NOTES.md when present at the tagged commit; otherwise
-# GitHub auto-generates notes from the commit history.
+# Creates a GitHub release. Two entry points:
+#   - push a v* tag: releases that tag
+#   - workflow_dispatch with tag_name: creates the tag at the chosen ref and
+#     releases it (useful where the environment can't push tags directly)
+# Curated notes come from .github/RELEASE_NOTES.md when present at the
+# released commit; otherwise GitHub auto-generates notes.
 name: Release
 
 on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag to create and release (e.g. v1.1.0)"
+        required: true
 
 permissions:
   contents: write
@@ -25,17 +33,18 @@ jobs:
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG_NAME: ${{ inputs.tag_name || github.ref_name }}
         run: |
+          args=(--repo "$GITHUB_REPOSITORY" --title "$TAG_NAME")
           if [ -f .github/RELEASE_NOTES.md ]; then
-            gh release create "$GITHUB_REF_NAME" \
-              --repo "$GITHUB_REPOSITORY" \
-              --title "$GITHUB_REF_NAME" \
-              --notes-file .github/RELEASE_NOTES.md \
-              --verify-tag
+            args+=(--notes-file .github/RELEASE_NOTES.md)
           else
-            gh release create "$GITHUB_REF_NAME" \
-              --repo "$GITHUB_REPOSITORY" \
-              --title "$GITHUB_REF_NAME" \
-              --generate-notes \
-              --verify-tag
+            args+=(--generate-notes)
           fi
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            # The tag does not exist yet; create it at the dispatched commit.
+            args+=(--target "$GITHUB_SHA")
+          else
+            args+=(--verify-tag)
+          fi
+          gh release create "$TAG_NAME" "${args[@]}"
