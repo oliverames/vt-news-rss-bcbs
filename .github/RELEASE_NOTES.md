@@ -1,12 +1,12 @@
 # v1.1.0 — Reliability sweep
 
-A comprehensive review pass over the whole pipeline: crawler hardening, cache correctness, a much smaller persistence file, and small output/reader fixes. 68 tests (7 new), zero dependency vulnerabilities.
+A comprehensive review pass over the whole pipeline: crawler hardening, cache correctness, a much smaller persistence file, and small output/reader fixes. 70 tests (9 new), zero dependency vulnerabilities.
 
 ## Crawler & fetch layer
-- `Retry-After` handling now understands the HTTP-date form as well as delta-seconds.
-- In-run retry sleeps are capped at 15 seconds — a server asking to retry in an hour previously hung a fetch worker for that hour. Cross-run source cooldowns still honor the full requested duration.
+- `Retry-After` handling now understands the HTTP-date form as well as delta-seconds (only all-digit values parse as seconds, so ISO-date forms can't misread as a delta).
+- When a server requests a backoff longer than 15 seconds, the fetch fails fast instead of hanging a worker or retrying early against a rate-limiter; the cross-run source cooldown honors the requested duration, capped at 24 hours so a clock-skewed server can't park a feed for months.
 - HTTP 408 is retried like 429; other 4xx responses still fail fast.
-- Response bodies are decoded using the `Content-Type` charset or the document's own XML/HTML declaration instead of assuming UTF-8, fixing mojibake from outlets serving ISO-8859-1/Windows-1252.
+- Response bodies are decoded using the `Content-Type` charset or the document's own XML/HTML declaration instead of assuming UTF-8, fixing mojibake from outlets serving ISO-8859-1/Windows-1252. Bytes that validate as UTF-8 (or carry a BOM) always win, so a mislabeled header can't mangle correct UTF-8 content.
 - `RSS_DOMAIN_DELAY_MS=0` and `RSS_TOWNNEWS_DELAY_MS=0` now genuinely disable the politeness delay for local runs.
 
 ## Cache correctness & audit size

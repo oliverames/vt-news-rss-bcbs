@@ -2640,3 +2640,75 @@ test("enrichAndFilterItems prunes expired cache entries unless validators remain
     "https://example.com/still-fresh",
   ]);
 });
+
+test("readResponseTextWithLimit prefers valid UTF-8 over a mislabeled charset", async () => {
+  // Real UTF-8 bytes behind a classic Apache AddDefaultCharset misconfig.
+  const mislabeled = new Response(Buffer.from("Café in Montpelier", "utf8"), {
+    headers: { "content-type": "text/xml; charset=iso-8859-1" },
+  });
+  assert.equal(await readResponseTextWithLimit(mislabeled), "Café in Montpelier");
+
+  // A UTF-8 BOM outranks the declared charset and is stripped.
+  const withBom = new Response(
+    Buffer.concat([Buffer.from([0xef, 0xbb, 0xbf]), Buffer.from("Café", "utf8")]),
+    { headers: { "content-type": "text/html; charset=windows-1252" } },
+  );
+  assert.equal(await readResponseTextWithLimit(withBom), "Café");
+});
+
+test("fetchText gives up in-run when Retry-After exceeds the sleep cap, and cooldowns are bounded", async () => {
+  let hits = 0;
+  const server = createServer((_request, response) => {
+    hits += 1;
+    response.writeHead(429, {
+      // Far-future HTTP-date form: a clock-skewed server.
+      "retry-after": new Date("2031-01-01T00:00:00Z").toUTCString(),
+    });
+    response.end("come back much later");
+  });
+  await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+
+  try {
+    const { port } = server.address();
+    const primaryFeedUrl = `http://127.0.0.1:${port}/rss.xml`;
+    const startedMs = Date.now();
+    const now = new Date();
+    const crawlState = { sourceState: {}, articleCache: {} };
+    const { sourceResults } = await collectFeedItems(
+      [
+        {
+          name: "Skewed Outlet",
+          homepage: "https://example.com/",
+          feedUrl: primaryFeedUrl,
+          fallbackFeed: {
+            feedUrl: `data:application/rss+xml,${encodeURIComponent(
+              '<?xml version="1.0"?><rss version="2.0"><channel></channel></rss>',
+            )}`,
+            scanArticle: false,
+          },
+        },
+      ],
+      now,
+      crawlState,
+    );
+
+    // One attempt only: the requested backoff exceeds what an in-run retry
+    // can honor, so retrying sooner would just hammer the server.
+    assert.equal(hits, 1);
+    assert.ok(Date.now() - startedMs < 10000, "no long retry sleep");
+    assert.equal(sourceResults[0].ok, true);
+    assert.match(sourceResults[0].primaryError, /HTTP 429/);
+
+    // The persisted cooldown is capped (24h), not the ~4.5 years requested.
+    const cooldownUntil = new Date(
+      crawlState.sourceState["Skewed Outlet"].primaryCooldownUntil,
+    );
+    const maxCooldownMs = 24 * 60 * 60 * 1000 + 60 * 1000;
+    assert.ok(
+      cooldownUntil.valueOf() - now.valueOf() <= maxCooldownMs,
+      `cooldown capped, got ${cooldownUntil.toISOString()}`,
+    );
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
+  }
+});

@@ -111,13 +111,9 @@ jobs:
             return 1
           }
 
-          if seed "$SITE_URL/feed-audit.json" "live audit feed"; then
-            :
-          elif seed "$SITE_URL/feed.json" "legacy live feed"; then
-            :
-          else
-            echo "::warning::Live archive unavailable; falling back to committed feed-audit.json (may be stale)"
-          fi
+          seed "$SITE_URL/feed-audit.json" "live audit feed" \
+            || seed "$SITE_URL/feed.json" "legacy live feed" \
+            || echo "::warning::Live archive unavailable; falling back to committed feed-audit.json (may be stale)"
 
       - name: Generate feed
         if: steps.mode.outputs.full == 'true'

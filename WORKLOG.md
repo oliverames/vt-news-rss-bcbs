@@ -24,7 +24,21 @@ Expired cache entries without ETag/Last-Modified validators are now dropped
 at expiry instead of lingering an extra TTL window (only ~300 of 17k entries
 actually carry validators), and the audit JSON is serialized compact instead
 of pretty-printed (−2.6 MB immediately; roughly half the cache at steady
-state). Version bumped to 1.1.0.
+state). Releases: added `.github/workflows/release.yml` — pushing a `v*` tag
+(or dispatching with a `tag_name` input, which creates the tag) publishes a
+GitHub release, using `.github/RELEASE_NOTES.md` when its first line names
+the tag. Version bumped to 1.1.0.
+
+A follow-up 8-angle review pass over the branch diff caught and fixed three
+bugs in the new code itself: a far-future Retry-After date could write a
+years-long primary-feed cooldown into the persisted audit (now capped at
+24h); digit-leading date forms ("2026-07-05T…") misparsed as delta-seconds
+(now only all-digit values do); and a mislabeled `charset=iso-8859-1` header
+on real UTF-8 bytes produced mojibake (bytes that validate as UTF-8, or carry
+a BOM, now win over the declared charset). Retries that can't honor a long
+Retry-After within the 15s cap now give up in-run instead of hammering the
+server early. Also deduplicated the webhook/parser helpers and guarded
+release notes against being reused by a future tag.
 
 **Decisions made**: Kept the error-entry TTL a constant (1 day) rather than a
 new env var. Investigated the recurring HTTP 415s from Charlotte News and The
@@ -34,12 +48,14 @@ fallback + cooldown path is the right handling. Left the seed step's
 soft-fallback to the committed archive in place (first-run bootstrap needs
 it) but made the failure a workflow warning annotation.
 
-**Left off at**: `npm test` passed with 67 tests (6 new), `node --check` clean
+**Left off at**: `npm test` passed with 70 tests (9 new), `node --check` clean
 on all src files, `xmllint --noout` validated a generated feed, and an
 offline pipeline smoke (`generateFeed({ sources: [] })` against a copy of the
 live audit JSON) exercised archive → relevance → outputs with zero network.
 
-**Open questions**: None.
+**Open questions**: The v1.1.0 release itself must be cut after merge — this
+session's sandbox cannot push tags (proxy returns 403). One click: Actions →
+Release → Run workflow with `tag_name: v1.1.0`.
 
 ---
 
