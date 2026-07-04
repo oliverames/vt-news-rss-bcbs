@@ -22,10 +22,12 @@ import { fetchText, throttleRequest } from "./fetching.js";
 const googleDecoder = new GoogleDecoder();
 
 const CONCURRENCY = parsePositiveInteger(process.env.RSS_CONCURRENCY, 6);
-const NEGATIVE_CACHE_TTL_DAYS = parsePositiveInteger(
-  process.env.RSS_NEGATIVE_CACHE_TTL_DAYS,
-  14,
-);
+const NEGATIVE_CACHE_TTL_MS =
+  parsePositiveInteger(process.env.RSS_NEGATIVE_CACHE_TTL_DAYS, 14) *
+  24 *
+  60 *
+  60 *
+  1000;
 // A no-match verdict reached because the article fetch itself failed (429,
 // timeout, block) is unreliable evidence — expire it after a day so the
 // article gets re-checked, instead of suppressing matches for two weeks.
@@ -53,10 +55,7 @@ function trackScanMode(metrics, mode) {
     (metrics.enrichment.scanModes[mode] || 0) + 1;
 }
 
-function articleCacheExpiresAt(
-  now,
-  ttlMs = NEGATIVE_CACHE_TTL_DAYS * 24 * 60 * 60 * 1000,
-) {
+function articleCacheExpiresAt(now, ttlMs) {
   return new Date(now.valueOf() + ttlMs).toISOString();
 }
 
@@ -93,7 +92,7 @@ function findFreshArticleCacheEntry(articleCache, keys, now) {
 // at expiry keeps the audit JSON (the persistence layer, re-downloaded every
 // run) from accumulating weeks of dead negative verdicts.
 function pruneExpiredArticleCache(articleCache, now) {
-  const staleCutoff = now.valueOf() - NEGATIVE_CACHE_TTL_DAYS * 24 * 60 * 60 * 1000;
+  const staleCutoff = now.valueOf() - NEGATIVE_CACHE_TTL_MS;
   for (const [url, entry] of Object.entries(articleCache)) {
     const expiresAt = parseDate(entry.expiresAt);
     if (!expiresAt) {
@@ -146,7 +145,7 @@ function writeArticleCache(articleCache, keys, item, resolvedLink, details, now)
     checkedAt: now.toISOString(),
     expiresAt: articleCacheExpiresAt(
       now,
-      isErrorOnlyEntry ? ERROR_ENTRY_TTL_MS : undefined,
+      isErrorOnlyEntry ? ERROR_ENTRY_TTL_MS : NEGATIVE_CACHE_TTL_MS,
     ),
     matchedTerms,
     snippet: cleanStorySnippet(details.snippet || "", item.title),

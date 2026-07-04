@@ -107,15 +107,38 @@ function sniffCharsetFromBody(buffer) {
   return match ? match[1].toLowerCase() : "";
 }
 
+function tryDecode(buffer, label, fatal = false) {
+  try {
+    return new TextDecoder(label, { fatal }).decode(buffer);
+  } catch {
+    return null;
+  }
+}
+
 // Small local outlets still serve ISO-8859-1/Windows-1252 feeds; decoding
 // those as UTF-8 mangles curly quotes and accented names into mojibake.
+// Precedence: BOM, then bytes that validate as UTF-8 (a header or prolog
+// mislabeling real UTF-8 as a legacy charset is far more common than legacy
+// text that happens to form valid UTF-8 sequences), then the declared or
+// document-sniffed charset.
 function decodeBodyBytes(buffer, declaredCharset = "") {
+  if (buffer.length >= 2 && buffer[0] === 0xff && buffer[1] === 0xfe) {
+    return tryDecode(buffer, "utf-16le") ?? new TextDecoder().decode(buffer);
+  }
+  if (buffer.length >= 2 && buffer[0] === 0xfe && buffer[1] === 0xff) {
+    return tryDecode(buffer, "utf-16be") ?? new TextDecoder().decode(buffer);
+  }
+
+  const utf8 = tryDecode(buffer, "utf-8", true);
+  if (utf8 !== null) {
+    return utf8;
+  }
+
   const charset = declaredCharset || sniffCharsetFromBody(buffer);
   if (charset && charset !== "utf-8" && charset !== "utf8") {
-    try {
-      return new TextDecoder(charset).decode(buffer);
-    } catch {
-      // Unknown charset label: fall through to UTF-8.
+    const decoded = tryDecode(buffer, charset);
+    if (decoded !== null) {
+      return decoded;
     }
   }
   return new TextDecoder().decode(buffer);
@@ -170,18 +193,20 @@ export async function readResponseTextWithLimit(
   );
 }
 
-// Retry-After arrives as delta-seconds or as an HTTP date.
+// Retry-After arrives as delta-seconds or as an HTTP date. Only an all-digit
+// value is delta-seconds — parseInt would otherwise read the leading number
+// out of a date form ("2026-07-05..." → 2026 seconds).
 function retryAfterMsFromHeader(value) {
-  if (!value) {
+  const trimmed = String(value ?? "").trim();
+  if (!trimmed) {
     return 0;
   }
 
-  const seconds = Number.parseInt(value, 10);
-  if (Number.isFinite(seconds) && seconds > 0) {
-    return seconds * 1000;
+  if (/^\d+$/.test(trimmed)) {
+    return parsePositiveInteger(trimmed, 0) * 1000;
   }
 
-  const date = parseDate(value);
+  const date = parseDate(trimmed);
   if (date) {
     const deltaMs = date.valueOf() - Date.now();
     return deltaMs > 0 ? deltaMs : 0;
@@ -266,7 +291,14 @@ export async function fetchText(url, accept, options = {}) {
         break;
       }
 
-      await sleep(Math.min(error.retryAfterMs || 750 * attempt, MAX_RETRY_SLEEP_MS));
+      const retryDelayMs = error.retryAfterMs || 750 * attempt;
+      if (retryDelayMs > MAX_RETRY_SLEEP_MS) {
+        // The server asked for a longer backoff than an in-run retry can
+        // honor; retrying sooner would just hammer it. Fail now — source
+        // cooldowns and the next scheduled run pick it up.
+        break;
+      }
+      await sleep(retryDelayMs);
     }
   }
 
@@ -360,7 +392,10 @@ function activeCooldownUntil(sourceState, now) {
 
 function cooldownDurationForError(error) {
   if (Number.isFinite(error.retryAfterMs) && error.retryAfterMs > 0) {
-    return error.retryAfterMs;
+    // The cooldown persists in the audit JSON across runs; cap it so one
+    // clock-skewed server sending a far-future Retry-After date cannot
+    // park a primary feed for months.
+    return Math.min(error.retryAfterMs, PRIMARY_COOLDOWN_FORBIDDEN_MS);
   }
   if (error.status === 403) {
     return PRIMARY_COOLDOWN_FORBIDDEN_MS;
