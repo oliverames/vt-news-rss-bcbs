@@ -1,6 +1,6 @@
 // Source list: Vermont outlets, national health feeds, Google News searches,
 // listing pages, and parked Facebook source definitions.
-import { parsePositiveInteger } from "./utils.js";
+import { parseNonNegativeInteger, parsePositiveInteger } from "./utils.js";
 
 const FACEBOOK_HOST_PATTERN = /^https?:\/\/(?:m\.|www\.)?facebook\.com\//i;
 
@@ -94,7 +94,7 @@ const LOCAL_OUTLET_FALLBACK_TERMS = [
 
 const TOWNNEWS_SEARCH_THROTTLE = {
   throttleGroup: "townnews-search",
-  throttleDelayMs: parsePositiveInteger(process.env.RSS_TOWNNEWS_DELAY_MS, 8000),
+  throttleDelayMs: parseNonNegativeInteger(process.env.RSS_TOWNNEWS_DELAY_MS, 8000),
 };
 
 function localOutletFallbackFeed(site, days = 30) {

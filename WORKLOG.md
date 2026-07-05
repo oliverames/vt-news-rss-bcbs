@@ -1,3 +1,64 @@
+## 2026-07-02 - Reliability review sweep for v1.1.0
+
+**What changed**: Full-app review pass focused on reliability. Dependencies:
+cleared the high-severity undici advisory (`npm audit fix`) and bumped
+`google-news-url-decoder` to 1.2.2. Fetch layer: `Retry-After` now parses the
+HTTP-date form as well as delta-seconds; in-run retry sleeps are capped at 15s
+(cooldowns still honor the full duration); HTTP 408 joined 429 as retryable;
+response bodies decode via the `Content-Type` charset or the document's own
+XML/HTML declaration instead of assuming UTF-8; `RSS_DOMAIN_DELAY_MS=0` and
+`RSS_TOWNNEWS_DELAY_MS=0` now genuinely disable the politeness delay for local
+runs. Enrichment: a no-match verdict recorded because the article fetch itself
+failed now expires after one day instead of the 14-day negative-cache TTL, so
+a transient 429/timeout can't suppress brand matching for two weeks.
+Summaries: Gemini responses wrapped in markdown fences or lead-in prose are
+salvaged before JSON.parse. Alerts: webhook posts get a 10s timeout. RSS
+output: empty `<source url="">` elements are omitted and the channel
+advertises `<ttl>60</ttl>`. Workflow: the archive seed step retries the
+download and requires the payload to parse as JSON (with an `items` array)
+before it replaces the checked-out archive, so a truncated download can't
+shrink the live history. Reader: a failed `feed.json` load now offers a Retry
+button. Audit size: the live feed-audit.json had grown to 19 MB (14.4 MB of
+articleCache, 17k entries), re-downloaded and re-uploaded every hourly run.
+Expired cache entries without ETag/Last-Modified validators are now dropped
+at expiry instead of lingering an extra TTL window (only ~300 of 17k entries
+actually carry validators), and the audit JSON is serialized compact instead
+of pretty-printed (−2.6 MB immediately; roughly half the cache at steady
+state). Releases: added `.github/workflows/release.yml` — pushing a `v*` tag
+(or dispatching with a `tag_name` input, which creates the tag) publishes a
+GitHub release, using `.github/RELEASE_NOTES.md` when its first line names
+the tag. Version bumped to 1.1.0.
+
+A follow-up 8-angle review pass over the branch diff caught and fixed three
+bugs in the new code itself: a far-future Retry-After date could write a
+years-long primary-feed cooldown into the persisted audit (now capped at
+24h); digit-leading date forms ("2026-07-05T…") misparsed as delta-seconds
+(now only all-digit values do); and a mislabeled `charset=iso-8859-1` header
+on real UTF-8 bytes produced mojibake (bytes that validate as UTF-8, or carry
+a BOM, now win over the declared charset). Retries that can't honor a long
+Retry-After within the 15s cap now give up in-run instead of hammering the
+server early. Also deduplicated the webhook/parser helpers and guarded
+release notes against being reused by a future tag.
+
+**Decisions made**: Kept the error-entry TTL a constant (1 day) rather than a
+new env var. Investigated the recurring HTTP 415s from Charlotte News and The
+Times Ink: both return 200 with identical headers from outside GitHub's
+runners, so they are IP-reputation blocks, not header bugs — the existing
+fallback + cooldown path is the right handling. Left the seed step's
+soft-fallback to the committed archive in place (first-run bootstrap needs
+it) but made the failure a workflow warning annotation.
+
+**Left off at**: `npm test` passed with 70 tests (9 new), `node --check` clean
+on all src files, `xmllint --noout` validated a generated feed, and an
+offline pipeline smoke (`generateFeed({ sources: [] })` against a copy of the
+live audit JSON) exercised archive → relevance → outputs with zero network.
+
+**Open questions**: The v1.1.0 release itself must be cut after merge — this
+session's sandbox cannot push tags (proxy returns 403). One click: Actions →
+Release → Run workflow with `tag_name: v1.1.0`.
+
+---
+
 ## 2026-06-22 - Bump upload-pages-artifact to v5; fix sibling bcbs-rss Pages
 
 **What changed**: Bumped `actions/upload-pages-artifact` from `@v4`

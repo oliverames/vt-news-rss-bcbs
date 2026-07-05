@@ -3,6 +3,7 @@
 import {
   mapWithConcurrency,
   parseDate,
+  parseNonNegativeInteger,
   parsePositiveInteger,
   sleep,
 } from "./utils.js";
@@ -51,10 +52,14 @@ const DOMAIN_QUEUES = new Map();
 // race let workers slip through), which is why older runs looked faster.
 // Now that it works, it dominates run time when many uncached articles share
 // a domain; lower it here if run length ever matters more than politeness.
-const PER_DOMAIN_DELAY_MS = parsePositiveInteger(
+const PER_DOMAIN_DELAY_MS = parseNonNegativeInteger(
   process.env.RSS_DOMAIN_DELAY_MS,
   1000,
 );
+// Retry-After can ask for hours; honoring that inside a run would hang a
+// fetch worker. Cap the in-run retry sleep — source cooldowns still honor
+// the full duration across runs (see cooldownDurationForError).
+const MAX_RETRY_SLEEP_MS = 15000;
 
 // Serialize request starts per domain: each caller awaits the previous
 // caller's slot, and the next slot opens one delay later. The get/set pair
@@ -77,7 +82,7 @@ export async function throttleRequest(
   }
 
   const queueKey = throttleGroup || hostname;
-  const delayMs = parsePositiveInteger(throttleDelayMs, PER_DOMAIN_DELAY_MS);
+  const delayMs = parseNonNegativeInteger(throttleDelayMs, PER_DOMAIN_DELAY_MS);
   const previousSlot = DOMAIN_QUEUES.get(queueKey) || Promise.resolve();
   DOMAIN_QUEUES.set(
     queueKey,
@@ -86,9 +91,63 @@ export async function throttleRequest(
   await previousSlot;
 }
 
-// Equivalent to response.text() (UTF-8 decode, BOM handled by TextDecoder)
-// but aborts once the body exceeds maxBytes. Size errors are marked
-// nonRetryable: a too-large body will be too large on the next attempt too.
+function charsetFromContentType(contentType = "") {
+  const match = /charset\s*=\s*"?([\w.-]+)"?/i.exec(contentType || "");
+  return match ? match[1].toLowerCase() : "";
+}
+
+// Look for an XML prolog or HTML meta charset declaration in the first KB.
+// Latin-1 is byte-transparent, so the declaration survives the probe decode
+// whatever the real encoding is.
+function sniffCharsetFromBody(buffer) {
+  const head = buffer.subarray(0, 1024).toString("latin1");
+  const match =
+    /<\?xml[^>]*encoding=["']([\w.-]+)["']/i.exec(head) ||
+    /<meta[^>]+charset=["']?([\w.-]+)/i.exec(head);
+  return match ? match[1].toLowerCase() : "";
+}
+
+function tryDecode(buffer, label, fatal = false) {
+  try {
+    return new TextDecoder(label, { fatal }).decode(buffer);
+  } catch {
+    return null;
+  }
+}
+
+// Small local outlets still serve ISO-8859-1/Windows-1252 feeds; decoding
+// those as UTF-8 mangles curly quotes and accented names into mojibake.
+// Precedence: BOM, then bytes that validate as UTF-8 (a header or prolog
+// mislabeling real UTF-8 as a legacy charset is far more common than legacy
+// text that happens to form valid UTF-8 sequences), then the declared or
+// document-sniffed charset.
+function decodeBodyBytes(buffer, declaredCharset = "") {
+  if (buffer.length >= 2 && buffer[0] === 0xff && buffer[1] === 0xfe) {
+    return tryDecode(buffer, "utf-16le") ?? new TextDecoder().decode(buffer);
+  }
+  if (buffer.length >= 2 && buffer[0] === 0xfe && buffer[1] === 0xff) {
+    return tryDecode(buffer, "utf-16be") ?? new TextDecoder().decode(buffer);
+  }
+
+  const utf8 = tryDecode(buffer, "utf-8", true);
+  if (utf8 !== null) {
+    return utf8;
+  }
+
+  const charset = declaredCharset || sniffCharsetFromBody(buffer);
+  if (charset && charset !== "utf-8" && charset !== "utf8") {
+    const decoded = tryDecode(buffer, charset);
+    if (decoded !== null) {
+      return decoded;
+    }
+  }
+  return new TextDecoder().decode(buffer);
+}
+
+// Equivalent to response.text() (BOM handled by TextDecoder, charset taken
+// from the Content-Type header or the document's own declaration) but aborts
+// once the body exceeds maxBytes. Size errors are marked nonRetryable: a
+// too-large body will be too large on the next attempt too.
 export async function readResponseTextWithLimit(
   response,
   maxBytes = MAX_RESPONSE_BYTES,
@@ -128,7 +187,32 @@ export async function readResponseTextWithLimit(
     chunks.push(value);
   }
 
-  return new TextDecoder().decode(Buffer.concat(chunks, receivedBytes));
+  return decodeBodyBytes(
+    Buffer.concat(chunks, receivedBytes),
+    charsetFromContentType(response.headers?.get?.("content-type")),
+  );
+}
+
+// Retry-After arrives as delta-seconds or as an HTTP date. Only an all-digit
+// value is delta-seconds — parseInt would otherwise read the leading number
+// out of a date form ("2026-07-05..." → 2026 seconds).
+function retryAfterMsFromHeader(value) {
+  const trimmed = String(value ?? "").trim();
+  if (!trimmed) {
+    return 0;
+  }
+
+  if (/^\d+$/.test(trimmed)) {
+    return parsePositiveInteger(trimmed, 0) * 1000;
+  }
+
+  const date = parseDate(trimmed);
+  if (date) {
+    const deltaMs = date.valueOf() - Date.now();
+    return deltaMs > 0 ? deltaMs : 0;
+  }
+
+  return 0;
 }
 
 function responseHeaderState(response) {
@@ -180,12 +264,11 @@ export async function fetchText(url, accept, options = {}) {
       if (!response.ok) {
         const error = new Error(`HTTP ${response.status} while fetching ${url}`);
         error.status = response.status;
-        const retryAfter = Number.parseInt(
-          response.headers.get("retry-after") ?? "",
-          10,
+        const retryAfterMs = retryAfterMsFromHeader(
+          response.headers.get("retry-after"),
         );
-        if (Number.isFinite(retryAfter) && retryAfter > 0) {
-          error.retryAfterMs = retryAfter * 1000;
+        if (retryAfterMs > 0) {
+          error.retryAfterMs = retryAfterMs;
         }
         throw error;
       }
@@ -198,14 +281,24 @@ export async function fetchText(url, accept, options = {}) {
     } catch (error) {
       lastError = error;
 
-      const isRateLimited = error.status === 429;
+      // 429 and 408 are transient by definition; other 4xx responses will
+      // repeat on the next attempt, so don't burn time retrying them.
+      const isRetryableClientStatus =
+        error.status === 429 || error.status === 408;
       const isClientError =
-        error.status >= 400 && error.status < 500 && !isRateLimited;
+        error.status >= 400 && error.status < 500 && !isRetryableClientStatus;
       if (isClientError || error.nonRetryable || attempt === MAX_FETCH_ATTEMPTS) {
         break;
       }
 
-      await sleep(error.retryAfterMs || 750 * attempt);
+      const retryDelayMs = error.retryAfterMs || 750 * attempt;
+      if (retryDelayMs > MAX_RETRY_SLEEP_MS) {
+        // The server asked for a longer backoff than an in-run retry can
+        // honor; retrying sooner would just hammer it. Fail now — source
+        // cooldowns and the next scheduled run pick it up.
+        break;
+      }
+      await sleep(retryDelayMs);
     }
   }
 
@@ -299,7 +392,10 @@ function activeCooldownUntil(sourceState, now) {
 
 function cooldownDurationForError(error) {
   if (Number.isFinite(error.retryAfterMs) && error.retryAfterMs > 0) {
-    return error.retryAfterMs;
+    // The cooldown persists in the audit JSON across runs; cap it so one
+    // clock-skewed server sending a far-future Retry-After date cannot
+    // park a primary feed for months.
+    return Math.min(error.retryAfterMs, PRIMARY_COOLDOWN_FORBIDDEN_MS);
   }
   if (error.status === 403) {
     return PRIMARY_COOLDOWN_FORBIDDEN_MS;

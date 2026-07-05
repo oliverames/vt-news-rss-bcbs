@@ -130,13 +130,13 @@ The browser does not recrawl sources. GitHub Actions does the collection and dep
 | `AUDIT_JSON_OUTPUT_PATH` | No | next to RSS as `feed-audit.json` | Output path for the audit JSON and summary cache |
 | `RSS_CONCURRENCY` | No | `6` | Number of article pages to fetch at once |
 | `RSS_SOURCE_CONCURRENCY` | No | `4` | Number of sources to fetch at once |
-| `RSS_DOMAIN_DELAY_MS` | No | `1000` | Politeness delay between requests to the same domain |
-| `RSS_TOWNNEWS_DELAY_MS` | No | `8000` | Shared delay between TownNews search-feed requests across outlet domains |
+| `RSS_DOMAIN_DELAY_MS` | No | `1000` | Politeness delay between requests to the same domain (`0` disables it for local runs) |
+| `RSS_TOWNNEWS_DELAY_MS` | No | `8000` | Shared delay between TownNews search-feed requests across outlet domains (`0` disables it) |
 | `RSS_TIMEOUT_MS` | No | `12000` | Request timeout in milliseconds |
 | `RSS_FETCH_ATTEMPTS` | No | `3` | Fetch attempts before a source or article is marked failed |
 | `RSS_MAX_RESPONSE_BYTES` | No | `10485760` | Maximum decompressed response size before a fetch is abandoned |
 | `RSS_ARTICLE_SCAN` | No | `true` | Set to `false` to filter only RSS feed text |
-| `RSS_NEGATIVE_CACHE_TTL_DAYS` | No | `14` | Days to keep article cache entries, including negative no-match results, before validating or refreshing |
+| `RSS_NEGATIVE_CACHE_TTL_DAYS` | No | `14` | Days to keep article cache entries, including negative no-match results, before validating or refreshing. No-match verdicts caused by a failed article fetch expire after one day regardless, so a transient 429 or timeout cannot suppress matching for two weeks. |
 | `RSS_MAX_FUTURE_HOURS` | No | `6` | Future-dated item tolerance before exclusion |
 | `ARCHIVE_MAX_AGE_DAYS` | No | `92` | Maximum age for topic-only archived stories |
 | `FEED_URL` | No | empty | Public URL for the RSS self-link |
@@ -157,7 +157,7 @@ The browser does not recrawl sources. GitHub Actions does the collection and dep
 
 Gemini rate limits vary by project, model, and usage tier. The summarizer starts with `gemini-2.5-flash-lite`, batches stories, caches successful summaries in `feed-audit.json`, and caps requests per run so hourly refreshes stay conservative.
 
-Source cooldowns are automatic when a primary feed has a fallback. HTTP 403 primary failures cool down for 24 hours, HTTP 429 failures use `Retry-After` when present or two hours otherwise, and other primary errors cool down for one hour. During cooldown, the run goes straight to the fallback feed and records the reason in the audit feed. Feed and article responses also store `ETag` and `Last-Modified` validators when servers provide them.
+Source cooldowns are automatic when a primary feed has a fallback. HTTP 403 primary failures cool down for 24 hours, HTTP 429 failures use `Retry-After` (delta-seconds or HTTP-date form, capped at 24 hours) when present or two hours otherwise, and other primary errors cool down for one hour. During cooldown, the run goes straight to the fallback feed and records the reason in the audit feed. In-run retries treat HTTP 429 and 408 as transient and sleep up to 15 seconds between attempts; if `Retry-After` asks for longer than that, the fetch fails fast and the cooldown machinery takes over. Non-UTF-8 responses decode using the `Content-Type` charset or the document's own declaration, with bytes that validate as UTF-8 always taking precedence. Feed and article responses also store `ETag` and `Last-Modified` validators when servers provide them.
 
 ## Architecture
 

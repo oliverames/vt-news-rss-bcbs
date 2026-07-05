@@ -237,6 +237,17 @@
         text-decoration: underline;
       }
 
+      .status .retry-link {
+        appearance: none;
+        background: none;
+        border: 0;
+        color: var(--link);
+        cursor: pointer;
+        font: inherit;
+        padding: 0;
+        text-decoration: underline;
+      }
+
       ul.stories .comment {
         margin: 0 0 7px;
         padding: 7px 9px;
@@ -814,8 +825,18 @@
         renderStories();
       }
 
+      function renderLoading() {
+        datelineEl.textContent = "Loading…";
+        storiesEl.replaceChildren();
+        const li = document.createElement("li");
+        li.className = "status";
+        li.textContent = "Loading stories…";
+        storiesEl.appendChild(li);
+      }
+
       async function load() {
         try {
+          renderLoading();
           const response = await fetch("feed.json", { cache: "no-cache" });
           if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
@@ -842,7 +863,13 @@
           storiesEl.replaceChildren();
           const li = document.createElement("li");
           li.className = "status";
-          li.textContent = `Could not load feed.json (${error.message}).`;
+          li.textContent = `Could not load feed.json (${error.message}). `;
+          const retry = document.createElement("button");
+          retry.type = "button";
+          retry.className = "retry-link";
+          retry.textContent = "Retry";
+          retry.addEventListener("click", load);
+          li.appendChild(retry);
           storiesEl.appendChild(li);
         }
       }
