@@ -26,6 +26,7 @@ import {
   mergeFacebookPagePostItem,
   parseBlueCrossVtListingItems,
   parseBcbsAssociationNewsItems,
+  parseCnnHealthSitemapItems,
   parseFeedItems,
   parseFacebookEmbeddedPosts,
   parseFacebookPageHtml,
@@ -35,11 +36,13 @@ import {
   collectFeedItems,
   enrichAndFilterItems,
   extractArticleComments,
+  extractArticlePreview,
   fetchText,
   filterSourceItemsByDateWindow,
   isObituaryItem,
   isSourceWindowClosed,
   htmlToArticleText,
+  isLikelyPaywalled,
   normalizeCrawlState,
   readResponseTextWithLimit,
   TOPIC_TERMS,
@@ -178,7 +181,7 @@ test("default sources cover recurring Kristina export outlets", () => {
         .join(" "),
     ).join(" "),
   ).replaceAll("+", " ");
-  assert.equal(DEFAULT_SOURCES.length, 81);
+  assert.equal(DEFAULT_SOURCES.length, 86);
 
   const expectedHosts = [
     "bcbs.com",
@@ -216,7 +219,6 @@ test("default sources cover recurring Kristina export outlets", () => {
     "theislandernewspaper.com",
     "nyvtmedia.com",
     "ourherald.com",
-    "timesinkvt.org",
     "springfieldvt.blogspot.com",
     "mtngazettevt.com",
     "valleyreporter.com",
@@ -232,6 +234,11 @@ test("default sources cover recurring Kristina export outlets", () => {
     "thewinooskinews.com",
     "cctv.org",
     "ibrattleboro.com",
+    "rakevt.org",
+    "poultneyjournal.com",
+    "magic967.com",
+    "vtcynic.com",
+    "strattonmagazine.com",
   ];
 
   for (const host of expectedHosts) {
@@ -266,7 +273,6 @@ test("default sources cover recurring Kristina export outlets", () => {
     "The Islander",
     "Lakes Region Free Press",
     "White River Valley Herald",
-    "The Times Ink",
     "Springfield Reporter",
     "Mountain Gazette",
     "Valley Reporter",
@@ -282,6 +288,12 @@ test("default sources cover recurring Kristina export outlets", () => {
     "Winooski News",
     "Town Meeting TV",
     "iBrattleboro",
+    "Burlington Free Press",
+    "The Rake Vermont",
+    "Poultney Journal",
+    "Magic 96.7 Vermont News",
+    "The Vermont Cynic",
+    "Stratton Magazine",
   ];
   for (const outletName of expectedLocalOutlets) {
     assert.match(sourceText, new RegExp(outletName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
@@ -347,6 +359,64 @@ test("default sources cover recurring Kristina export outlets", () => {
     assert.equal(source.throttleDelayMs > 0, true);
     assert.match(source.fallbackFeed?.feedUrl || "", /news\.google\.com\/rss\/search/);
   }
+});
+
+test("current Google News searches apply their freshness window to the full query", () => {
+  const currentBlueCross = DEFAULT_SOURCES.find(
+    (source) => source.name === "Google News Search",
+  );
+  const vermontHealth = DEFAULT_SOURCES.find(
+    (source) => source.name === "Google News Vermont Health Search",
+  );
+  const blueCrossQuery = new URL(currentBlueCross.feedUrl).searchParams.get("q");
+  const vermontHealthQuery = new URL(vermontHealth.feedUrl).searchParams.get("q");
+
+  assert.match(blueCrossQuery, /^\(.+\) when:30d$/);
+  assert.match(vermontHealthQuery, /^\(.+\) when:7d$/);
+  assert.equal(currentBlueCross.maxItemAgeDays, 30);
+  assert.equal(vermontHealth.maxItemAgeDays, 7);
+});
+
+test("parseFeedItems accepts publisher dates without a space before am or pm", () => {
+  const [item] = parseFeedItems(
+    `
+      <rss><channel><item>
+        <title>Health policy update</title>
+        <link>https://www.fiercehealthcare.com/example</link>
+        <pubDate>Jul 10, 2026 11:00am</pubDate>
+      </item></channel></rss>
+    `,
+    { name: "Fierce Healthcare", feedUrl: "https://example.com/feed" },
+  );
+
+  assert.match(item.pubDate?.toISOString() || "", /^2026-07-10T/);
+});
+
+test("parseCnnHealthSitemapItems keeps current health URLs only", () => {
+  const items = parseCnnHealthSitemapItems(
+    `
+      <urlset xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+        <url>
+          <loc>https://www.cnn.com/2026/07/12/health/vermont-care-wellness</loc>
+          <news:news><news:publication_date>2026-07-12T14:30:00Z</news:publication_date><news:title>Vermont health care update</news:title></news:news>
+        </url>
+        <url>
+          <loc>https://www.cnn.com/2026/07/12/politics/example</loc>
+          <news:news><news:publication_date>2026-07-12T13:00:00Z</news:publication_date><news:title>Political story</news:title></news:news>
+        </url>
+      </urlset>
+    `,
+    {
+      name: "CNN Health",
+      listingUrl: "https://www.cnn.com/sitemap/news.xml",
+      scanArticle: false,
+    },
+  );
+
+  assert.equal(items.length, 1);
+  assert.equal(items[0].title, "Vermont health care update");
+  assert.equal(items[0].scanArticle, false);
+  assert.equal(items[0].pubDate.toISOString(), "2026-07-12T14:30:00.000Z");
 });
 
 test("topic terms catch the healthcare stories the comms team pulls", () => {
@@ -1075,6 +1145,22 @@ test("filterSourceItemsByDateWindow enforces backfill boundaries", () => {
   );
 });
 
+test("filterSourceItemsByDateWindow enforces a rolling source age limit", () => {
+  const now = new Date("2026-07-12T12:00:00Z");
+  const items = [
+    { title: "current", pubDate: new Date("2026-07-10T12:00:00Z") },
+    { title: "stale", pubDate: new Date("2026-07-01T12:00:00Z") },
+    { title: "undated", pubDate: null },
+  ];
+
+  assert.deepEqual(
+    filterSourceItemsByDateWindow(items, { maxItemAgeDays: 7 }, now).map(
+      (item) => item.title,
+    ),
+    ["current"],
+  );
+});
+
 test("isObituaryItem catches source categories, title/path signals, and obituary prose", () => {
   const items = [
     {
@@ -1324,6 +1410,30 @@ test("parseFeedItems parses Atom entries", () => {
   assert.equal(items.length, 1);
   assert.equal(items[0].title, "Health care story");
   assert.equal(items[0].link, "https://example.com/atom-story");
+});
+
+test("parseFeedItems reads YouTube Atom media descriptions", () => {
+  const items = parseFeedItems(
+    `
+      <feed xmlns="http://www.w3.org/2005/Atom" xmlns:media="http://search.yahoo.com/mrss/">
+        <entry>
+          <title>Vermont candidate forum</title>
+          <link rel="alternate" href="https://www.youtube.com/watch?v=example" />
+          <id>yt:video:example</id>
+          <published>2026-07-11T12:00:00Z</published>
+          <media:group><media:description>Candidates discuss Vermont health care affordability.</media:description></media:group>
+        </entry>
+      </feed>
+    `,
+    {
+      name: "Town Meeting TV",
+      feedUrl: "https://www.youtube.com/feeds/videos.xml?channel_id=example",
+      scanArticle: false,
+    },
+  );
+
+  assert.equal(items[0].description, "Candidates discuss Vermont health care affordability.");
+  assert.match(items[0].feedContent, /health care affordability/);
 });
 
 test("parseBlueCrossVtListingItems extracts dated Newsroom and blog rows", () => {
@@ -1963,6 +2073,27 @@ test("buildJsonSummary keeps crawl state and metrics audit-only", () => {
   assert.equal(auditSummary.crawlMetrics.collection.sourceCooldowns, 1);
 });
 
+test("buildJsonSummary keeps preview completion state audit-only", () => {
+  const item = {
+    sourceName: "STAT Health News",
+    title: "Coverage update",
+    link: "https://www.statnews.com/example",
+    matchedTerms: ["Health insurance"],
+    previewText: "A bounded publisher preview.",
+    previewChecked: true,
+  };
+  const publicSummary = buildJsonSummary([item], [], new Date("2026-07-12T12:00:00Z"));
+  const auditSummary = buildJsonSummary(
+    [item],
+    [],
+    new Date("2026-07-12T12:00:00Z"),
+    { includeRejected: true },
+  );
+
+  assert.equal(publicSummary.items[0].previewChecked, undefined);
+  assert.equal(auditSummary.items[0].previewChecked, true);
+});
+
 test("parseFeedItems supports isSearchFeed property", () => {
   const xml = `<?xml version="1.0"?>
     <rss version="2.0">
@@ -2153,6 +2284,313 @@ test("htmlToArticleText extracts clean editorial text ignoring boilerplates", ()
   assert.ok(!text.includes("Trending Articles"));
   assert.ok(!text.includes("About Us"));
   assert.ok(!text.includes("Publisher"));
+});
+
+test("extractArticlePreview returns a bounded publisher lead without paywall boilerplate", () => {
+  const preview = extractArticlePreview(
+    `
+      <html><body>
+        <nav>Sections Subscribe Log in</nav>
+        <article>
+          <p>Vermont regulators opened a review of proposed health insurance rates for next year.</p>
+          <p>The filing describes how hospital prices and prescription drug costs affect premiums.</p>
+          <p>This third paragraph must not be republished in the preview.</p>
+          <p>Subscribe now to continue reading.</p>
+        </article>
+        <script type="application/ld+json">{"articleBody":"Hidden full article text"}</script>
+      </body></html>
+    `,
+    "https://www.timesargus.com/news/example",
+  );
+
+  assert.match(preview, /^Vermont regulators opened/);
+  assert.match(preview, /prescription drug costs affect premiums\.$/);
+  assert.doesNotMatch(preview, /third paragraph|Subscribe|Hidden full article/i);
+  assert.ok(preview.length <= 600);
+});
+
+test("extractArticlePreview truncates on a word boundary and rejects boilerplate-only pages", () => {
+  const preview = extractArticlePreview(
+    `<article><p>${"Vermont health care coverage remains important for families. ".repeat(20)}</p></article>`,
+    "https://www.statnews.com/example",
+    { maxCharacters: 120, maxParagraphs: 2 },
+  );
+
+  assert.ok(preview.length <= 120);
+  assert.match(preview, /\.\.\.$/);
+  assert.doesNotMatch(preview, /\s\.\.\.$/);
+  assert.equal(
+    extractArticlePreview(
+      "<article><p>Subscribe to continue reading.</p><p>Log in to access this article.</p></article>",
+      "https://www.statnews.com/example",
+    ),
+    "",
+  );
+});
+
+test("extractArticlePreview skips STAT author biography text", () => {
+  const preview = extractArticlePreview(
+    `
+      <div class="article-body">
+        <div class="article-content">
+          <div class="author-pop-over"><p>Reporter at Large, Live and Feature Journalism</p><p>Damian covers the global drug industry.</p></div>
+          <div class="entry-content the-content wp-block-post-content">
+            <p>Vermont regulators opened a review of next year's health insurance premiums.</p>
+            <p>The filing points to hospital prices and prescription drug costs.</p>
+          </div>
+        </div>
+      </div>
+    `,
+    "https://www.statnews.com/2026/07/12/example/",
+  );
+
+  assert.match(preview, /^Vermont regulators opened/);
+  assert.doesNotMatch(preview, /Reporter at Large|Damian covers/);
+});
+
+test("isLikelyPaywalled matches exact publisher hosts and their subdomains", () => {
+  assert.equal(isLikelyPaywalled({ link: "https://www.statnews.com/story" }), true);
+  assert.equal(isLikelyPaywalled({ link: "https://news.timesargus.com/story" }), true);
+  assert.equal(isLikelyPaywalled({ link: "https://notstatnews.com/story" }), false);
+  assert.equal(isLikelyPaywalled({ link: "https://timesargus.com.example/story" }), false);
+});
+
+test("enrichAndFilterItems fetches a preview for a signaled paywall item in feed-only mode", async () => {
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "true";
+  let requests = 0;
+
+  try {
+    const articleCache = {};
+    const metrics = { enrichment: { scanModes: {} } };
+    const items = await enrichAndFilterItems(
+      [
+        {
+          sourceName: "STAT Health News",
+          title: "Vermont premiums face new review",
+          link: "https://www.statnews.com/2026/07/12/example/",
+          feedContent: "Vermont health insurance premiums face a regulatory review.",
+          scanArticle: false,
+          articleScanMode: "feedOnly",
+        },
+      ],
+      new Map(),
+      {
+        articleCache,
+        metrics,
+        now: new Date("2026-07-12T12:00:00Z"),
+        fetchText: async (url) => {
+          requests += 1;
+          return {
+            text: "<article><p>Vermont regulators are reviewing proposed premium increases.</p><p>The filing cites hospital and prescription drug costs.</p></article>",
+            url,
+            notModified: false,
+            etag: "",
+            lastModified: "",
+          };
+        },
+        throttleRequest: async () => {},
+      },
+    );
+
+    assert.equal(requests, 1);
+    assert.equal(items.length, 1);
+    assert.match(items[0].previewText, /^Vermont regulators/);
+    assert.equal(items[0].previewChecked, true);
+    assert.equal(articleCache[items[0].link].previewChecked, true);
+    assert.equal(metrics.enrichment.previewFetches, 1);
+    assert.equal(metrics.enrichment.previewsFound, 1);
+  } finally {
+    if (originalScan === undefined) {
+      delete process.env.RSS_ARTICLE_SCAN;
+    } else {
+      process.env.RSS_ARTICLE_SCAN = originalScan;
+    }
+  }
+});
+
+test("RSS, JSON, and the reader label publisher previews separately", async () => {
+  const item = {
+    sourceName: "Times Argus",
+    title: "Vermont health care story",
+    link: "https://www.timesargus.com/news/example",
+    pubDate: new Date("2026-07-12T12:00:00Z"),
+    matchedTerms: ["Health care"],
+    summary: "An independent summary.",
+    previewText: "The publisher's first two paragraphs appear here.",
+  };
+  const rss = buildRss([item], { now: new Date("2026-07-12T13:00:00Z") });
+  const json = buildJsonSummary(
+    [item],
+    [{ name: "Times Argus", ok: true, itemCount: 1 }],
+    new Date("2026-07-12T13:00:00Z"),
+  );
+  const reader = await readFile(
+    path.resolve(process.cwd(), "site", "index.html"),
+    "utf8",
+  );
+
+  assert.match(rss, /<strong>Publisher preview:<\/strong>/);
+  assert.match(rss, /publisher&apos;s first two paragraphs/i);
+  assert.equal(json.items[0].previewText, item.previewText);
+  assert.match(json.items[0].content_text, /Publisher preview:/);
+  assert.match(reader, /item\.previewText/);
+  assert.match(reader, /Publisher preview:/);
+  assert.match(reader, /\.textContent\s*=/);
+});
+
+test("normalizeCrawlState preserves preview cache state", () => {
+  const oversizedPreview = `${"Vermont health care reporting. ".repeat(40)}END`;
+  const state = normalizeCrawlState({
+    articleCache: {
+      "https://www.statnews.com/example": {
+        expiresAt: "2026-07-20T12:00:00Z",
+        previewText: oversizedPreview,
+        previewChecked: true,
+      },
+    },
+  });
+
+  const cached = state.articleCache["https://www.statnews.com/example"];
+  assert.ok(cached.previewText.length <= 600);
+  assert.doesNotMatch(cached.previewText, /END$/);
+  assert.equal(cached.previewChecked, true);
+});
+
+test("preview fetch errors use the short error cache without marking preview complete", async () => {
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "true";
+  let requests = 0;
+  const articleCache = {};
+  const item = {
+    sourceName: "STAT Health News",
+    title: "Vermont coverage update",
+    link: "https://www.statnews.com/2026/07/12/error-example/",
+    feedContent: "Vermont health insurance coverage update.",
+    scanArticle: false,
+  };
+  const options = {
+    articleCache,
+    now: new Date("2026-07-12T12:00:00Z"),
+    fetchText: async () => {
+      requests += 1;
+      throw new Error("temporary timeout");
+    },
+    throttleRequest: async () => {},
+  };
+
+  try {
+    await enrichAndFilterItems([item], new Map(), options);
+    await enrichAndFilterItems(
+      [item],
+      new Map(),
+      { ...options, now: new Date("2026-07-12T13:00:00Z") },
+    );
+
+    assert.equal(requests, 1);
+    assert.equal(articleCache[item.link].previewChecked, false);
+    assert.match(articleCache[item.link].articleError, /temporary timeout/);
+    assert.equal(articleCache[item.link].expiresAt, "2026-07-13T12:00:00.000Z");
+  } finally {
+    if (originalScan === undefined) delete process.env.RSS_ARTICLE_SCAN;
+    else process.env.RSS_ARTICLE_SCAN = originalScan;
+  }
+});
+
+test("legacy preview migration does not send validators that could yield an empty 304", async () => {
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "true";
+  const link = "https://www.statnews.com/2026/07/12/legacy-example/";
+  const articleCache = {
+    [link]: {
+      url: link,
+      resolvedUrl: link,
+      expiresAt: "2026-07-20T12:00:00Z",
+      matchedTerms: ["Health insurance"],
+      matchSource: "searchFallback",
+      articleHeaders: { etag: '"legacy"' },
+    },
+  };
+  let conditionalHeaders;
+
+  try {
+    const items = await enrichAndFilterItems(
+      [{
+        sourceName: "STAT Health News",
+        title: "Coverage",
+        link,
+        feedContent: "Vermont health insurance coverage update.",
+      }],
+      new Map(),
+      {
+        articleCache,
+        now: new Date("2026-07-12T12:00:00Z"),
+        fetchText: async (url, _accept, options) => {
+          conditionalHeaders = options.conditionalHeaders;
+          return {
+            text: "<article><p>Vermont families are reviewing their health coverage options.</p></article>",
+            url,
+            notModified: false,
+            etag: '"fresh"',
+            lastModified: "",
+          };
+        },
+        throttleRequest: async () => {},
+      },
+    );
+
+    assert.deepEqual(conditionalHeaders, {});
+    assert.match(items[0].previewText, /^Vermont families/);
+    assert.equal(items[0].matchSource, "searchFallback");
+  } finally {
+    if (originalScan === undefined) delete process.env.RSS_ARTICLE_SCAN;
+    else process.env.RSS_ARTICLE_SCAN = originalScan;
+  }
+});
+
+test("preview article-cache hits preserve the matched archive summary and verdict", async () => {
+  const link = "https://www.statnews.com/2026/07/12/cached-preview/";
+  const now = new Date("2026-07-12T12:00:00Z");
+  const cache = new Map([
+    [link, {
+      matchedTerms: ["Health insurance"],
+      snippet: "Cached health insurance snippet.",
+      summary: "The saved summary must survive the preview merge.",
+      reason: "Coverage policy affects members.",
+      relevant: true,
+      matchSource: "searchFallback",
+      previewChecked: false,
+    }],
+  ]);
+  const articleCache = {
+    [link]: {
+      url: link,
+      resolvedUrl: link,
+      expiresAt: "2026-07-20T12:00:00Z",
+      matchedTerms: ["Health insurance"],
+      previewText: "A cached publisher preview.",
+      previewChecked: true,
+      comments: [],
+      matchSource: "searchFallback",
+    },
+  };
+
+  const [item] = await enrichAndFilterItems(
+    [{
+      sourceName: "STAT Health News",
+      title: "Coverage",
+      link,
+      feedContent: "Vermont health insurance coverage update.",
+    }],
+    cache,
+    { articleCache, now },
+  );
+
+  assert.equal(item.previewText, "A cached publisher preview.");
+  assert.equal(item.summary, "The saved summary must survive the preview merge.");
+  assert.equal(item.reason, "Coverage policy affects members.");
+  assert.equal(item.relevant, true);
+  assert.equal(item.matchSource, "searchFallback");
 });
 
 test("htmlToArticleText prefers domain-specific article selectors", () => {

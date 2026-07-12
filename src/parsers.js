@@ -1,7 +1,12 @@
 // Parsers for RSS/Atom XML, newsroom listing pages, article HTML, and
 // Facebook's no-login post and page HTML.
 import * as cheerio from "cheerio";
-import { cleanText, parseDate, resolveUrl } from "./utils.js";
+import {
+  cleanText,
+  normalizePreviewText,
+  parseDate,
+  resolveUrl,
+} from "./utils.js";
 
 function getFirstText($item, selectors) {
   for (const selector of selectors) {
@@ -119,7 +124,11 @@ export function parseFeedItems(feedXml, source) {
         $item.find("link").first().attr("href") ||
         getFirstText($item, ["link"]);
       const link = resolveUrl(href, source.homepage || source.feedUrl);
-      const contentHtml = getFirstHtml($item, ["content", "summary"]);
+      const contentHtml = getFirstHtml($item, [
+        "content",
+        "summary",
+        "media\\:description",
+      ]);
       const description = decodeFeedText(contentHtml);
       const sourceCategories = cleanText(
         $item
@@ -163,6 +172,44 @@ export function parseFeedItems(feedXml, source) {
     .filter(Boolean);
 
   return [...rssItems, ...atomItems];
+}
+
+export function parseCnnHealthSitemapItems(xml, source) {
+  const $ = cheerio.load(xml, { xmlMode: true });
+  return $("url")
+    .map((_, element) => {
+      const $url = $(element);
+      const link = cleanText($url.find("loc").first().text());
+      if (!/\/\d{4}\/\d{2}\/\d{2}\/health\//i.test(link)) {
+        return null;
+      }
+
+      const title = cleanText($url.find("news\\:title").first().text());
+      if (!title || !link) {
+        return null;
+      }
+
+      const pubDate = parseDate(
+        cleanText($url.find("news\\:publication_date").first().text()),
+      );
+      return {
+        sourceName: source.name,
+        sourceFeedUrl: source.listingUrl,
+        isSearchFeed: false,
+        searchFallbackTerms: source.searchFallbackTerms || [],
+        scanArticle: source.scanArticle !== false,
+        articleScanMode: sourceArticleScanMode(source),
+        title,
+        link,
+        guid: link,
+        pubDate,
+        description: "",
+        sourceCategories: "",
+        feedContent: title,
+      };
+    })
+    .get()
+    .filter(Boolean);
 }
 
 export function parseBlueCrossVtListingItems(html, source) {
@@ -817,6 +864,14 @@ const DOMAIN_ARTICLE_TEXT_SELECTORS = [
     selectors: [".entry-content", ".post-content", "article"],
   },
   {
+    hostPattern: /(^|\.)statnews\.com$/i,
+    selectors: [
+      ".entry-content.the-content",
+      ".wp-block-post-content",
+      "[itemprop='articleBody']",
+    ],
+  },
+  {
     hostPattern: /(^|\.)valleynews\.com$/i,
     selectors: [".article-body", ".story-body", "[itemprop='articleBody']", "article"],
   },
@@ -1063,4 +1118,53 @@ export function htmlToArticleText(html, pageUrl = "") {
   }
 
   return cleanText($("body").text());
+}
+
+const ARTICLE_PREVIEW_BOILERPLATE_PATTERN =
+  /\b(?:already a subscriber|create an account|log in|login|register to continue|sign in|subscribe|subscription|unlock this article)\b/i;
+
+export function extractArticlePreview(html, pageUrl = "", options = {}) {
+  const maxCharacters = Math.max(40, Number(options.maxCharacters) || 600);
+  const maxParagraphs = Math.max(1, Number(options.maxParagraphs) || 2);
+  const $ = cheerio.load(html);
+  $(
+    "script, style, noscript, svg, iframe, form, nav, footer, header, aside, .sidebar, #sidebar, .nav, .menu, .ads, .ad, .advertisement, [role='banner'], [role='navigation'], [role='contentinfo']",
+  ).remove();
+
+  const selectors = articleSelectorsForUrl(pageUrl);
+  let paragraphs = [];
+  for (const selector of selectors) {
+    const element = $(selector).first();
+    if (element.length === 0) {
+      continue;
+    }
+    paragraphs = element
+      .find("p")
+      .map((_, paragraph) => cleanText($(paragraph).text()))
+      .get()
+      .filter(
+        (paragraph) =>
+          paragraph.length >= 20 &&
+          !ARTICLE_PREVIEW_BOILERPLATE_PATTERN.test(paragraph),
+      );
+    if (paragraphs.length > 0) {
+      break;
+    }
+  }
+
+  if (paragraphs.length === 0) {
+    paragraphs = $("body p")
+      .map((_, paragraph) => cleanText($(paragraph).text()))
+      .get()
+      .filter(
+        (paragraph) =>
+          paragraph.length >= 20 &&
+          !ARTICLE_PREVIEW_BOILERPLATE_PATTERN.test(paragraph),
+      );
+  }
+
+  return normalizePreviewText(
+    cleanText(paragraphs.slice(0, maxParagraphs).join(" ")),
+    maxCharacters,
+  );
 }

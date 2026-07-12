@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <code>81 default sources</code> &bull;
+  <code>86 default sources</code> &bull;
   <code>RSS + JSON Feed</code> &bull;
   <code>hourly GitHub Pages refresh</code>
 </p>
@@ -65,7 +65,7 @@ The default source list combines Vermont outlets, official Blue Cross and health
 
 | Category | Coverage | Notes |
 | --- | --- | --- |
-| Vermont news outlets | WCAX, VTDigger, Vermont Public, Seven Days, MyNBC5, MyChamplainValley, Addison Independent, Valley News, Caledonian-Record, The Chronicle/Barton Chronicle, The Commons, The Bridge, Community News Service, Waterbury Roundabout, and more | RSS, outlet search feeds, or site-scoped Google News depending on what each outlet exposes; blocked primary feeds can fall back to site-scoped Google News |
+| Vermont news outlets | WCAX, VTDigger, Vermont Public, Seven Days, MyNBC5, MyChamplainValley, Burlington Free Press, The Rake Vermont, Poultney Journal, Magic 96.7, The Vermont Cynic, Addison Independent, Valley News, Caledonian-Record, The Chronicle/Barton Chronicle, The Commons, The Bridge, Community News Service, Waterbury Roundabout, and more | RSS, Atom, first-party sitemaps, outlet search feeds, or site-scoped Google News depending on what each outlet exposes; blocked primary feeds can fall back to site-scoped Google News |
 | Official pages | BlueCrossVT Newsroom, BlueCrossVT Be Well VT Blog, UVM Health Newsroom, BCBSA Association News | Public listing pages are parsed because normal RSS feeds are not available |
 | Search feeds | Blue Cross VT brand search, Jan. 1, 2026 Blue Cross VT backfill, Vermont health search, Kristina source search, health insurance search, trade search, national policy search, outlet fallbacks | Search feeds are capped and bounded to avoid turning the reader into generic health news |
 | National health feeds | ABC Health, CBS Health, CNN Health, STAT, Fierce Healthcare, Healthcare Dive, KFF Health News, The Hill, NPR Health | Broad national items are filtered unless they have a payer, policy, coverage, or regional angle |
@@ -78,6 +78,8 @@ Direct Blue Cross VT mentions are kept indefinitely. Other stories are kept for 
 The matcher scans feed titles, descriptions, source text, and, when enabled, selected article pages. Brand terms scan both feed text and article body text. Topic terms scan feed text only, because full article bodies mention health care too often for that to be precise.
 
 Article scanning is selective. Items with a brand, topic, declared search fallback, or brand-required source signal can fetch article pages for body text and comments. Items with no feed-level signal are cached as negative results for a bounded period instead of being scraped again every run. Sources can also opt into `feedOnly`, `smart`, `brandBody`, or `always` article scan modes through source metadata.
+
+For articles labeled `Paywall likely`, the collector also tries to publish a clearly labeled publisher preview from the normal unauthenticated page response. The preview is capped at two editorial paragraphs and 600 characters, excludes subscription and login prompts, and is cached separately from generated summaries. The collector does not use authenticated sessions, alternate user agents, AMP or cache copies, archive services, or embedded full-article metadata to bypass access controls.
 
 The brand matcher includes common variants:
 
@@ -116,6 +118,7 @@ Each story can include:
 | Date | Publication date from the source feed, listing page, or post HTML |
 | Access label | `Free to read`, `Paywall likely`, `May require login`, or `Access varies` |
 | Summary | AI-generated one or two sentence summary when Gemini is configured |
+| Publisher preview | Up to two lead paragraphs and 600 characters from a paywalled publisher's ordinary unauthenticated page, when available |
 | Why it is here | Short relevance reason for a reader who wants to skim quickly |
 | Comments | Publicly parseable article or post comments, hidden by default |
 

@@ -5,6 +5,7 @@ import {
   cleanStorySnippet,
   cleanText,
   escapeXml,
+  normalizePreviewText,
   sortItemsByDate,
   wrapCdata,
 } from "./utils.js";
@@ -63,6 +64,13 @@ function itemDescription(item) {
 
   if (item.summary) {
     lines.push(`<p>${escapeXml(item.summary)}</p>`);
+  }
+
+  const previewText = normalizePreviewText(item.previewText || "");
+  if (access === "Paywall likely" && previewText) {
+    lines.push(
+      `<p><strong>Publisher preview:</strong> ${escapeXml(previewText)}</p>`,
+    );
   }
 
   if (item.reason) {
@@ -211,9 +219,14 @@ export function buildJsonSummary(items, sourceResults, now = new Date(), options
       const matchedTerms = canonicalizeMatchedTerms(item.matchedTerms || []);
       const comments = Array.isArray(item.comments) ? item.comments : [];
       const snippet = cleanStorySnippet(item.snippet, item.title);
+      const previewText = normalizePreviewText(item.previewText || "");
+      const access = itemAccessLabel(item);
       const contentText = cleanText(
         [
           item.summary || snippet || item.description || "",
+          access === "Paywall likely" && previewText
+            ? `Publisher preview: ${previewText}`
+            : "",
           item.reason ? `Why included: ${item.reason}` : "",
           comments.length > 0
             ? `Comments: ${flattenCommentText(comments).join(" | ")}`
@@ -233,7 +246,7 @@ export function buildJsonSummary(items, sourceResults, now = new Date(), options
         sourceName: item.sourceName,
         sourceFeedUrl: item.sourceFeedUrl || "",
         sourceType: itemSourceType(item),
-        access: itemAccessLabel(item),
+        access,
         link: item.link,
         guid: item.guid || item.link,
         pubDate: item.pubDate?.toISOString() || null,
@@ -241,6 +254,10 @@ export function buildJsonSummary(items, sourceResults, now = new Date(), options
         category: item.category || categorizeTerms(matchedTerms),
         snippet,
         summary: item.summary || "",
+        previewText: access === "Paywall likely" ? previewText : "",
+        previewChecked: includeRejected
+          ? item.previewChecked === true
+          : undefined,
         reason: item.reason || "",
         // undefined (not yet judged) is omitted by JSON.stringify, which
         // marks the item for a relevance pass on the next run.

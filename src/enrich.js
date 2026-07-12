@@ -5,6 +5,7 @@ import {
   cleanStorySnippet,
   cleanText,
   mapWithConcurrency,
+  normalizePreviewText,
   parseDate,
   parsePositiveInteger,
 } from "./utils.js";
@@ -16,8 +17,13 @@ import {
   MENTION_TERMS,
   TOPIC_TERMS,
 } from "./matching.js";
-import { extractArticleComments, htmlToArticleText } from "./parsers.js";
+import {
+  extractArticleComments,
+  extractArticlePreview,
+  htmlToArticleText,
+} from "./parsers.js";
 import { fetchText, throttleRequest } from "./fetching.js";
+import { isLikelyPaywalled } from "./relevance.js";
 
 const googleDecoder = new GoogleDecoder();
 
@@ -133,10 +139,34 @@ function shouldFetchArticle(item, feedBrandMatches, topicMatches) {
   );
 }
 
+function shouldFetchPreview(
+  item,
+  resolvedLink,
+  feedBrandMatches,
+  topicMatches,
+  cachedMatches = [],
+) {
+  if (
+    !scanArticlePages() ||
+    item.previewArticle === false ||
+    !isLikelyPaywalled({ ...item, link: resolvedLink })
+  ) {
+    return false;
+  }
+
+  return (
+    feedBrandMatches.length > 0 ||
+    topicMatches.length > 0 ||
+    cachedMatches.length > 0 ||
+    (item.searchFallbackTerms || []).length > 0 ||
+    item.requireBrandMatch
+  );
+}
+
 function writeArticleCache(articleCache, keys, item, resolvedLink, details, now) {
   const matchedTerms = canonicalizeMatchedTerms(details.matchedTerms || []);
-  const isErrorOnlyEntry =
-    Boolean(details.articleError) && matchedTerms.length === 0;
+  const isErrorOnlyEntry = Boolean(details.articleError) &&
+    (matchedTerms.length === 0 || details.previewChecked !== true);
   const cacheEntry = {
     url: item.link,
     resolvedUrl: resolvedLink,
@@ -149,6 +179,8 @@ function writeArticleCache(articleCache, keys, item, resolvedLink, details, now)
     ),
     matchedTerms,
     snippet: cleanStorySnippet(details.snippet || "", item.title),
+    previewText: normalizePreviewText(details.previewText || ""),
+    previewChecked: details.previewChecked === true,
     articleError: details.articleError || "",
     comments: Array.isArray(details.comments) ? details.comments : [],
     matchSource: details.matchSource || "",
@@ -191,6 +223,8 @@ function itemFromArticleCache(
     matchedTerms,
     category: categorizeTerms(matchedTerms),
     snippet: cleanStorySnippet(cached.snippet || item.description || "", item.title),
+    previewText: normalizePreviewText(cached.previewText || ""),
+    previewChecked: cached.previewChecked === true,
     comments: mergeComments(item.comments, cached.comments),
     articleError: cached.articleError || "",
     matchSource,
@@ -234,6 +268,8 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
   const articleCache = options.articleCache || {};
   const metrics = options.metrics || {};
   const now = options.now || new Date();
+  const fetchArticleText = options.fetchText || fetchText;
+  const throttleArticleRequest = options.throttleRequest || throttleRequest;
   if (metrics.enrichment) {
     metrics.enrichment.itemsSeen = items.length;
   }
@@ -243,6 +279,10 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
     let articleText = "";
     let articleComments = [];
     let articleError = "";
+    let previewText = "";
+    let previewChecked = false;
+    let inheritedCache = null;
+    let matchedCachedItem = null;
     let resolvedLink = item.link;
     const originalLink = item.link;
 
@@ -265,10 +305,21 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
       cacheKeys,
       now,
     );
+    const matchedCacheEntry = cache.get(resolvedLink);
+    const previewRequested = shouldFetchPreview(
+      item,
+      resolvedLink,
+      feedBrandMatches,
+      topicMatches,
+      [
+        ...(matchedCacheEntry?.matchedTerms || []),
+        ...(freshArticleCache?.matchedTerms || []),
+      ],
+    );
 
-    if (cache.has(resolvedLink)) {
+    if (matchedCacheEntry) {
       bumpMetric(metrics, "matchedCacheHits");
-      const cached = cache.get(resolvedLink);
+      const cached = matchedCacheEntry;
       let matchedTerms = canonicalizeMatchedTerms([
         ...(cached.matchedTerms || []),
         ...feedBrandMatches,
@@ -277,14 +328,15 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
       if (matchedTerms.length === 0) {
         matchedTerms = canonicalizeMatchedTerms(item.searchFallbackTerms || []);
       }
-      console.log(`Cache Hit: Skipping fetch/scrape for ${resolvedLink}`);
-      return {
+      const cachedItem = {
         ...item,
         link: resolvedLink,
         matchedTerms,
         category: categorizeTerms(matchedTerms),
         pubDate: item.pubDate || cached.pubDate || null,
         snippet: cleanStorySnippet(cached.snippet, item.title),
+        previewText: normalizePreviewText(cached.previewText || ""),
+        previewChecked: cached.previewChecked === true,
         summary: cached.summary || "",
         reason: cached.reason || "",
         relevant: cached.relevant,
@@ -292,6 +344,15 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
         articleError: cached.articleError,
         matchSource: cached.matchSource || "",
       };
+      matchedCachedItem = cachedItem;
+      if (!previewRequested || cached.previewChecked === true) {
+        console.log(`Cache Hit: Skipping fetch/scrape for ${resolvedLink}`);
+        if (cached.previewChecked === true) {
+          bumpMetric(metrics, "previewCacheHits");
+        }
+        return cachedItem;
+      }
+      inheritedCache = cached;
     }
 
     if (freshArticleCache) {
@@ -306,28 +367,60 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
         bumpMetric(metrics, "negativeCacheHits");
         return null;
       }
-      bumpMetric(metrics, "articleCacheHits");
-      return cachedItem;
+      if (
+        !previewRequested ||
+        freshArticleCache.previewChecked === true ||
+        Boolean(freshArticleCache.articleError)
+      ) {
+        bumpMetric(metrics, "articleCacheHits");
+        if (freshArticleCache.previewChecked === true) {
+          bumpMetric(metrics, "previewCacheHits");
+        }
+        if (!matchedCachedItem) {
+          return cachedItem;
+        }
+        return {
+          ...matchedCachedItem,
+          previewText: cachedItem.previewText,
+          previewChecked: cachedItem.previewChecked,
+          comments: mergeComments(
+            matchedCachedItem.comments,
+            cachedItem.comments,
+          ),
+          articleError: cachedItem.articleError || matchedCachedItem.articleError,
+        };
+      }
+      inheritedCache = inheritedCache || freshArticleCache;
     }
 
     const scanMode = item.articleScanMode || (item.scanArticle === false ? "feedOnly" : "smart");
     trackScanMode(metrics, scanMode);
-    const fetchArticle = shouldFetchArticle(item, feedBrandMatches, topicMatches);
+    const fetchArticle =
+      shouldFetchArticle(item, feedBrandMatches, topicMatches) || previewRequested;
+    const collectPreview =
+      fetchArticle && isLikelyPaywalled({ ...item, link: resolvedLink });
     if (fetchArticle) {
-      await throttleRequest(resolvedLink);
+      await throttleArticleRequest(resolvedLink);
       try {
         bumpMetric(metrics, "articleFetches");
+        if (collectPreview) {
+          bumpMetric(metrics, "previewFetches");
+        }
         const staleArticleCache = findArticleCacheEntry(articleCache, cacheKeys);
+        const conditionalHeaders =
+          collectPreview && staleArticleCache?.previewChecked !== true
+            ? {}
+            : staleArticleCache?.articleHeaders || {};
         const {
           text: html,
           url: finalUrl,
           notModified,
           etag,
           lastModified,
-        } = await fetchText(
+        } = await fetchArticleText(
           resolvedLink,
           "text/html, application/xhtml+xml, */*",
-          { conditionalHeaders: staleArticleCache?.articleHeaders || {} },
+          { conditionalHeaders },
         );
         if (notModified && staleArticleCache) {
           bumpMetric(metrics, "articleNotModified");
@@ -338,21 +431,41 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
             feedBrandMatches,
             topicMatches,
           );
+          const refreshedCache = {
+            ...staleArticleCache,
+            previewChecked: staleArticleCache.previewChecked === true,
+          };
           writeArticleCache(
             articleCache,
             cacheKeys,
             item,
             resolvedLink,
-            staleArticleCache,
+            refreshedCache,
             now,
           );
-          return cachedItem;
+          return cachedItem
+            ? {
+                ...cachedItem,
+                previewText: normalizePreviewText(
+                  staleArticleCache.previewText || "",
+                ),
+                previewChecked: refreshedCache.previewChecked,
+              }
+            : cachedItem;
         }
 
         if (finalUrl) {
           resolvedLink = finalUrl;
         }
         articleText = htmlToArticleText(html, finalUrl || resolvedLink);
+        if (collectPreview) {
+          previewChecked = true;
+          previewText = extractArticlePreview(html, finalUrl || resolvedLink);
+          bumpMetric(
+            metrics,
+            previewText ? "previewsFound" : "previewUnavailable",
+          );
+        }
         articleComments = extractArticleComments(html);
         if (articleComments.length > 0) {
           bumpMetric(metrics, "commentsFound", articleComments.length);
@@ -361,6 +474,9 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
       } catch (error) {
         articleError = error.message;
         bumpMetric(metrics, "articleErrors");
+        if (collectPreview) {
+          bumpMetric(metrics, "previewUnavailable");
+        }
       }
     } else {
       bumpMetric(metrics, "articleFetchSkipped");
@@ -399,11 +515,25 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
     }
 
     const matchedTerms = [
-      ...new Set([...feedBrandMatches, ...articleBrandMatches, ...topicMatches]),
+      ...new Set([
+        ...(inheritedCache?.matchedTerms || []),
+        ...feedBrandMatches,
+        ...articleBrandMatches,
+        ...topicMatches,
+      ]),
     ];
 
     let finalMatchedTerms = canonicalizeMatchedTerms(matchedTerms);
-    let matchSource = "text";
+    const hasFreshTextMatches =
+      feedBrandMatches.length > 0 ||
+      articleBrandMatches.length > 0 ||
+      topicMatches.length > 0;
+    let matchSource =
+      inheritedCache?.matchSource === "searchFallback"
+        ? "searchFallback"
+        : hasFreshTextMatches
+          ? "text"
+          : inheritedCache?.matchSource || "text";
     if (finalMatchedTerms.length === 0) {
       const fallbackTerms = canonicalizeMatchedTerms(item.searchFallbackTerms || []);
       if (fallbackTerms.length === 0) {
@@ -431,10 +561,15 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
     const snippetSource =
       articleBrandMatches.length > 0 ? articleText : item.feedContent;
     const snippet = cleanStorySnippet(
-      buildSnippet(snippetSource, [...MENTION_TERMS, ...TOPIC_TERMS]),
+      inheritedCache?.snippet ||
+        buildSnippet(snippetSource, [...MENTION_TERMS, ...TOPIC_TERMS]),
       item.title,
     );
-    const comments = mergeComments(item.comments, articleComments);
+    const comments = mergeComments(
+      item.comments,
+      inheritedCache?.comments,
+      articleComments,
+    );
     writeArticleCache(
       articleCache,
       articleCacheKeys(originalLink, resolvedLink),
@@ -443,6 +578,8 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
       {
         matchedTerms: finalMatchedTerms,
         snippet,
+        previewText,
+        previewChecked,
         comments,
         articleError,
         matchSource,
@@ -457,6 +594,14 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
       matchedTerms: finalMatchedTerms,
       category: categorizeTerms(finalMatchedTerms),
       snippet,
+      previewText,
+      previewChecked,
+      summary: inheritedCache?.summary || item.summary || "",
+      reason: inheritedCache?.reason || item.reason || "",
+      relevant:
+        typeof inheritedCache?.relevant === "boolean"
+          ? inheritedCache.relevant
+          : item.relevant,
       comments,
       articleError,
       matchSource,

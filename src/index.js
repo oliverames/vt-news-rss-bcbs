@@ -71,6 +71,10 @@ function createCrawlMetrics(sources, startedAt) {
       articleFetchSkipped: 0,
       articleNotModified: 0,
       articleErrors: 0,
+      previewFetches: 0,
+      previewCacheHits: 0,
+      previewsFound: 0,
+      previewUnavailable: 0,
       commentsFound: 0,
       scanModes: {},
     },
@@ -224,9 +228,11 @@ export {
 } from "./matching.js";
 export {
   extractArticleComments,
+  extractArticlePreview,
   htmlToArticleText,
   mergeFacebookPagePostItem,
   parseBcbsAssociationNewsItems,
+  parseCnnHealthSitemapItems,
   parseBlueCrossVtListingItems,
   parseFacebookEmbeddedComments,
   parseFacebookEmbeddedPosts,
@@ -244,7 +250,7 @@ export {
 } from "./fetching.js";
 export { isObituaryItem } from "./filters.js";
 export { enrichAndFilterItems } from "./enrich.js";
-export { applyDeterministicRelevance } from "./relevance.js";
+export { applyDeterministicRelevance, isLikelyPaywalled } from "./relevance.js";
 export { dedupeResolvedItems, mergeWithArchive, normalizeCrawlState } from "./archive.js";
 export {
   buildSummaryPrompt,

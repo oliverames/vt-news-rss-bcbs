@@ -1,3 +1,52 @@
+## 2026-07-12 - Add paywall previews and refresh source coverage
+
+**What changed**: Added a publisher preview for articles labeled `Paywall
+likely`. The collector reads only the publisher's ordinary unauthenticated
+HTML, keeps at most two editorial paragraphs and 600 characters, removes
+subscription and login prompts, and labels the text separately from generated
+summaries in RSS, JSON, and the browser reader. Preview results and completed
+checks persist in the article cache. Transient fetch failures retain the
+one-day retry path, and legacy cache entries fetch a full response instead of
+accepting an empty 304 during migration.
+
+The source review added Burlington Free Press, The Rake Vermont, Poultney
+Journal, Magic 96.7 Vermont News, The Vermont Cynic, and Stratton Magazine.
+The revised list has 86 default rows. Town Meeting TV now uses its current
+official YouTube Atom feed, and CNN Health uses CNN's current news sitemap.
+The Times Ink was removed because its homepage, feeds, WordPress API, sitemap,
+and robots.txt all returned HTTP 500, while its Google fallback returned no
+items. The four stale TownNews category searches now use their current broad
+article feeds. Fierce Healthcare's compact `11:00am` dates parse correctly.
+Google News searches have local rolling date guards because live results
+showed that Google can ignore a `when:` operator even when the query is
+parenthesized.
+
+**Decisions made**: The preview is an attributed lead excerpt, not a paywall
+bypass or full-text mirror. The collector does not use authenticated sessions,
+alternate user agents, AMP or cache copies, archive services, or embedded
+full-article metadata. The outlet additions came from the [Seven Days Vermont
+news outlet directory](https://www.sevendaysvt.com/news/vermont-news-outlets-directory/),
+the [Vermont Press Association directory](https://www.vtpress.org/about-our-newspapers/),
+and direct tests of each publisher's feed. WVMT was excluded because its feed
+reposts WCAX links. WDEV remains out because its local news product is audio,
+and the Guilford Gazette would need a PDF-specific ingestion path.
+
+**Left off at**: All 86 tests passed. Every source file, the test file, and the
+reader script parsed cleanly; `git diff --check` passed. A clean live run with
+article scanning disabled fetched 85 active rows, skipped the closed 2026
+backfill as designed, recorded zero hard failures, collected 1,771 bounded
+source items, and wrote 155 matching stories. The generated RSS passed
+`xmllint`, both JSON files parsed, and live unauthenticated preview probes
+returned bounded text from Valley News, STAT, and a Wall Street Journal result.
+
+**Open questions**: Fifteen valid search rows returned zero current items. The
+list includes Burlington Free Press, twelve other site-scoped local outlets,
+and the two broad Vermont and Blue Cross searches. Their endpoints worked, but
+no result survived the 7-day or 30-day age guard. That is an honest empty
+result rather than a source failure.
+
+---
+
 ## 2026-07-02 - Reliability review sweep for v1.1.0
 
 **What changed**: Full-app review pass focused on reliability. Dependencies:

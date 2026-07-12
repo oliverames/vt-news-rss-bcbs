@@ -12,6 +12,7 @@ import {
   mergeFacebookPagePostItem,
   parseBcbsAssociationNewsItems,
   parseBlueCrossVtListingItems,
+  parseCnnHealthSitemapItems,
   parseFacebookPageHtml,
   parseFacebookPostHtml,
   parseFeedItems,
@@ -524,19 +525,27 @@ function dedupeItems(items) {
   return [...byKey.values()];
 }
 
-export function filterSourceItemsByDateWindow(items, source) {
-  if (!source.minPubDate && !source.maxPubDate) {
+export function filterSourceItemsByDateWindow(items, source, now = new Date()) {
+  const maxItemAgeDays = Number(source.maxItemAgeDays);
+  const hasRollingMinimum = Number.isFinite(maxItemAgeDays) && maxItemAgeDays > 0;
+  if (!source.minPubDate && !source.maxPubDate && !hasRollingMinimum) {
     return items;
   }
 
   const minDate = parseDate(source.minPubDate);
   const maxDate = parseDate(source.maxPubDate);
+  const rollingMinTime = hasRollingMinimum
+    ? now.valueOf() - maxItemAgeDays * 24 * 60 * 60 * 1000
+    : null;
   return items.filter((item) => {
     const time = item.pubDate?.valueOf();
     if (time === undefined || time === null || Number.isNaN(time)) {
       return false;
     }
     if (minDate && time < minDate.valueOf()) {
+      return false;
+    }
+    if (rollingMinTime !== null && time < rollingMinTime) {
       return false;
     }
     if (maxDate && time >= maxDate.valueOf()) {
@@ -546,8 +555,8 @@ export function filterSourceItemsByDateWindow(items, source) {
   });
 }
 
-function applySourceItemBounds(items, source) {
-  const datedItems = filterSourceItemsByDateWindow(items, source);
+function applySourceItemBounds(items, source, now) {
+  const datedItems = filterSourceItemsByDateWindow(items, source, now);
   const filteredItems = datedItems.filter((item) => !isObituaryItem(item));
   return source.maxItems ? filteredItems.slice(0, source.maxItems) : filteredItems;
 }
@@ -617,7 +626,7 @@ async function fetchItemsForSource(source, now, crawlState, metrics) {
       );
       notModified = pageNotModified;
       sourceItems = parseFacebookPageHtml(html, source);
-      sourceItems = applySourceItemBounds(sourceItems, source);
+      sourceItems = applySourceItemBounds(sourceItems, source, now);
       sourceItems = await enrichFacebookPageItemsFromPosts(sourceItems, source);
       sourceItems = sourceItems.map((item) => ({
         ...item,
@@ -638,15 +647,17 @@ async function fetchItemsForSource(source, now, crawlState, metrics) {
         sourceItems = parseUvmHealthNewsroomItems(html, source);
       } else if (source.listingParser === "bcbsAssociationNews") {
         sourceItems = parseBcbsAssociationNewsItems(html, source);
+      } else if (source.listingParser === "cnnHealthSitemap") {
+        sourceItems = parseCnnHealthSitemapItems(html, source);
       } else {
         sourceItems = parseBlueCrossVtListingItems(html, source);
       }
-      sourceItems = applySourceItemBounds(sourceItems, source);
+      sourceItems = applySourceItemBounds(sourceItems, source, now);
     } else {
       const feed = await fetchSourceFeedXml(source, crawlState, now, metrics);
       feedUrl = feed.source.feedUrl;
       sourceItems = parseFeedItems(feed.xml, feed.source);
-      sourceItems = applySourceItemBounds(sourceItems, feed.source);
+      sourceItems = applySourceItemBounds(sourceItems, feed.source, now);
       feedFallbackFrom = feed.fallbackFrom;
       primaryFeedError = feed.primaryError;
       primaryCooldown = feed.primaryCooldown;

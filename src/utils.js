@@ -19,6 +19,19 @@ export function cleanText(value = "") {
     .trim();
 }
 
+export function normalizePreviewText(value = "", maxCharacters = 600) {
+  const cleaned = cleanText(value);
+  if (cleaned.length <= maxCharacters) {
+    return cleaned;
+  }
+
+  const room = Math.max(0, maxCharacters - 3);
+  const candidate = cleaned.slice(0, room).trimEnd();
+  const lastSpace = candidate.lastIndexOf(" ");
+  const truncated = lastSpace > 0 ? candidate.slice(0, lastSpace) : candidate;
+  return `${truncated.trimEnd()}...`;
+}
+
 function normalizeForDuplicateCheck(value = "") {
   return cleanText(value)
     .toLowerCase()
@@ -93,7 +106,8 @@ export function parseDate(value) {
     return null;
   }
 
-  const parsed = new Date(value);
+  const normalized = String(value).replace(/(\d)(am|pm)\b/gi, "$1 $2");
+  const parsed = new Date(normalized);
   return Number.isNaN(parsed.valueOf()) ? null : parsed;
 }
 

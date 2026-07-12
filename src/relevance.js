@@ -14,8 +14,16 @@ import {
 const BLUECROSSVT_HOST_PATTERN = /^https?:\/\/(?:www\.)?bluecrossvt\.org\//i;
 const FACEBOOK_HOST_PATTERN = /^https?:\/\/(?:www\.)?facebook\.com\//i;
 
-const PAYWALL_HOST_PATTERN =
-  /(?:burlingtonfreepress\.com|modernhealthcare\.com|nytimes\.com|statnews\.com|timesargus\.com|vnews\.com|washingtonpost\.com|wsj\.com)/i;
+const PAYWALL_HOSTS = [
+  "burlingtonfreepress.com",
+  "modernhealthcare.com",
+  "nytimes.com",
+  "statnews.com",
+  "timesargus.com",
+  "vnews.com",
+  "washingtonpost.com",
+  "wsj.com",
+];
 
 const FREE_ACCESS_HOST_PATTERN =
   /(?:abcnews\.go\.com|addisonindependent\.com|apnews\.com|axios\.com|bcbs\.com|beckershospitalreview\.com|beckerspayer\.com|benningtonbanner\.com|bluecrossvt\.org|cbsnews\.com|cnn\.com|compassvermont\.com|fiercehealthcare\.com|healthcaredive\.com|kffhealthnews\.org|mynbc5\.com|mychamplainvalley\.com|npr\.org|reformer\.com|samessenger\.com|sevendaysvt\.com|thehill\.com|uvmhealth\.org|vermontbiz\.com|vermontdailychronicle\.com|vermontpublic\.org|vtcng\.com|vtdigger\.org|wcax\.com)/i;
@@ -108,17 +116,24 @@ export function itemSourceType(item) {
 
 export function itemAccessLabel(item) {
   const link = itemLink(item);
-  const host = itemHost(item);
   if (FACEBOOK_HOST_PATTERN.test(link)) {
     return "May require login";
   }
-  if (PAYWALL_HOST_PATTERN.test(host)) {
+  if (isLikelyPaywalled(item)) {
     return "Paywall likely";
   }
+  const host = itemHost(item);
   if (FREE_ACCESS_HOST_PATTERN.test(host)) {
     return "Free to read";
   }
   return "Access varies";
+}
+
+export function isLikelyPaywalled(item) {
+  const host = itemHost(item).toLowerCase();
+  return PAYWALL_HOSTS.some(
+    (paywallHost) => host === paywallHost || host.endsWith(`.${paywallHost}`),
+  );
 }
 
 function hasNationalPolicySignal(text, matchedTerms = []) {

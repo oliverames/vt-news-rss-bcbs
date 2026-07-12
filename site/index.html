@@ -501,6 +501,7 @@
           item.title,
           item.summary,
           item.snippet,
+          item.previewText,
           item.reason,
           item.sourceName,
           ...(item.matchedTerms || []),
@@ -746,6 +747,16 @@
             summary.className = "summary";
             summary.appendChild(document.createTextNode(item.summary || item.snippet));
             li.appendChild(summary);
+          }
+
+          if (item.access === "Paywall likely" && item.previewText) {
+            const preview = document.createElement("div");
+            preview.className = "summary";
+            const previewLabel = document.createElement("strong");
+            previewLabel.textContent = "Publisher preview: ";
+            preview.appendChild(previewLabel);
+            preview.appendChild(document.createTextNode(item.previewText));
+            li.appendChild(preview);
           }
 
           if (item.reason) {

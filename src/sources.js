@@ -72,7 +72,7 @@ const BLUE_CROSS_VT_BACKFILL_TERMS = [
 ];
 
 const BLUE_CROSS_CURRENT_SEARCH_QUERY =
-  BLUE_CROSS_CURRENT_SEARCH_TERMS.join(" OR ");
+  `(${BLUE_CROSS_CURRENT_SEARCH_TERMS.join(" OR ")}) when:30d`;
 const BLUE_CROSS_VT_BACKFILL_QUERY =
   BLUE_CROSS_VT_BACKFILL_TERMS.join(" OR ");
 
@@ -104,6 +104,7 @@ function localOutletFallbackFeed(site, days = 30) {
     ),
     isSearchFeed: true,
     scanArticle: false,
+    maxItemAgeDays: days,
     maxItems: 25,
   };
 }
@@ -224,7 +225,7 @@ export const DEFAULT_SOURCES = [
     name: "Rutland Herald",
     homepage: "https://www.rutlandherald.com/",
     feedUrl:
-      "https://www.rutlandherald.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+      "https://www.rutlandherald.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
     fallbackFeed: localOutletFallbackFeed("rutlandherald.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
@@ -232,7 +233,7 @@ export const DEFAULT_SOURCES = [
     name: "Times Argus",
     homepage: "https://www.timesargus.com/",
     feedUrl:
-      "https://www.timesargus.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+      "https://www.timesargus.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
     fallbackFeed: localOutletFallbackFeed("timesargus.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
@@ -250,7 +251,7 @@ export const DEFAULT_SOURCES = [
     name: "Bennington Banner",
     homepage: "https://www.benningtonbanner.com/",
     feedUrl:
-      "https://www.benningtonbanner.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+      "https://www.benningtonbanner.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
     fallbackFeed: localOutletFallbackFeed("benningtonbanner.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
@@ -258,7 +259,7 @@ export const DEFAULT_SOURCES = [
     name: "Brattleboro Reformer",
     homepage: "https://www.reformer.com/",
     feedUrl:
-      "https://www.reformer.com/search/?f=rss&t=article&c=news&l=50&s=start_time&sd=desc",
+      "https://www.reformer.com/search/?f=rss&t=article&l=50&s=start_time&sd=desc",
     fallbackFeed: localOutletFallbackFeed("reformer.com"),
     ...TOWNNEWS_SEARCH_THROTTLE,
   },
@@ -454,12 +455,6 @@ export const DEFAULT_SOURCES = [
     fallbackFeed: localOutletFallbackFeed("ourherald.com"),
   },
   {
-    name: "The Times Ink",
-    homepage: "https://timesinkvt.org/",
-    feedUrl: "https://timesinkvt.org/feed/",
-    fallbackFeed: localOutletFallbackFeed("timesinkvt.org"),
-  },
-  {
     name: "Springfield Reporter / Springfield Vermont News",
     homepage: "https://springfieldvt.blogspot.com/p/springfield-reporter.html",
     feedUrl: "https://springfieldvt.blogspot.com/feeds/posts/default?alt=rss",
@@ -539,7 +534,9 @@ export const DEFAULT_SOURCES = [
   {
     name: "Town Meeting TV",
     homepage: "https://www.cctv.org/",
-    feedUrl: "https://www.cctv.org/rss.xml",
+    feedUrl:
+      "https://www.youtube.com/feeds/videos.xml?channel_id=UCJkWMLSqRNKLoyUZQiNoAcQ",
+    scanArticle: false,
     fallbackFeed: localOutletFallbackFeed("cctv.org"),
   },
   {
@@ -548,12 +545,48 @@ export const DEFAULT_SOURCES = [
     feedUrl: "https://www.ibrattleboro.com/feed/",
     fallbackFeed: localOutletFallbackFeed("ibrattleboro.com"),
   },
+  localOutletSearchSource(
+    "Burlington Free Press",
+    "https://www.burlingtonfreepress.com/",
+    "burlingtonfreepress.com",
+  ),
+  {
+    name: "The Rake Vermont",
+    homepage: "https://www.rakevt.org/",
+    feedUrl: "https://www.rakevt.org/feed/",
+    fallbackFeed: localOutletFallbackFeed("rakevt.org"),
+  },
+  {
+    name: "Poultney Journal",
+    homepage: "https://www.poultneyjournal.com/",
+    feedUrl: "https://www.poultneyjournal.com/rss/",
+    fallbackFeed: localOutletFallbackFeed("poultneyjournal.com"),
+  },
+  {
+    name: "Magic 96.7 Vermont News",
+    homepage: "https://www.magic967.com/",
+    feedUrl: "https://www.magic967.com/news/vermont/feed.xml",
+    fallbackFeed: localOutletFallbackFeed("magic967.com"),
+  },
+  {
+    name: "The Vermont Cynic",
+    homepage: "https://vtcynic.com/",
+    feedUrl: "https://vtcynic.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("vtcynic.com"),
+  },
+  {
+    name: "Stratton Magazine",
+    homepage: "https://strattonmagazine.com/",
+    feedUrl: "https://strattonmagazine.com/feed/",
+    fallbackFeed: localOutletFallbackFeed("strattonmagazine.com"),
+  },
   {
     name: "Google News Search",
     homepage: "https://news.google.com/",
     feedUrl: googleNewsSearchUrl(BLUE_CROSS_CURRENT_SEARCH_QUERY),
     isSearchFeed: true,
     searchFallbackTerms: ["Blue Cross"],
+    maxItemAgeDays: 30,
     maxItems: 50,
   },
   blueCrossVtBackfillSource(
@@ -565,7 +598,7 @@ export const DEFAULT_SOURCES = [
     name: "Google News Vermont Health Search",
     homepage: "https://news.google.com/",
     feedUrl: googleNewsSearchUrl(
-      [
+      `(${[
         'Vermont AND "healthcare"',
         'Vermont AND "health care"',
         'Vermont AND "hospitals"',
@@ -582,10 +615,11 @@ export const DEFAULT_SOURCES = [
         '"Vermont Department of Health"',
         '"health insurance premiums" Vermont',
         '"Medicare Advantage" Vermont',
-      ].join(" OR ") + " when:7d",
+      ].join(" OR ")}) when:7d`,
     ),
     isSearchFeed: true,
     scanArticle: false,
+    maxItemAgeDays: 7,
     maxItems: 50,
   },
   {
@@ -599,6 +633,7 @@ export const DEFAULT_SOURCES = [
     ),
     isSearchFeed: true,
     scanArticle: false,
+    maxItemAgeDays: 14,
     maxItems: 75,
   },
   {
@@ -619,6 +654,7 @@ export const DEFAULT_SOURCES = [
     ),
     isSearchFeed: true,
     scanArticle: false,
+    maxItemAgeDays: 7,
     maxItems: 30,
   },
   {
@@ -638,7 +674,8 @@ export const DEFAULT_SOURCES = [
   {
     name: "CNN Health",
     homepage: "https://www.cnn.com/health",
-    feedUrl: "http://rss.cnn.com/rss/cnn_health.rss",
+    listingUrl: "https://www.cnn.com/sitemap/news.xml",
+    listingParser: "cnnHealthSitemap",
     scanArticle: false,
     maxItems: 50,
   },
@@ -695,6 +732,7 @@ export const DEFAULT_SOURCES = [
     ),
     isSearchFeed: true,
     scanArticle: false,
+    maxItemAgeDays: 14,
     maxItems: 75,
   },
   {
@@ -708,6 +746,7 @@ export const DEFAULT_SOURCES = [
     ),
     isSearchFeed: true,
     scanArticle: false,
+    maxItemAgeDays: 14,
     maxItems: 75,
   },
 ];
@@ -813,20 +852,26 @@ export function buildSourcesFromEnv(baseSources = DEFAULT_SOURCES) {
 export const VERMONT_SOURCE_NAMES = new Set([
   "Addison Independent",
   "Bennington Banner",
+  "Burlington Free Press",
   "Brattleboro Reformer",
   "MyChamplainValley",
   "MyNBC5",
+  "Magic 96.7 Vermont News",
   "Newport Daily Express",
   "Rutland Herald",
+  "Poultney Journal",
   "St. Albans Messenger",
   "Seven Days",
   "The Mountain Times",
+  "The Rake Vermont",
+  "The Vermont Cynic",
   "Times Argus",
   "Valley News",
   "Vermont Business Magazine",
   "Vermont Community Newspaper Group",
   "Vermont Daily Chronicle",
   "Vermont Public",
+  "Stratton Magazine",
   "VTDigger",
   "WCAX",
 ]);
