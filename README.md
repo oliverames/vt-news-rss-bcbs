@@ -139,6 +139,7 @@ The browser does not recrawl sources. GitHub Actions does the collection and dep
 | `RSS_FETCH_ATTEMPTS` | No | `3` | Fetch attempts before a source or article is marked failed |
 | `RSS_MAX_RESPONSE_BYTES` | No | `10485760` | Maximum decompressed response size before a fetch is abandoned |
 | `RSS_ARTICLE_SCAN` | No | `true` | Set to `false` to filter only RSS feed text |
+| `RSS_PREVIEW_BACKFILL_MAX_PER_RUN` | No | `25` | Maximum archived paywall stories to revisit for previews in one run |
 | `RSS_NEGATIVE_CACHE_TTL_DAYS` | No | `14` | Days to keep article cache entries, including negative no-match results, before validating or refreshing. No-match verdicts caused by a failed article fetch expire after one day regardless, so a transient 429 or timeout cannot suppress matching for two weeks. |
 | `RSS_MAX_FUTURE_HOURS` | No | `6` | Future-dated item tolerance before exclusion |
 | `ARCHIVE_MAX_AGE_DAYS` | No | `92` | Maximum age for topic-only archived stories |

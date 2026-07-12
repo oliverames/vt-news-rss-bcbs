@@ -3,10 +3,13 @@
 // public surface tests and tooling import from this module.
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { sortItemsByDate } from "./utils.js";
+import { parsePositiveInteger, sortItemsByDate } from "./utils.js";
 import { buildSourcesFromEnv } from "./sources.js";
 import { collectFeedItems } from "./fetching.js";
-import { enrichAndFilterItems } from "./enrich.js";
+import {
+  enrichAndFilterItems,
+  selectPreviewBackfillItems,
+} from "./enrich.js";
 import { applyDeterministicRelevance } from "./relevance.js";
 import {
   dedupeResolvedItems,
@@ -75,6 +78,7 @@ function createCrawlMetrics(sources, startedAt) {
       previewCacheHits: 0,
       previewsFound: 0,
       previewUnavailable: 0,
+      previewBackfillItems: 0,
       commentsFound: 0,
       scanModes: {},
     },
@@ -117,6 +121,20 @@ export async function generateFeed({
     collectFeedItems(sources, now, crawlState, crawlMetrics),
   );
   const items = collected.items;
+  const previewBackfillItems = selectPreviewBackfillItems(
+    archivedItems,
+    items,
+    parsePositiveInteger(process.env.RSS_PREVIEW_BACKFILL_MAX_PER_RUN, 25),
+    crawlState.articleCache,
+    now,
+  );
+  crawlMetrics.enrichment.previewBackfillItems = previewBackfillItems.length;
+  if (previewBackfillItems.length > 0) {
+    console.log(
+      `Backfilling previews for ${previewBackfillItems.length} archived paywall items`,
+    );
+  }
+  const enrichmentItems = [...items, ...previewBackfillItems];
   // Streaks ride along in the published sources array, so the audit JSON
   // doubles as the source-rot dashboard and the persistence layer.
   const sourceResults = applyFailureStreaks(
@@ -129,7 +147,7 @@ export async function generateFeed({
   triggerWebhooks(selectFailureAlerts(sourceResults)).catch(err => console.error("Webhook trigger error:", err));
 
   const currentMatched = await measurePhase(crawlMetrics, "enrich", () =>
-    enrichAndFilterItems(items, cache, {
+    enrichAndFilterItems(enrichmentItems, cache, {
       articleCache: crawlState.articleCache,
       metrics: crawlMetrics,
       now,
@@ -249,7 +267,7 @@ export {
   readResponseTextWithLimit,
 } from "./fetching.js";
 export { isObituaryItem } from "./filters.js";
-export { enrichAndFilterItems } from "./enrich.js";
+export { enrichAndFilterItems, selectPreviewBackfillItems } from "./enrich.js";
 export { applyDeterministicRelevance, isLikelyPaywalled } from "./relevance.js";
 export { dedupeResolvedItems, mergeWithArchive, normalizeCrawlState } from "./archive.js";
 export {

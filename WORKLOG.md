@@ -7,7 +7,10 @@ subscription and login prompts, and labels the text separately from generated
 summaries in RSS, JSON, and the browser reader. Preview results and completed
 checks persist in the article cache. Transient fetch failures retain the
 one-day retry path, and legacy cache entries fetch a full response instead of
-accepting an empty 304 during migration.
+accepting an empty 304 during migration. Each run also revisits up to 25
+recent archived paywall stories, so the existing reader history gains previews
+without sending a large one-time request burst. Recognized publisher domains
+do not fall back to arbitrary body paragraphs when no article body is present.
 
 The source review added Burlington Free Press, The Rake Vermont, Poultney
 Journal, Magic 96.7 Vermont News, The Vermont Cynic, and Stratton Magazine.
@@ -31,13 +34,16 @@ and direct tests of each publisher's feed. WVMT was excluded because its feed
 reposts WCAX links. WDEV remains out because its local news product is audio,
 and the Guilford Gazette would need a PDF-specific ingestion path.
 
-**Left off at**: All 86 tests passed. Every source file, the test file, and the
+**Left off at**: All 90 tests passed. Every source file, the test file, and the
 reader script parsed cleanly; `git diff --check` passed. A clean live run with
 article scanning disabled fetched 85 active rows, skipped the closed 2026
 backfill as designed, recorded zero hard failures, collected 1,771 bounded
 source items, and wrote 155 matching stories. The generated RSS passed
 `xmllint`, both JSON files parsed, and live unauthenticated preview probes
 returned bounded text from Valley News, STAT, and a Wall Street Journal result.
+A production-shaped smoke run against the live archive selected five archived
+paywall stories, made five preview requests, found five bounded previews, and
+published all five relevant previews in the public JSON feed.
 
 **Open questions**: Fifteen valid search rows returned zero current items. The
 list includes Burlington Free Press, twelve other site-scoped local outlets,

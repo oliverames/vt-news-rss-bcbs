@@ -872,22 +872,37 @@ const DOMAIN_ARTICLE_TEXT_SELECTORS = [
     ],
   },
   {
+    hostPattern: /(^|\.)modernhealthcare\.com$/i,
+    strictPreviewSelectors: true,
+    selectors: [
+      "[data-testid='article-body']",
+      "[itemprop='articleBody']",
+      ".article-body",
+      ".story-body",
+      ".entry-content",
+    ],
+  },
+  {
     hostPattern: /(^|\.)valleynews\.com$/i,
     selectors: [".article-body", ".story-body", "[itemprop='articleBody']", "article"],
   },
 ];
 
-function articleSelectorsForUrl(pageUrl = "") {
+function articleSelectorEntryForUrl(pageUrl = "") {
   let hostname = "";
   try {
     hostname = new URL(pageUrl).hostname.replace(/^www\./i, "");
   } catch {
-    return DEFAULT_ARTICLE_TEXT_SELECTORS;
+    return null;
   }
 
-  const matched = DOMAIN_ARTICLE_TEXT_SELECTORS.find((entry) =>
+  return DOMAIN_ARTICLE_TEXT_SELECTORS.find((entry) =>
     entry.hostPattern.test(hostname),
   );
+}
+
+function articleSelectorsForUrl(pageUrl = "") {
+  const matched = articleSelectorEntryForUrl(pageUrl);
   return [
     ...(matched?.selectors || []),
     ...DEFAULT_ARTICLE_TEXT_SELECTORS,
@@ -1131,7 +1146,10 @@ export function extractArticlePreview(html, pageUrl = "", options = {}) {
     "script, style, noscript, svg, iframe, form, nav, footer, header, aside, .sidebar, #sidebar, .nav, .menu, .ads, .ad, .advertisement, [role='banner'], [role='navigation'], [role='contentinfo']",
   ).remove();
 
-  const selectors = articleSelectorsForUrl(pageUrl);
+  const selectorEntry = articleSelectorEntryForUrl(pageUrl);
+  const selectors = selectorEntry?.strictPreviewSelectors
+    ? selectorEntry.selectors
+    : articleSelectorsForUrl(pageUrl);
   let paragraphs = [];
   for (const selector of selectors) {
     const element = $(selector).first();
@@ -1152,6 +1170,10 @@ export function extractArticlePreview(html, pageUrl = "", options = {}) {
     }
   }
 
+  if (paragraphs.length === 0 && articleSelectorEntryForUrl(pageUrl)) {
+    return "";
+  }
+
   if (paragraphs.length === 0) {
     paragraphs = $("body p")
       .map((_, paragraph) => cleanText($(paragraph).text()))
@@ -1167,4 +1189,60 @@ export function extractArticlePreview(html, pageUrl = "", options = {}) {
     cleanText(paragraphs.slice(0, maxParagraphs).join(" ")),
     maxCharacters,
   );
+}
+
+const ARTICLE_TITLE_STOP_WORDS = new Set([
+  "about",
+  "after",
+  "from",
+  "health",
+  "latest",
+  "news",
+  "that",
+  "their",
+  "this",
+  "with",
+]);
+
+function articleTitleTokens(value = "") {
+  return new Set(
+    cleanText(value)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .split(/\s+/)
+      .filter(
+        (token) => token.length >= 4 && !ARTICLE_TITLE_STOP_WORDS.has(token),
+      ),
+  );
+}
+
+export function articlePageMatchesTitle(
+  html,
+  expectedTitle,
+  { requireEvidence = false } = {},
+) {
+  const expectedTokens = articleTitleTokens(expectedTitle);
+  if (expectedTokens.size === 0) {
+    return !requireEvidence;
+  }
+
+  const $ = cheerio.load(html);
+  const candidates = [
+    $("meta[property='og:title']").attr("content"),
+    $("meta[name='twitter:title']").attr("content"),
+    $("h1").first().text(),
+    $("title").text(),
+  ].filter(Boolean);
+  if (candidates.length === 0) {
+    return !requireEvidence;
+  }
+
+  const requiredMatches = Math.min(2, expectedTokens.size);
+  return candidates.some((candidate) => {
+    const candidateTokens = articleTitleTokens(candidate);
+    const matches = [...expectedTokens].filter((token) =>
+      candidateTokens.has(token),
+    ).length;
+    return matches >= requiredMatches && matches / expectedTokens.size >= 0.3;
+  });
 }

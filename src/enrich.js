@@ -18,6 +18,7 @@ import {
   TOPIC_TERMS,
 } from "./matching.js";
 import {
+  articlePageMatchesTitle,
   extractArticleComments,
   extractArticlePreview,
   htmlToArticleText,
@@ -264,6 +265,108 @@ function mergeComments(...commentLists) {
   return merged;
 }
 
+export function selectPreviewBackfillItems(
+  archivedItems,
+  currentItems,
+  limit = 25,
+  articleCache = {},
+  now = new Date(),
+) {
+  const currentLinks = new Set(
+    currentItems.map((item) => item.link).filter(Boolean),
+  );
+  const normalizeTitle = (value) =>
+    cleanText(value)
+      .toLowerCase()
+      .replace(/\s+-\s+[^-]{2,80}$/, "")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim();
+  const normalizePublisher = (value) =>
+    cleanText(value)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, " ")
+      .split(/\s+/)
+      .filter(
+        (token) =>
+          token && !["feed", "google", "health", "news", "search", "the"].includes(token),
+      )
+      .join("");
+  const publisherForItem = (item) => {
+    const suffix = cleanText(item.title).match(/\s+-\s+([^-]{2,80})$/)?.[1];
+    if (suffix) {
+      return normalizePublisher(suffix);
+    }
+    if (item.sourceName && !/^Google News\b/i.test(item.sourceName)) {
+      return normalizePublisher(item.sourceName);
+    }
+    try {
+      return normalizePublisher(
+        new URL(item.link).hostname.replace(/^www\./i, "").split(".")[0],
+      );
+    } catch {
+      return "";
+    }
+  };
+  const storyKey = (item) => {
+    const title = normalizeTitle(item.title);
+    const publisher = publisherForItem(item);
+    return title && publisher ? `${title}|${publisher}` : "";
+  };
+  const currentStoryKeys = new Set(
+    currentItems.map(storyKey).filter(Boolean),
+  );
+  const boundedLimit = Number.isFinite(Number(limit)) && Number(limit) > 0
+    ? Math.floor(Number(limit))
+    : 25;
+
+  return archivedItems
+    .filter((item) => {
+      const cached = articleCache[item.link];
+      const cacheExpiresAt = parseDate(cached?.expiresAt);
+      const hasFreshCachedError = Boolean(cached?.articleError) &&
+        Boolean(cacheExpiresAt) &&
+        cacheExpiresAt.valueOf() > now.valueOf();
+      return (
+        item.relevant !== false &&
+        item.previewChecked !== true &&
+        !currentLinks.has(item.link) &&
+        !currentStoryKeys.has(storyKey(item)) &&
+        !hasFreshCachedError &&
+        isLikelyPaywalled(item)
+      );
+    })
+    .sort(
+      (left, right) =>
+        (parseDate(right.pubDate)?.valueOf() || 0) -
+        (parseDate(left.pubDate)?.valueOf() || 0),
+    )
+    .slice(0, boundedLimit)
+    .map((item) => ({
+      ...item,
+      feedContent: cleanText(
+        [item.title, item.snippet, item.summary, item.reason]
+          .filter(Boolean)
+          .join(" "),
+      ),
+    }));
+}
+
+function articleUrlMateriallyChanged(originalUrl, finalUrl) {
+  try {
+    const original = new URL(originalUrl);
+    const final = new URL(finalUrl);
+    const originalHost = original.hostname.replace(/^www\./i, "").toLowerCase();
+    const finalHost = final.hostname.replace(/^www\./i, "").toLowerCase();
+    const normalizePath = (pathname) => pathname.replace(/\/+$/, "") || "/";
+    return (
+      originalHost !== finalHost ||
+      normalizePath(original.pathname) !== normalizePath(final.pathname)
+    );
+  } catch {
+    return originalUrl !== finalUrl;
+  }
+}
+
 export async function enrichAndFilterItems(items, cache = new Map(), options = {}) {
   const articleCache = options.articleCache || {};
   const metrics = options.metrics || {};
@@ -406,6 +509,7 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
         if (collectPreview) {
           bumpMetric(metrics, "previewFetches");
         }
+        const requestedArticleUrl = resolvedLink;
         const staleArticleCache = findArticleCacheEntry(articleCache, cacheKeys);
         const conditionalHeaders =
           collectPreview && staleArticleCache?.previewChecked !== true
@@ -454,19 +558,35 @@ export async function enrichAndFilterItems(items, cache = new Map(), options = {
             : cachedItem;
         }
 
-        if (finalUrl) {
-          resolvedLink = finalUrl;
+        const articleUrl = finalUrl || requestedArticleUrl;
+        const urlChanged = articleUrlMateriallyChanged(
+          requestedArticleUrl,
+          articleUrl,
+        );
+        const redirectIdentityMatches = !urlChanged || articlePageMatchesTitle(
+          html,
+          item.title,
+          { requireEvidence: true },
+        );
+        if (redirectIdentityMatches) {
+          resolvedLink = articleUrl;
+          articleText = htmlToArticleText(html, articleUrl);
         }
-        articleText = htmlToArticleText(html, finalUrl || resolvedLink);
         if (collectPreview) {
           previewChecked = true;
-          previewText = extractArticlePreview(html, finalUrl || resolvedLink);
+          const previewIdentityMatches = redirectIdentityMatches &&
+            articlePageMatchesTitle(html, item.title);
+          previewText = previewIdentityMatches
+            ? extractArticlePreview(html, articleUrl)
+            : "";
           bumpMetric(
             metrics,
             previewText ? "previewsFound" : "previewUnavailable",
           );
         }
-        articleComments = extractArticleComments(html);
+        articleComments = redirectIdentityMatches
+          ? extractArticleComments(html)
+          : [];
         if (articleComments.length > 0) {
           bumpMetric(metrics, "commentsFound", articleComments.length);
         }

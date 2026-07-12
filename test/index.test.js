@@ -16,6 +16,7 @@ import {
   applyDeterministicRelevance,
   applyFailureStreaks,
   selectFailureAlerts,
+  selectPreviewBackfillItems,
   canonicalizeMatchedTerms,
   categorizeTerms,
   CATEGORY_BRAND,
@@ -2346,6 +2347,165 @@ test("extractArticlePreview skips STAT author biography text", () => {
 
   assert.match(preview, /^Vermont regulators opened/);
   assert.doesNotMatch(preview, /Reporter at Large|Damian covers/);
+});
+
+test("extractArticlePreview does not use unrelated body text on a recognized publisher", () => {
+  const preview = extractArticlePreview(
+    `
+      <html><body>
+        <h1>Prime Therapeutics faces price-fixing allegations</h1>
+        <main class="related-card">
+          <p>Results from an unrelated ACO program showed strong savings.</p>
+        </main>
+      </body></html>
+    `,
+    "https://www.modernhealthcare.com/insurance/example/",
+  );
+
+  assert.equal(preview, "");
+});
+
+test("selectPreviewBackfillItems chooses recent eligible archived paywall stories", () => {
+  const now = new Date("2026-07-12T12:00:00Z");
+  const selected = selectPreviewBackfillItems(
+    [
+      {
+        title: "Fresh cached error",
+        link: "https://www.statnews.com/fresh-error",
+        pubDate: new Date("2026-07-12T13:00:00Z"),
+      },
+      {
+        title: "Newest paywall story",
+        link: "https://www.statnews.com/newest",
+        pubDate: new Date("2026-07-12T12:00:00Z"),
+        snippet: "Health insurance coverage changed.",
+        relevant: true,
+      },
+      {
+        sourceName: "STAT Health News",
+        title: "Already in current feed",
+        link: "https://www.statnews.com/current",
+        pubDate: new Date("2026-07-11T12:00:00Z"),
+      },
+      {
+        title: "Already checked",
+        link: "https://www.timesargus.com/checked",
+        pubDate: new Date("2026-07-10T12:00:00Z"),
+        previewChecked: true,
+      },
+      {
+        title: "Rejected",
+        link: "https://www.vnews.com/rejected",
+        pubDate: new Date("2026-07-09T12:00:00Z"),
+        relevant: false,
+      },
+      {
+        title: "Older paywall story",
+        link: "https://www.statnews.com/older",
+        pubDate: new Date("2026-07-08T12:00:00Z"),
+        summary: "A saved coverage summary.",
+      },
+      {
+        title: "Free story",
+        link: "https://vtdigger.org/free",
+        pubDate: new Date("2026-07-07T12:00:00Z"),
+      },
+    ],
+    [{
+      title: "Already in current feed - STAT",
+      link: "https://news.google.com/rss/articles/wrapper",
+    }],
+    2,
+    {
+      "https://www.statnews.com/fresh-error": {
+        articleError: "temporary timeout",
+        expiresAt: "2026-07-13T12:00:00Z",
+      },
+    },
+    now,
+  );
+
+  assert.deepEqual(selected.map((item) => item.title), [
+    "Newest paywall story",
+    "Older paywall story",
+  ]);
+  assert.match(selected[0].feedContent, /Health insurance coverage changed/);
+  assert.match(selected[1].feedContent, /saved coverage summary/);
+});
+
+test("enrichAndFilterItems rejects a preview after a stale redirect", async () => {
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "true";
+
+  try {
+    const [item] = await enrichAndFilterItems(
+      [{
+        sourceName: "STAT Health News",
+        title: "Vermont premiums face new review",
+        link: "https://www.statnews.com/2026/07/12/stale-story/",
+        feedContent: "Vermont health insurance premiums face a regulatory review.",
+        scanArticle: false,
+      }],
+      new Map(),
+      {
+        articleCache: {},
+        metrics: { enrichment: { scanModes: {} } },
+        now: new Date("2026-07-12T12:00:00Z"),
+        fetchText: async () => ({
+          text: "<main><h1>Latest health news</h1><p>An unrelated article appears on the publisher homepage.</p></main>",
+          url: "https://www.statnews.com/",
+          notModified: false,
+          etag: "",
+          lastModified: "",
+        }),
+        throttleRequest: async () => {},
+      },
+    );
+
+    assert.equal(item.previewText, "");
+    assert.equal(item.previewChecked, true);
+    assert.equal(item.link, "https://www.statnews.com/2026/07/12/stale-story/");
+  } finally {
+    if (originalScan === undefined) delete process.env.RSS_ARTICLE_SCAN;
+    else process.env.RSS_ARTICLE_SCAN = originalScan;
+  }
+});
+
+test("unchanged article URLs keep body-only brand matches when headlines differ", async () => {
+  const originalScan = process.env.RSS_ARTICLE_SCAN;
+  process.env.RSS_ARTICLE_SCAN = "true";
+  const link = "https://example.com/article";
+
+  try {
+    const [item] = await enrichAndFilterItems(
+      [{
+        sourceName: "Example Outlet",
+        title: "Feed headline before an editor update",
+        link,
+        feedContent: "A local business story.",
+        articleScanMode: "always",
+      }],
+      new Map(),
+      {
+        articleCache: {},
+        now: new Date("2026-07-12T12:00:00Z"),
+        fetchText: async () => ({
+          text: "<article><h1>Updated publisher headline</h1><p>Blue Cross VT announced a coverage change.</p></article>",
+          url: link,
+          notModified: false,
+          etag: "",
+          lastModified: "",
+        }),
+        throttleRequest: async () => {},
+      },
+    );
+
+    assert.deepEqual(item.matchedTerms, ["Blue Cross VT"]);
+    assert.equal(item.link, link);
+  } finally {
+    if (originalScan === undefined) delete process.env.RSS_ARTICLE_SCAN;
+    else process.env.RSS_ARTICLE_SCAN = originalScan;
+  }
 });
 
 test("isLikelyPaywalled matches exact publisher hosts and their subdomains", () => {
