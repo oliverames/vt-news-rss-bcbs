@@ -120,16 +120,16 @@ Release → Run workflow with `tag_name: v1.1.0`.
 (SHA `7b1f4a76`) to `@v5.0.0` (SHA `fc324d35`) in `publish-feed.yml`. v5
 updates the bundled `actions/upload-artifact` to v7, clearing the Node 20
 deprecation warning that was annotating every run. Most of the session was
-spent on the separate `oliverames/bcbs-rss` repo (the BCBS Be Well VT blog
+spent on the separate `bcbs-rss` repo (the BCBS Be Well VT blog
 RSS, a sibling project to this news monitor), whose weekly "Publish RSS Site"
 run had been failing since 2026-06-08.
 
 **Decisions made**: Root cause on bcbs-rss was not a workflow bug: it is a
 private repo on a Free GitHub plan, and GitHub Pages requires a paid plan for
 private repos (the `POST /pages` API returned "Your current plan does not
-support GitHub Pages for this repository"). Chose to make bcbs-rss public
-(Oliver's call) rather than upgrade to Pro or retire the project, matching this
-repo's already-public posture. Pinned to the immutable v5 commit SHA with a
+support GitHub Pages for this repository"). The repository was made public
+rather than moving it to a paid plan or retiring it, matching this repository's
+already-public posture. Pinned to the immutable v5 commit SHA with a
 `# v5.0.0` comment rather than the floating `@v5` tag, consistent with this
 repo's existing SHA-pin style.
 
@@ -173,7 +173,7 @@ real secrets exposed.
 
 ## 2026-06-16 - Disable social collection, add article comments and icons
 
-**What changed**: Parked the built-in Facebook/social sources behind `ENABLE_SOCIAL_SOURCES=true` and made env-configured Facebook post/page URLs inactive unless that flag is set. Archived Facebook/social items are now pruned when social collection is disabled, so old social posts do not carry forward from the live audit cache. Added conservative article comment extraction from server-rendered comment sections and JSON-LD `Comment` objects, then merged those comments into already-identified news items during enrichment. Added favicon, Apple touch icon, and web manifest icons generated from the BCBS profile asset at `the provided BCBS profile asset`.
+**What changed**: Parked the built-in Facebook/social sources behind `ENABLE_SOCIAL_SOURCES=true` and made env-configured Facebook post/page URLs inactive unless that flag is set. Archived Facebook/social items are now pruned when social collection is disabled, so old social posts do not carry forward from the live audit cache. Added conservative article comment extraction from server-rendered comment sections and JSON-LD `Comment` objects, then merged those comments into already-identified news items during enrichment. Added favicon, Apple touch icon, and web manifest icons generated from the provided BCBS profile asset.
 
 **Decisions made**: Kept the existing Facebook parsers and reader Social fallback instead of deleting them, so a deliberate one-off social run remains possible with `ENABLE_SOCIAL_SOURCES=true`. Article comments enrich matched stories but do not create new relevance matches by themselves. Used the profile image directly for browser/iPhone assets because it is already square and brand-ready.
 
@@ -215,13 +215,13 @@ real secrets exposed.
 
 ## 2026-06-13 - Apply branded README style
 
-**What changed**: Reworked the public README around the `ames-writing:readme-style` structure: centered project mark, badges, strategic "Why This Exists" framing, quick start, source coverage, matching and relevance behavior, reader experience, configuration, architecture, development commands, and Oliver footer. Added `site/readme-icon.svg` as a small local header mark so the README does not depend on a missing external asset.
+**What changed**: Reworked the public README around the `ames-writing:readme-style` structure: centered project mark, badges, strategic "Why This Exists" framing, quick start, source coverage, matching and relevance behavior, reader experience, configuration, architecture, and development commands. Added `site/readme-icon.svg` as a small local header mark so the README does not depend on a missing external asset.
 
 **Decisions made**: Used a "license not specified" badge rather than inventing a license file. Kept the README factual to the current implementation: 45 configured sources, GitHub Actions doing the hourly crawl, browser-side reader filtering only, BlueCrossVT.org/social hidden from All by default, direct Blue Cross VT mentions retained indefinitely, and the Jan. 1 through June 13, 2026 backfill carried by the audit archive after the bounded source closes.
 
-**Left off at**: `npm test` passed with 45 tests, `node --check src/*.js` passed, `git diff --check` passed, README local asset and source count checks passed, and the link check confirmed the repo, shields, Repository, live reader, GitHub, and Bluesky profile. The commit `6fbf24d` was pushed to `main`; publish run `27466251060` built in 6m7s and deployed successfully.
+**Left off at**: `npm test` passed with 45 tests, `node --check src/*.js` passed, `git diff --check` passed, README local asset and source count checks passed, and the link check confirmed the repository, status badges, and live reader. The commit `6fbf24d` was pushed to `main`; publish run `27466251060` built in 6m7s and deployed successfully.
 
-**Open questions**: None. Automated fetches still warn on `an external site` and LinkedIn-style social pages, but the README keeps the required Oliver identity links from the README style guide.
+**Open questions**: None.
 
 ---
 

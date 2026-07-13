@@ -19,9 +19,6 @@
     <img src="https://img.shields.io/github/actions/workflow/status/oliverames/vt-news-rss-bcbs/publish-feed.yml?branch=main&style=flat-square&label=publish&color=f5a542" alt="Publish workflow">
   </a>
   <img src="https://img.shields.io/badge/license-not_specified-f5a542?style=flat-square" alt="License not specified">
-  <a href="https://github.com/oliverames">
-    <img src="https://img.shields.io/badge/Repository-source-0969da?style=flat-square&logo=github&logoColor=white" alt="Repository">
-  </a>
   <a href="https://oliverames.github.io/vt-news-rss-bcbs/">
     <img src="https://img.shields.io/badge/live-reader-f5a542?style=flat-square" alt="Live reader">
   </a>
@@ -218,20 +215,3 @@ The publish workflow runs on pushes to `main`, manual dispatches, and an hourly 
 ## License
 
 No license file is currently included in this repository.
-
----
-
-<p align="center">
-  <a href="https://github.com/oliverames">
-    <img src="https://img.shields.io/badge/Repository-source-0969da?style=for-the-badge&logo=github&logoColor=white" alt="Repository">
-  </a>
-</p>
-
-<p align="center">
-  <sub>
-    Maintained on GitHub
-    &bull; <a href="https://github.com/oliverames">GitHub</a>
-    &bull; <a href="https://github.com/oliverames">LinkedIn</a>
-    &bull; <a href="https://github.com/oliverames">Bluesky</a>
-  </sub>
-</p>
