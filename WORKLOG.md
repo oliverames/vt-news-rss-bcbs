@@ -1,3 +1,13 @@
+## 2026-07-13 - Privacy history cleanup
+
+**What changed**: Rewrote `main` and `v1.1.0` so old maintainer emails use the GitHub noreply address, removed former donation and social-profile links, replaced a machine-local asset path with neutral wording, and removed AI co-author and session trailers. The current feed, reader, and application code are unchanged.
+
+**Verification**: All 90 tests pass, `npm audit` reports zero vulnerabilities, Gitleaks reports no findings across the rewritten history, and no branch or tag contains the former email, profile, machine-path, or AI-attribution patterns. Both `main` and `v1.1.0` were force-pushed with leases.
+
+**Remaining privacy step**: GitHub still serves the previous commits when someone requests an old object by its exact hash, even though no branch or tag points to that history. GitHub's documented process requires Support to remove cached views and run server-side garbage collection. The current repository history and live Pages site are clean, but strict removal from GitHub storage is not complete until Support confirms that purge.
+
+---
+
 ## 2026-07-12 - Add paywall previews and refresh source coverage
 
 **What changed**: Added a publisher preview for articles labeled `Paywall
