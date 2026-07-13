@@ -35,6 +35,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG_NAME: ${{ inputs.tag_name || github.ref_name }}
         run: |
+          if gh release view "$TAG_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG_NAME already exists; nothing to create."
+            exit 0
+          fi
+
           args=(--repo "$GITHUB_REPOSITORY" --title "$TAG_NAME")
           # Use the curated notes only when they were written for this exact
           # tag (first line names it) — otherwise a future release would
