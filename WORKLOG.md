@@ -1,3 +1,15 @@
+## 2026-07-21 - Document Cloudflare hosting and crawler migration
+
+**What changed**: Added `CLOUDFLARE_MIGRATION_PLAN.md`, documenting a phased move of the reader and feeds to `amesvt.com/vt-news-rss-bcbs/`. Phase 1 keeps the hourly crawler in GitHub Actions and deploys the same generated artifact to GitHub Pages and a narrowly routed Cloudflare Worker with Static Assets. Phase 2 records the optional migration of crawling to a paid scheduled Worker with R2-backed state, overlap protection, and a GitHub Pages mirror strategy.
+
+**Decisions made**: Keep the existing crawler and archive behavior unchanged during the hosting move. Avoid deploying hourly news artifacts through the separate `amesvt-website` Pages project because independent deployments could overwrite each other. Treat Cloudflare-native crawling as a later migration, with a likely cost near $5 per month and an $8 planning ceiling until production CPU usage is measured. Keep credential values and account-specific identifiers out of tracked files.
+
+**Left off at**: The research plan was re-read, passed `git diff --check`, and passed a targeted credential-pattern scan. Commit `3c11ebc` was pushed to `origin/main`; the repository was clean and synchronized after the push.
+
+**Open questions**: Before implementation, decide whether the news reader should be indexable or inherit the current `amesvt.com` `noindex, nofollow` posture. Before moving the crawler, confirm the Workers Paid minimum and how the GitHub Pages mirror should remain fresh.
+
+---
+
 ## 2026-07-13 - Privacy history cleanup
 
 **What changed**: Rewrote `main` and `v1.1.0` so old maintainer emails use the GitHub noreply address, removed former donation and social-profile links, replaced a machine-local asset path with neutral wording, and removed AI co-author and session trailers. The current feed, reader, and application code are unchanged.
