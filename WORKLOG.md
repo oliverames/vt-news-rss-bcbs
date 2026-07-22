@@ -1,3 +1,17 @@
+## 2026-07-22 - Exercise test and release automation safely
+
+**What changed**: Added manual entry points for the test workflow and a non-publishing release dry run, then exercised both through GitHub Actions.
+
+**Decisions made**: The release test must prove packaging without creating tags, releases, or production feed mutations.
+
+**Left off at**: Both manual runs are green and the repository is synchronized.
+
+**Open questions**: The Cloudflare hosting and crawler-migration decisions recorded below remain unchanged.
+
+**Verification**: All 90 tests passed, the audit reported zero vulnerabilities, and the release dry run completed without publishing artifacts.
+
+---
+
 ## 2026-07-21 - Document Cloudflare hosting and crawler migration
 
 **What changed**: Added `CLOUDFLARE_MIGRATION_PLAN.md`, documenting a phased move of the reader and feeds to `amesvt.com/vt-news-rss-bcbs/`. Phase 1 keeps the hourly crawler in GitHub Actions and deploys the same generated artifact to GitHub Pages and a narrowly routed Cloudflare Worker with Static Assets. Phase 2 records the optional migration of crawling to a paid scheduled Worker with R2-backed state, overlap protection, and a GitHub Pages mirror strategy.
